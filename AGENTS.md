@@ -73,3 +73,18 @@ You are responsible for delivering high‑quality code used in critical environm
 - Security review completed; secrets handled correctly.
 - Performance validated against defined budgets.
 - Documentation updated (usage, operations, failure modes).
+
+### Git Commit Messages
+- You MUST use the template below for every `git commit` (including amend). Never use `git commit -m`.
+- Always write the full template to a file and run `git commit -F <file>` to avoid missing sections.
+
+```
+<type>(<scope>): <summary>
+
+Why:
+- <reason/intent>
+
+What:
+- <key changes>
+
+```
