@@ -1,0 +1,39 @@
+version: 1
+features:
+  - slug: cli-core
+    title: CLI command surface and version info
+    depends_on: []
+    notes: base CLI routing and shared flag parsing
+    tasks:
+      - id: "01"
+        title: Command routing and usage
+      - id: "02"
+        title: Flag parsing helpers
+  - slug: skill-install
+    title: Skill install/uninstall with backup and filtering
+    depends_on:
+      - cli-core
+    notes: relies on shared flags and agent resolution
+    tasks:
+      - id: "01"
+        title: Install embedded skills
+      - id: "02"
+        title: Uninstall skills with backup
+  - slug: skill-doctor
+    title: Skill drift detection and listing
+    depends_on:
+      - cli-core
+    notes: uses shared flags and skills index
+    tasks:
+      - id: "01"
+        title: Doctor drift detection
+      - id: "02"
+        title: List command output
+  - slug: codex-wrapper
+    title: Codex wrapper transcript logging
+    depends_on:
+      - cli-core
+    notes: relies on CLI routing and repo-id discovery
+    tasks:
+      - id: "01"
+        title: Transcript capture wrapper

@@ -1,0 +1,57 @@
+version: 1
+features:
+  - slug: cli-core
+    tasks:
+      - id: "01"
+        title: Command routing and usage
+        tests:
+          - id: "01"
+            title: Usage and unknown command handling
+          - id: "02"
+            title: Version output includes build metadata
+      - id: "02"
+        title: Flag parsing helpers
+        tests:
+          - id: "01"
+            title: Only-list parsing trims and ignores empty values
+          - id: "02"
+            title: Agent resolution default and --all behavior
+  - slug: skill-install
+    tasks:
+      - id: "01"
+        title: Install embedded skills
+        tests:
+          - id: "01"
+            title: Install writes skills into an empty skills root
+          - id: "02"
+            title: Install backs up modified skills before update
+      - id: "02"
+        title: Uninstall skills with backup
+        tests:
+          - id: "01"
+            title: Uninstall removes skills and creates backup
+          - id: "02"
+            title: Uninstall --force removes skills without backup
+  - slug: skill-doctor
+    tasks:
+      - id: "01"
+        title: Doctor drift detection
+        tests:
+          - id: "01"
+            title: Doctor detects missing and drifted files
+          - id: "02"
+            title: Doctor reports extra skills
+      - id: "02"
+        title: List command output
+        tests:
+          - id: "01"
+            title: List output matches doctor status
+  - slug: codex-wrapper
+    tasks:
+      - id: "01"
+        title: Transcript capture wrapper
+        tests:
+          - id: "01"
+            title: Codex wrapper writes transcript and metadata
+          - id: "02"
+            title: Codex wrapper fails without repo-id

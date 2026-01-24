@@ -1,0 +1,21 @@
+version: 1
+features:
+  - slug: cli-core
+    title: CLI command surface and version info
+    depends_on: []
+    notes: base command routing and flag parsing
+  - slug: skill-install
+    title: Skill install/uninstall with backup and filtering
+    depends_on:
+      - cli-core
+    notes: relies on CLI parsing and agent resolution
+  - slug: skill-doctor
+    title: Skill drift detection and listing
+    depends_on:
+      - cli-core
+    notes: uses CLI parsing; independent of install/uninstall
+  - slug: codex-wrapper
+    title: Codex wrapper transcript logging
+    depends_on:
+      - cli-core
+    notes: uses CLI parsing and shared filesystem helpers
