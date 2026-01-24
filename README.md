@@ -84,30 +84,37 @@ under `specs/` and the later steps implement code.
 
 1. **Initialize Loopr metadata**
    - Prompt: "Run loopr-init"
+   - Interaction: Autonomous (no questions expected)
    - Output: `specs/.loopr/` with repo id and transcript path
 
 2. **Create a PRD**
    - Prompt: "Run loopr-prd with seed prompt: <seed prompt above>"
+   - Interaction: **User input required** (MCQ interview; answer each question)
    - Output: `specs/prd.md`
 
 3. **Expand PRD → Spec**
    - Prompt: "Run loopr-specify"
+   - Interaction: **User input required if prompted** (clarifying questions when PRD lacks detail)
    - Output: `specs/spec.md` (includes foundation requirements)
 
 4. **Split Spec → Features**
    - Prompt: "Run loopr-features"
+   - Interaction: Autonomous
    - Output: `specs/feature-*.md` + `specs/feature-order.yaml` (foundation first)
 
 5. **Generate Tasks**
    - Prompt: "Run loopr-tasks"
+   - Interaction: Autonomous
    - Output: `specs/feature-*-task-*.md` + `specs/task-order.yaml`
 
 6. **Generate Tests**
    - Prompt: "Run loopr-tests"
+   - Interaction: Autonomous
    - Output: `specs/feature-*-task-*-test-*.md` + `specs/test-order.yaml`
 
 7. **Implement**
    - Prompt: "Run loopr-execute"
+   - Interaction: Mostly autonomous; **user input required** if the agent needs missing context (e.g., test command choice or failure resolution)
    - Output: working code, tests, and `specs/implementation-progress.md`
 
 ### 3) Verify the build
