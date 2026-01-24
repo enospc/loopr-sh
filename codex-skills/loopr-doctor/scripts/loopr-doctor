@@ -10,6 +10,7 @@ Checks:
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -57,6 +58,25 @@ def main() -> int:
     feature_order_path = specs_dir / "feature-order.yaml"
     task_order_path = specs_dir / "task-order.yaml"
     test_order_path = specs_dir / "test-order.yaml"
+    init_state_path = specs_dir / ".loopr" / "init-state.json"
+
+    mode = "existing"
+    if init_state_path.exists():
+        try:
+            init_state = json.loads(init_state_path.read_text())
+        except Exception as exc:
+            err(f"Failed to parse {init_state_path}: {exc}")
+            init_state = None
+        if isinstance(init_state, dict):
+            state_mode = init_state.get("mode")
+            if state_mode in {"greenfield", "existing"}:
+                mode = state_mode
+            else:
+                err(
+                    f"{init_state_path}: mode must be 'greenfield' or 'existing' (got {state_mode!r})"
+                )
+    else:
+        warn(f"Missing {init_state_path}; assuming existing mode")
 
     if not feature_order_path.exists():
         err(f"Missing {feature_order_path}")
@@ -103,9 +123,9 @@ def main() -> int:
                     err(
                         f"feature-order.yaml: feature[{idx}].depends_on must be a list of strings"
                     )
-            if feature_slugs and feature_slugs[0] != "foundation":
+            if mode == "greenfield" and feature_slugs and feature_slugs[0] != "foundation":
                 err(
-                    "feature-order.yaml: first feature must be 'foundation' in greenfield repos"
+                    "feature-order.yaml: first feature must be 'foundation' when mode=greenfield"
                 )
     elif feature_order is not None:
         err("feature-order.yaml: root must be a map")

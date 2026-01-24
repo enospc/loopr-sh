@@ -6,15 +6,16 @@ description: Split specs/spec.md into feature documents at specs/feature-<slug>.
 ## Prerequisite
 - Run loopr-init to ensure repo-id and transcript logging are initialized.
 - Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
+- Read `specs/.loopr/init-state.json` to determine `mode` (if missing, assume `existing`).
 
 # Loopr Features
 
 ## Overview
-Split specs/spec.md into independent, implementable features, generate a pragmatic dependency-based order, and write each feature to specs/feature-<feature-slug>.md with ordering metadata. For greenfield repos, always include a Foundation feature for scaffolding and test harness setup.
+Split specs/spec.md into independent, implementable features, generate a pragmatic dependency-based order, and write each feature to specs/feature-<feature-slug>.md with ordering metadata. For greenfield repos (`mode=greenfield`), always include a Foundation feature for scaffolding and test harness setup.
 
 ## Workflow
 1. Read specs/spec.md and identify distinct features.
-2. Always include a greenfield **Foundation** feature for repo scaffolding, tooling, and a test harness smoke test. This must be first in the order and have no dependencies.
+2. If `mode=greenfield`, include a **Foundation** feature for repo scaffolding, tooling, and a test harness smoke test. This must be first in the order and have no dependencies. If `mode=existing`, the foundation feature is optional.
 3. Prefer orthogonal features with minimal coupling.
 4. Generate a short slug for each feature (kebab-case, unique).
 5. Determine dependencies between features and produce a pragmatic build order.
@@ -25,13 +26,13 @@ Split specs/spec.md into independent, implementable features, generate a pragmat
 - Lowercase kebab-case.
 - Keep under 40 characters when possible.
 - If a collision exists, append a short suffix (e.g., -v2 or -auth).
-- Reserve `foundation` for the greenfield setup feature.
+- Reserve `foundation` for the greenfield setup feature (when `mode=greenfield`).
 
 ## Feature template
 ```
 
 ## feature-order.yaml format
-Keep it machine-readable and stable:
+Keep it machine-readable and stable. Include `foundation` only when `mode=greenfield`:
 
 ```yaml
 version: 1

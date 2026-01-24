@@ -6,6 +6,7 @@ description: Implement every task listed in specs/task-order.yaml in order, usin
 ## Prerequisite
 - Run loopr-init to ensure repo-id and transcript logging are initialized.
 - Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
+- Read `specs/.loopr/init-state.json` to determine `mode` (if missing, assume `existing`).
 
 # Loopr Execute
 
@@ -13,10 +14,10 @@ description: Implement every task listed in specs/task-order.yaml in order, usin
 Execute all tasks in specs/task-order.yaml sequentially, using loopr-run-task for each task. Stop on first failure and report progress.
 
 ## Workflow
-1. **Preflight (greenfield only):**
+1. **Preflight (mode-aware):**
    - Run **loopr-doctor**; if it fails, stop and fix inputs.
    - Verify specs/task-order.yaml exists; if missing, stop and ask to run loopr-tasks.
-   - Verify the first feature is `foundation`; if missing, stop and ask to re-run loopr-features and loopr-tasks to add it.
+   - If `mode=greenfield`, verify the first feature is `foundation`; if missing, stop and ask to re-run loopr-features and loopr-tasks to add it.
    - If specs/test-order.yaml is missing, generate it with loopr-tests before implementation.
 2. Read specs/task-order.yaml and extract the ordered list of feature slugs and task IDs.
 3. For each task in order:

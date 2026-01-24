@@ -4,16 +4,18 @@ description: Guide users through the Loopr workflow and the correct order of loo
 ---
 
 ## Prerequisite
-- Run loopr-init to ensure repo-id and transcript logging are initialized.
+- None. This skill is informational only and must not trigger other skills.
 
 # Loopr Help
 
 ## Overview
-Provide a thorough, step-by-step guide for using the Loopr workflow, including the correct order of loopr-* skills, when to use each, and a non-trivial greenfield example from a seed prompt. This workflow is for brand-new, empty repos only.
+Provide a thorough, step-by-step guide for using the Loopr workflow, including the correct order of loopr-* skills, when to use each, and a non-trivial greenfield example from a seed prompt. This workflow is optimized for brand-new, empty repos; existing repos require explicit `--allow-existing` and may skip foundation.
+
+Important: This skill must not invoke or trigger any other skills. It should only explain what to run and when, without executing anything.
 
 ## Greenfield Preflight
 Before starting the workflow in a new repo, confirm it is truly greenfield. If `specs/.loopr/repo-id` exists, treat the repo as Loopr-managed and proceed:
-- Allowed: `.git/`, `README.md`, `LICENSE`, `.gitignore` (or similarly empty scaffolding).
+- Allowed: `.git/`, `.github/`, `.vscode/`, `docs/`, `specs/`, `README.md`, `LICENSE`, `.gitignore` (or similarly empty scaffolding).
 - Not allowed: app code or build tooling (examples: `package.json`, `go.mod`, `Cargo.toml`, `pyproject.toml`, `pom.xml`, `build.gradle`, `src/`, `app/`, `backend/`, `frontend/`).
 If disallowed signals exist, stop and ask for confirmation.
 

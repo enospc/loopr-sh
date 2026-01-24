@@ -1,6 +1,6 @@
 # Loopr CLI
 
-Loopr is a workflow installer for greenfield projects. The `loopr` binary plants the
+Loopr is a workflow installer for greenfield-first projects (existing repos require explicit `--allow-existing`). The `loopr` binary plants the
 Loopr skills into your coding agent (Codex) so the agent can run the full
 PRD → Spec → Features → Tasks → Tests → Implementation pipeline.
 
@@ -94,8 +94,9 @@ Use `loopr codex` to capture transcripts into `specs/.loopr/transcripts/<repo-id
 
 1. **Initialize Loopr metadata**
    - Prompt: "Run loopr-init"
+   - If the repo already has code, prompt: "Run loopr-init with --allow-existing"
    - Interaction: Autonomous (no questions expected)
-   - Output: `specs/.loopr/` with repo id and transcript path
+   - Output: `specs/.loopr/` with repo id, init-state, and transcript path
 
 2. **Create a PRD**
    - Prompt: "Run loopr-prd with seed prompt: <seed prompt above>"
@@ -110,7 +111,7 @@ Use `loopr codex` to capture transcripts into `specs/.loopr/transcripts/<repo-id
 4. **Split Spec → Features**
    - Prompt: "Run loopr-features"
    - Interaction: Autonomous
-   - Output: `specs/feature-*.md` + `specs/feature-order.yaml` (foundation first)
+   - Output: `specs/feature-*.md` + `specs/feature-order.yaml` (foundation first in greenfield mode)
 
 5. **Generate Tasks**
    - Prompt: "Run loopr-tasks"
@@ -165,5 +166,5 @@ If you have local edits, Loopr will back them up automatically before overwritin
 
 ## Notes
 
-- Loopr is **greenfield-only**: it assumes a blank repo.
+- Loopr defaults to **greenfield**: it assumes a blank repo unless you explicitly run `loopr-init` with `--allow-existing`.
 - The CLI installs skills only. Planning and coding happen through Codex.

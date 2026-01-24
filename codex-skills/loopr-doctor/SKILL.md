@@ -1,12 +1,12 @@
 ---
 name: loopr-doctor
-description: Validate Loopr order YAML files and referenced feature/task/test artifacts for greenfield repos. Use as a preflight before generating tasks/tests or before implementation, and anytime order files change.
+description: Validate Loopr order YAML files and referenced feature/task/test artifacts. Use as a preflight before generating tasks/tests or before implementation, and anytime order files change.
 ---
 
 # Loopr Doctor
 
 ## Overview
-Validate the Loopr order artifacts (`feature-order.yaml`, `task-order.yaml`, `test-order.yaml`) and their referenced feature/task/test files. Enforce greenfield invariants like `foundation` being first and catch broken references before implementation.
+Validate the Loopr order artifacts (`feature-order.yaml`, `task-order.yaml`, `test-order.yaml`) and their referenced feature/task/test files. Enforce greenfield invariants like `foundation` being first only when `specs/.loopr/init-state.json` indicates `mode=greenfield`, and catch broken references before implementation.
 
 ## Workflow
 1. Ensure `specs/` exists and the repo is greenfield or already Loopr-managed.
@@ -17,7 +17,7 @@ Validate the Loopr order artifacts (`feature-order.yaml`, `task-order.yaml`, `te
 
 ## Checks performed
 - Required files exist: `specs/feature-order.yaml`, `specs/task-order.yaml`, `specs/test-order.yaml`
-- `feature-order.yaml` has a non-empty features list and `foundation` is first
+- `feature-order.yaml` has a non-empty features list and `foundation` is first when `mode=greenfield`
 - Feature/task/test IDs are numeric strings (preserve zero padding)
 - Order files reference existing feature/task/test markdown files
 - Duplicate IDs or unknown references are flagged
