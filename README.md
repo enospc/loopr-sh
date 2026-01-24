@@ -51,6 +51,7 @@ loopr install   # plant skills
 loopr doctor    # validate installed skills
 loopr list      # list skills and status
 loopr uninstall # remove skills (backed up by default)
+loopr codex     # run Codex with transcript logging
 loopr version   # show version info
 ```
 
@@ -77,10 +78,19 @@ mkdir todo-cli && cd todo-cli
 /path/to/loopr doctor
 ```
 
+For transcript logging, run Codex through the wrapper:
+
+```
+/path/to/loopr codex -- <codex args>
+```
+
+
 ### 2) Run the workflow in Codex
 
 Open Codex in this repo and run the skills in order. Each step creates concrete artifacts
 under `specs/` and the later steps implement code.
+
+Use `loopr codex` to capture transcripts into `specs/.loopr/transcripts/<repo-id>/`.
 
 1. **Initialize Loopr metadata**
    - Prompt: "Run loopr-init"

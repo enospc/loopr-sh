@@ -16,12 +16,14 @@ This workflow is intended for a brand-new, empty repo. Stop and ask for confirma
    - If present: read and reuse the repo-id.
    - If missing: generate a new 6-character lowercase ID (nanoid-style) and persist it to `specs/.loopr/repo-id`.
 3. Ensure transcript directory exists: `specs/.loopr/transcripts/<repo-id>/`.
-4. Create a new session log file path (do not overwrite):
-   - `specs/.loopr/transcripts/<repo-id>/session-<timestamp>.jsonl`
-5. Export environment variables for the current session:
+4. Define session log paths (do not overwrite):
+   - Raw transcript: `specs/.loopr/transcripts/<repo-id>/session-<timestamp>.log`
+   - Metadata (JSONL): `specs/.loopr/transcripts/<repo-id>/session-<timestamp>.jsonl`
+5. Export environment variables for the current session (optional):
    - `LOOPR_REPO_ID=<repo-id>`
    - `LOOPR_TRANSCRIPT=<session-log-path>`
-6. If desired, append a short entry to `specs/.loopr/index.md` indicating the new session log path.
+6. Note: transcripts are captured by the `loopr codex` wrapper. If you launch Codex directly, these files may remain empty.
+7. If desired, append a short entry to `specs/.loopr/index.md` indicating the new session log path.
 
 ## Output requirements
 - Idempotent: re-running does not change an existing repo-id.

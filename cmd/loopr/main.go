@@ -26,6 +26,8 @@ func main() {
 		runList(os.Args[2:])
 	case "uninstall":
 		runUninstall(os.Args[2:])
+	case "codex":
+		runCodex(os.Args[2:])
 	case "version":
 		runVersion()
 	case "-h", "--help", "help":
@@ -45,6 +47,7 @@ func usage() {
 	fmt.Println("  doctor      Validate installed skills")
 	fmt.Println("  list        List skills and status")
 	fmt.Println("  uninstall   Remove loopr skills")
+	fmt.Println("  codex       Run Codex with transcript logging")
 	fmt.Println("  version     Show version info")
 }
 
@@ -198,6 +201,16 @@ func runUninstall(args []string) {
 		fmt.Printf("Agent: %s\n", spec.Name)
 		printUninstallReport(report, *verbose)
 	}
+}
+
+func runCodex(args []string) {
+	exitCode, session, err := ops.RunCodex(args)
+	if err != nil {
+		fail(err)
+	}
+	fmt.Printf("Transcript: %s\n", session.LogPath)
+	fmt.Printf("Metadata:   %s\n", session.MetaPath)
+	os.Exit(exitCode)
 }
 
 func runVersion() {
