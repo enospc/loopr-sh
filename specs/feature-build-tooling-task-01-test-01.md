@@ -4,7 +4,7 @@
 01
 
 ## Type
-Manual
+Integration
 
 ## Purpose
 Verify the deterministic build target produces the Loopr binary.
@@ -24,4 +24,4 @@ Verify the deterministic build target produces the Loopr binary.
 - `bin/loopr` exists and is executable.
 
 ## Automation Notes
-- Suitable for CI if build environment is standardized.
+- Covered by `scripts/ci/build-tooling-check.sh` in CI or local runs.

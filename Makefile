@@ -7,7 +7,7 @@ COMMIT := $(shell git rev-parse --short=12 HEAD 2>/dev/null || echo "")
 DATE := $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 LDFLAGS := -X 'loopr/internal/version.Version=$(VERSION)' -X 'loopr/internal/version.Commit=$(COMMIT)' -X 'loopr/internal/version.Date=$(DATE)'
 
-.PHONY: build run fmt vet tidy clean
+.PHONY: build run fmt vet tidy clean ci
 
 build:
 	@command -v go >/dev/null 2>&1 || { echo "Go is required to build Loopr. Install Go 1.25+ and re-run make build."; exit 1; }
@@ -28,3 +28,6 @@ tidy:
 
 clean:
 	rm -rf $(BIN_DIR)
+
+ci:
+	./scripts/ci/build-tooling-check.sh

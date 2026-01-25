@@ -28,6 +28,7 @@ Provide a stable build command and standard validation commands for the Loopr CL
 ## Implementation Plan
 - Review the existing Makefile targets for build, fmt, and vet.
 - Add or adjust targets to ensure deterministic behavior and consistent output paths.
+- Add an automated check script and a `make ci` target to run build, fmt, and vet.
 - Update README or docs if build target usage is not documented.
 
 ## Dependencies
@@ -37,7 +38,7 @@ Provide a stable build command and standard validation commands for the Loopr CL
 - Go toolchain version drift could affect reproducibility.
 
 ## Test Plan
-- Manual: run `make build`, `make fmt`, and `make vet` locally.
+- Integration: run `scripts/ci/build-tooling-check.sh` (runs `make build`, `make fmt`, and `make vet`).
 
 ## Notes
 - Keep targets stable to avoid breaking developer scripts.

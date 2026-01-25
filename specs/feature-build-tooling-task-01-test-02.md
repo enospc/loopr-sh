@@ -4,7 +4,7 @@
 02
 
 ## Type
-Manual
+Integration
 
 ## Purpose
 Ensure formatting and vetting targets run successfully.
@@ -24,4 +24,4 @@ Ensure formatting and vetting targets run successfully.
 - `make vet` completes without errors.
 
 ## Automation Notes
-- Suitable for CI if the toolchain version is fixed.
+- Covered by `scripts/ci/build-tooling-check.sh` in CI or local runs.
