@@ -10,6 +10,7 @@ LDFLAGS := -X 'loopr/internal/version.Version=$(VERSION)' -X 'loopr/internal/ver
 .PHONY: build run fmt vet tidy clean
 
 build:
+	@command -v go >/dev/null 2>&1 || { echo "Go is required to build Loopr. Install Go 1.25+ and re-run make build."; exit 1; }
 	mkdir -p $(BIN_DIR)
 	go build -ldflags "$(LDFLAGS)" -o $(BIN) $(PKG)
 
