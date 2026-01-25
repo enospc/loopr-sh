@@ -6,7 +6,8 @@ description: Build. Verify. Iterate. A disciplined workflow for AI-first softwar
 <section class="hero" id="hero" data-section="hero">
   <div class="hero-content">
     <p class="eyebrow">Build. Verify. Iterate.</p>
-    <h1>Own outcomes.<br />Not output.</h1>
+    <h1>A disciplined workflow for AI-first software delivery.</h1>
+    <h2>Own outcomes.<br />Not output.</h2>
     <p class="lead">Loopr installs a PRD -> Spec -> Features -> Tasks -> Tests -> Implementation workflow so AI code ships with intent, verification, and reversible decisions.</p>
     <div class="hero-cta">
       <a class="btn primary" data-cta="primary" href="/go/install/">Install Loopr</a>
