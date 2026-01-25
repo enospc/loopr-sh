@@ -1,0 +1,46 @@
+version: 1
+features:
+  - slug: foundation
+    title: Repository scaffolding and test harness
+    depends_on: []
+  - slug: visual-theme
+    title: Fly.io-inspired visual system
+    depends_on:
+      - foundation
+  - slug: site-structure
+    title: Site structure and navigation
+    depends_on:
+      - foundation
+      - visual-theme
+  - slug: theme-switcher
+    title: Theme switcher (light/dark)
+    depends_on:
+      - visual-theme
+      - site-structure
+  - slug: marketing-content
+    title: Marketing landing content
+    depends_on:
+      - foundation
+      - visual-theme
+      - site-structure
+      - theme-switcher
+  - slug: docs-content
+    title: Documentation content
+    depends_on:
+      - foundation
+      - visual-theme
+      - site-structure
+      - theme-switcher
+  - slug: codex-power-user
+    title: Codex power user narrative
+    depends_on:
+      - foundation
+      - visual-theme
+      - site-structure
+      - theme-switcher
+      - docs-content
+  - slug: analytics-seo
+    title: Analytics and SEO instrumentation
+    depends_on:
+      - foundation
+      - site-structure

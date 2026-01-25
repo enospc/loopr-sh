@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="{{lang}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}" />
+    <meta property="og:title" content="{{ogTitle}}" />
+    <meta property="og:description" content="{{ogDescription}}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ogUrl}}" />
+    <meta property="og:image" content="{{ogImage}}" />
+    <meta name="twitter:card" content="{{twitterCard}}" />
+    <meta name="twitter:title" content="{{ogTitle}}" />
+    <meta name="twitter:description" content="{{ogDescription}}" />
+    <meta name="twitter:image" content="{{ogImage}}" />
+    <link rel="preload" href="/assets/fonts/Inter-wght-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("loopr-theme");
+          var theme = stored === "dark" ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (err) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
+    {{extraHead}}
+  </head>
+  <body class="{{bodyClass}}">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="brand">
+          <a class="brand-mark" href="/" aria-label="Loopr home">
+            <svg viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="loopr-gradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#8b5cf6" />
+                  <stop offset="100%" stop-color="#6d28d9" />
+                </linearGradient>
+              </defs>
+              <rect x="3" y="3" width="42" height="42" rx="14" fill="url(#loopr-gradient)" />
+              <path
+                d="M12 24C12 16 20 16 24 24C28 32 36 32 36 24C36 16 28 16 24 24C20 32 12 32 12 24Z"
+                fill="none"
+                stroke="#ffffff"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>Loopr</span>
+          </a>
+        </div>
+        <nav class="site-nav" aria-label="Primary">
+          <ul class="nav-list">
+            {{navItems}}
+            <li class="nav-item nav-toggle-item">
+              <button class="theme-toggle" type="button" id="theme-toggle" aria-pressed="false">
+                <span class="label">Light</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+        <div class="header-cta">
+          <div class="cta-group" role="group" aria-label="Primary actions">
+            <a class="btn ghost" data-cta="secondary" href="{{ctaSecondaryHref}}">{{ctaSecondaryLabel}}</a>
+            <a class="btn primary" data-cta="primary" href="{{ctaPrimaryHref}}">{{ctaPrimaryLabel}}</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="content" class="page">
+      {{content}}
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-shell">
+        <div class="footer-inner">
+          <div>
+            <div class="brand-mark footer">
+              <svg viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
+                <defs>
+                  <linearGradient id="loopr-gradient-footer" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#8b5cf6" />
+                    <stop offset="100%" stop-color="#6d28d9" />
+                  </linearGradient>
+                </defs>
+                <rect x="3" y="3" width="42" height="42" rx="14" fill="url(#loopr-gradient-footer)" />
+                <path
+                  d="M12 24C12 16 20 16 24 24C28 32 36 32 36 24C36 16 28 16 24 24C20 32 12 32 12 24Z"
+                  fill="none"
+                  stroke="#ffffff"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span>Loopr</span>
+            </div>
+            <p class="muted">{{description}}</p>
+          </div>
+          <div class="footer-links">
+            {{footerItems}}
+          </div>
+        </div>
+        <div class="footer-meta">{{year}} {{siteName}}. Built for AI-first engineering teams.</div>
+      </div>
+    </footer>
+
+    {{analyticsSnippet}}
+    <script>
+      (function () {
+        var toggle = document.getElementById("theme-toggle");
+        if (!toggle) return;
+        var label = toggle.querySelector(".label");
+        function apply(theme) {
+          document.documentElement.setAttribute("data-theme", theme);
+          toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+          if (label) {
+            label.textContent = theme === "dark" ? "Dark" : "Light";
+          }
+        }
+        var stored = null;
+        try {
+          stored = localStorage.getItem("loopr-theme");
+        } catch (err) {
+          stored = null;
+        }
+        apply(stored === "dark" ? "dark" : "light");
+        toggle.addEventListener("click", function () {
+          var current = document.documentElement.getAttribute("data-theme") || "light";
+          var next = current === "dark" ? "light" : "dark";
+          try {
+            localStorage.setItem("loopr-theme", next);
+          } catch (err) {
+            // ignore storage errors
+          }
+          apply(next);
+        });
+      })();
+    </script>
+  </body>
+</html>

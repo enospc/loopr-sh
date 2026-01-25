@@ -1,0 +1,86 @@
+version: 1
+features:
+  - slug: foundation
+    title: Repository scaffolding and test harness
+    depends_on: []
+    tasks:
+      - id: "01"
+        title: Project scaffold and npm scripts
+      - id: "02"
+        title: Static build and dev server
+      - id: "03"
+        title: Validation and test harness
+  - slug: visual-theme
+    title: Fly.io-inspired visual system
+    depends_on:
+      - foundation
+    tasks:
+      - id: "01"
+        title: Design tokens and typography
+      - id: "02"
+        title: Section layouts and components
+  - slug: site-structure
+    title: Site structure and navigation
+    depends_on:
+      - foundation
+      - visual-theme
+    tasks:
+      - id: "01"
+        title: Base layout and navigation
+      - id: "02"
+        title: SEO metadata and 404 page
+  - slug: theme-switcher
+    title: Theme switcher (light/dark)
+    depends_on:
+      - visual-theme
+      - site-structure
+    tasks:
+      - id: "01"
+        title: Theme tokens + toggle UI
+      - id: "02"
+        title: Persistence + no-flash script
+  - slug: marketing-content
+    title: Marketing landing content
+    depends_on:
+      - foundation
+      - visual-theme
+      - site-structure
+      - theme-switcher
+    tasks:
+      - id: "01"
+        title: Landing page content
+  - slug: docs-content
+    title: Documentation content
+    depends_on:
+      - foundation
+      - visual-theme
+      - site-structure
+      - theme-switcher
+    tasks:
+      - id: "01"
+        title: Docs index, install, and quickstart
+      - id: "02"
+        title: Commands and workflow docs
+      - id: "03"
+        title: FAQ page
+  - slug: codex-power-user
+    title: Codex power user narrative
+    depends_on:
+      - foundation
+      - visual-theme
+      - site-structure
+      - theme-switcher
+      - docs-content
+    tasks:
+      - id: "01"
+        title: Codex power user page
+  - slug: analytics-seo
+    title: Analytics and SEO instrumentation
+    depends_on:
+      - foundation
+      - site-structure
+    tasks:
+      - id: "01"
+        title: Cloudflare analytics integration
+      - id: "02"
+        title: Conversion proxy routes

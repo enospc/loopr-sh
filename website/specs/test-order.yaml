@@ -1,0 +1,98 @@
+version: 1
+features:
+  - slug: foundation
+    tasks:
+      - id: "01"
+        title: Project scaffold and npm scripts
+        tests:
+          - id: "01"
+            title: Scaffold and npm scripts exist
+      - id: "02"
+        title: Static build and dev server
+        tests:
+          - id: "01"
+            title: Static build output and dev server
+      - id: "03"
+        title: Validation and test harness
+        tests:
+          - id: "01"
+            title: Validation harness detects missing pages/links
+  - slug: visual-theme
+    tasks:
+      - id: "01"
+        title: Design tokens and typography
+        tests:
+          - id: "01"
+            title: Design tokens and typography applied
+      - id: "02"
+        title: Section layouts and components
+        tests:
+          - id: "01"
+            title: Shared section layouts and footer
+  - slug: site-structure
+    tasks:
+      - id: "01"
+        title: Base layout and navigation
+        tests:
+          - id: "01"
+            title: Shared layout and navigation
+      - id: "02"
+        title: SEO metadata and 404 page
+        tests:
+          - id: "01"
+            title: SEO metadata and custom 404 page
+  - slug: theme-switcher
+    tasks:
+      - id: "01"
+        title: Theme tokens + toggle UI
+        tests:
+          - id: "01"
+            title: Theme toggle defaults to light
+      - id: "02"
+        title: Persistence + no-flash script
+        tests:
+          - id: "01"
+            title: Theme preference persists
+  - slug: marketing-content
+    tasks:
+      - id: "01"
+        title: Landing page content
+        tests:
+          - id: "01"
+            title: Landing page sections and Loopr.md alignment
+  - slug: docs-content
+    tasks:
+      - id: "01"
+        title: Docs index, install, and quickstart
+        tests:
+          - id: "01"
+            title: Docs index, install, and quickstart pages
+      - id: "02"
+        title: Commands and workflow docs
+        tests:
+          - id: "01"
+            title: Commands and workflow docs exist
+      - id: "03"
+        title: FAQ page
+        tests:
+          - id: "01"
+            title: FAQ page content and Loopr.md alignment
+  - slug: codex-power-user
+    tasks:
+      - id: "01"
+        title: Codex power user page
+        tests:
+          - id: "01"
+            title: Codex power user page content
+  - slug: analytics-seo
+    tasks:
+      - id: "01"
+        title: Cloudflare analytics integration
+        tests:
+          - id: "01"
+            title: Cloudflare analytics snippet present
+      - id: "02"
+        title: Conversion proxy routes
+        tests:
+          - id: "01"
+            title: Conversion proxy routes

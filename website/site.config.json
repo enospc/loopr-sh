@@ -1,0 +1,24 @@
+{
+  "site": {
+    "name": "Loopr",
+    "domain": "loopr.sh",
+    "baseUrl": "https://loopr.sh",
+    "tagline": "Workflow installer for greenfield-first projects",
+    "description": "Loopr installs a disciplined PRD -> Spec -> Features -> Tasks -> Tests -> Implementation workflow so teams can ship AI-first software safely."
+  },
+  "links": {
+    "github": "https://github.com/enospc/loopr-sh"
+  },
+  "analytics": {
+    "cloudflareToken": ""
+  },
+  "nav": [
+    {"label": "Docs", "href": "/docs/"},
+    {"label": "Codex", "href": "/codex-power-user/"},
+    {"label": "GitHub", "href": "/go/github/"}
+  ],
+  "ctas": {
+    "primary": {"label": "Install Loopr", "href": "/docs/install/"},
+    "secondary": {"label": "View Docs", "href": "/docs/"}
+  }
+}
