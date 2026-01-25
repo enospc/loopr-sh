@@ -7,20 +7,21 @@
 Integration
 
 ## Purpose
-Ensure `loopr codex` exits with a clear error when no Loopr repo-id is found.
+Ensure `loopr codex` fails with a clear error when `specs/.loopr/repo-id` is missing.
 
 ## Preconditions
-- No `specs/.loopr/repo-id` exists in the current or parent directories.
+- `bin/loopr` built and available on PATH or invoked directly.
+- A directory without `specs/.loopr/repo-id`.
 
 ## Test Data
-- Command: `loopr codex -- --help`.
+- Example Codex args such as `--help`.
 
 ## Steps
-1. Run the command from a directory without a Loopr workspace.
+1. Run `loopr codex -- --help` from a directory without `specs/.loopr/repo-id`.
 
 ## Expected Results
-- Exit code is non-zero.
-- Error message mentions missing `specs/.loopr/repo-id` and suggests running `loopr-init`.
+- Command exits non-zero.
+- Error message instructs to run `loopr-init`.
 
 ## Automation Notes
-- Use a temp directory outside any Loopr workspace to avoid false positives.
+- Use a temp directory without `specs/.loopr/` for automation.

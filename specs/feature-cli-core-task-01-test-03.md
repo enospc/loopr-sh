@@ -7,22 +7,21 @@
 Integration
 
 ## Purpose
-Confirm arguments after `--` are passed to Codex unchanged.
+Ensure arguments after `--` are passed to Codex unchanged.
 
 ## Preconditions
-- A stub `codex` binary is available in PATH that records its argv.
+- `bin/loopr` built and available on PATH or invoked directly.
+- Codex CLI installed, or a stub `codex` script on PATH to capture args.
 
 ## Test Data
-- Command: `loopr codex -- --help`.
+- Codex args such as `--help`.
 
 ## Steps
-1. Place a stub `codex` executable in PATH that writes its argv to a temp file.
-2. Run `loopr codex -- --help`.
-3. Inspect the stub's recorded argv.
+1. Run `loopr codex -- --help`.
+2. Observe Codex receiving `--help` as an argument.
 
 ## Expected Results
-- The stub sees `--help` as the first argument.
-- No `loopr` flags appear after the `--` delimiter.
+- Codex receives `--help` without Loopr parsing it.
 
 ## Automation Notes
-- A shell script stub can write "$@" to a file for assertions.
+- Use a stub `codex` binary in PATH for deterministic argument capture.

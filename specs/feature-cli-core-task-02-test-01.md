@@ -7,21 +7,21 @@
 Unit
 
 ## Purpose
-Ensure `--only` parsing returns a stable list of skill names with whitespace trimmed and empties removed.
+Verify `--only` parsing trims whitespace and ignores empty entries.
 
 ## Preconditions
-- Unit test harness available in Go.
+- None.
 
 ## Test Data
-- Input: "loopr-init, ,loopr-prd,,loopr-specify"
-- Expected: ["loopr-init", "loopr-prd", "loopr-specify"]
+- Example input: "loopr-init,, loopr-prd , ,loopr-specify".
 
 ## Steps
-1. Invoke the shared `--only` parsing helper with the input string.
-2. Capture the returned slice.
+1. Call the `--only` parsing helper with the example input.
+2. Inspect the returned slice.
 
 ## Expected Results
-- Returned slice matches expected order and excludes empty entries.
+- Output contains `loopr-init`, `loopr-prd`, and `loopr-specify` in order.
+- Empty entries are discarded.
 
 ## Automation Notes
-- Prefer a unit test for the helper function to avoid CLI invocation.
+- Implement as a unit test for the helper function.

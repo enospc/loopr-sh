@@ -43,5 +43,5 @@ Allow developers to cleanly remove skills while preserving local edits by defaul
 
 ## Completion
 - Status: Done
-- Tests: go test ./...
-- Notes: Added uninstall coverage for backup and --force behavior.
+- Tests: `go test ./...`
+- Notes: None.

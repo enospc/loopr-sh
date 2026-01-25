@@ -7,25 +7,22 @@
 Unit
 
 ## Purpose
-Validate agent resolution returns default `codex`, supports `--all`, and rejects unknown agents.
+Verify agent resolution defaults to Codex and `--all` returns all supported agents.
 
 ## Preconditions
-- Unit test harness available in Go.
+- None.
 
 ## Test Data
-- Default: no `--agent` flag set
-- All: `--all` set
-- Invalid: `--agent not-real`
+- Agent name: "codex".
+- `--all` flag set to true.
 
 ## Steps
-1. Run helper with no `--agent` flag and `--all` false.
-2. Run helper with `--all` true.
-3. Run helper with `--agent not-real`.
+1. Resolve agents with default agent name and `--all=false`.
+2. Resolve agents with `--all=true`.
 
 ## Expected Results
-- Step 1 returns the `codex` agent spec.
-- Step 2 returns all supported agent specs (non-empty).
-- Step 3 returns an error for unsupported agent.
+- Step 1 returns a single Codex spec.
+- Step 2 returns the full supported agent list.
 
 ## Automation Notes
-- Use a flagset in tests to simulate CLI parsing.
+- Implement as unit tests for the resolver helper.

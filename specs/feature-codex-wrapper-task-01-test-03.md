@@ -7,27 +7,24 @@
 Integration
 
 ## Purpose
-Verify `--loopr-root` and `LOOPR_ROOT` select the intended workspace, with flag precedence over env.
+Verify `--loopr-root` and `LOOPR_ROOT` override workspace resolution.
 
 ## Preconditions
-- Two temp workspaces exist, each with its own `specs/.loopr/repo-id`.
-- A stub `codex` binary is available in PATH.
+- `bin/loopr` built and available on PATH or invoked directly.
+- Two Loopr workspaces with distinct `specs/.loopr/repo-id` values.
+- Codex CLI installed, or a stub `codex` script on PATH.
 
 ## Test Data
-- Commands:
-  - `LOOPR_ROOT=<pathA> loopr codex -- --help`
-  - `LOOPR_ROOT=<pathA> loopr codex --loopr-root <pathB> -- --help`
+- Example Codex args such as `--help`.
 
 ## Steps
-1. Create workspace A and workspace B, each with `specs/.loopr/repo-id`.
-2. Set `LOOPR_ROOT` to workspace A and run `loopr codex -- --help`.
-3. Confirm transcript artifacts are created under workspace A.
-4. With `LOOPR_ROOT` still set to A, run `loopr codex --loopr-root <pathB> -- --help`.
-5. Confirm transcript artifacts are created under workspace B.
+1. Run `loopr codex --loopr-root <workspace-a> -- --help`.
+2. Run `LOOPR_ROOT=<workspace-b> loopr codex -- --help`.
+3. Inspect transcript directories for each workspace.
 
 ## Expected Results
-- Without `--loopr-root`, `LOOPR_ROOT` determines the workspace.
-- With `--loopr-root`, artifacts are created under the flag-specified workspace regardless of `LOOPR_ROOT`.
+- Step 1 writes transcripts under workspace A.
+- Step 2 writes transcripts under workspace B.
 
 ## Automation Notes
-- Ensure each workspace has a distinct repo-id to simplify assertions.
+- Use temp workspaces with repo-id files for deterministic checks.

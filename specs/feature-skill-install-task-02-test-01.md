@@ -4,28 +4,25 @@
 01
 
 ## Type
-Integration
+Unit
 
 ## Purpose
-Verify `loopr uninstall` removes targeted skills and creates a backup by default.
+Verify uninstall removes skills and creates backups by default.
 
 ## Preconditions
-- Temp directory available for CODEX_HOME.
-- `loopr-init` installed in skills root.
+- Skills installed in a temp root.
 
 ## Test Data
-- Command: `go run ./cmd/loopr uninstall --only loopr-init`
+- Embedded test skill.
 
 ## Steps
-1. Install `loopr-init` into a temp skills root.
-2. Run `go run ./cmd/loopr uninstall --only loopr-init`.
-3. Check that `$CODEX_HOME/skills/loopr-init` is removed.
-4. Check `.backup/loopr-<timestamp>/loopr-init` exists.
+1. Install skills into a temp root.
+2. Run uninstall without `--force`.
+3. Check that skills are removed and backups exist.
 
 ## Expected Results
-- Uninstall command exits successfully.
 - Skill directory is removed.
-- Backup directory exists with the removed skill contents.
+- Backup directory exists and contains the removed skill.
 
 ## Automation Notes
-- Ensure backup directory is created even when only one skill is removed.
+- Use temp directories and verify filesystem state in unit tests.

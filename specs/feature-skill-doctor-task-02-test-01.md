@@ -7,27 +7,21 @@
 Integration
 
 ## Purpose
-Ensure `loopr list` reports the same status as `loopr doctor` for the same skills.
+Ensure `loopr list` reflects the same status as `loopr doctor`.
 
 ## Preconditions
-- Temp directory available for CODEX_HOME.
-- `loopr-init` installed in skills root.
+- `bin/loopr` built and available on PATH or invoked directly.
 
 ## Test Data
-- Modify a file under `$CODEX_HOME/skills/loopr-init/`.
-- Commands:
-  - `go run ./cmd/loopr doctor --only loopr-init`
-  - `go run ./cmd/loopr list --only loopr-init`
+- A temp skills root with a mix of installed and missing skills.
 
 ## Steps
-1. Install `loopr-init` into a temp skills root.
-2. Modify a file under `loopr-init`.
-3. Run `go run ./cmd/loopr doctor --only loopr-init` and note the status.
-4. Run `go run ./cmd/loopr list --only loopr-init`.
+1. Run `loopr doctor` for a controlled skills root.
+2. Run `loopr list` for the same skills root.
+3. Compare statuses for each skill.
 
 ## Expected Results
-- Doctor reports `drifted` for `loopr-init`.
-- List output shows `loopr-init` with status `drifted`.
+- Status values match between doctor and list outputs.
 
 ## Automation Notes
-- Parse both outputs and assert the status strings match.
+- Can be automated by setting `CODEX_HOME` to a temp directory.

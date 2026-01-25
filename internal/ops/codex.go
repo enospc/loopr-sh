@@ -1,14 +1,22 @@
 package ops
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
+
+	"loopr/internal/agents"
+	"loopr/internal/skills"
+	"loopr/internal/version"
 )
 
 type CodexSession struct {
@@ -52,13 +60,44 @@ func RunCodex(args []string, opts CodexOptions) (int, *CodexSession, error) {
 		Started:  time.Now().UTC(),
 	}
 
-	if err := writeMeta(metaPath, map[string]any{
-		"event": "start",
-		"ts":    session.Started.Format(time.RFC3339Nano),
-		"cwd":   cwd,
-		"cmd":   session.Command,
-		"log":   filepath.Base(logPath),
-	}); err != nil {
+	embeddedHash, err := embeddedSkillsHash()
+	if err != nil {
+		return 1, session, err
+	}
+
+	startMeta := map[string]any{
+		"event":                "start",
+		"ts":                   session.Started.Format(time.RFC3339Nano),
+		"cwd":                  cwd,
+		"cmd":                  session.Command,
+		"log":                  filepath.Base(logPath),
+		"loopr_version":        version.Version,
+		"loopr_commit":         version.Commit,
+		"loopr_date":           version.Date,
+		"repo_root":            root,
+		"repo_id":              repoID,
+		"skills_embedded_hash": embeddedHash,
+	}
+
+	if commit, dirty := gitInfo(root); commit != "" {
+		startMeta["git_commit"] = commit
+		if dirty != nil {
+			startMeta["git_dirty"] = *dirty
+		}
+	}
+
+	if installedHash, err := installedSkillsHash(); err == nil && installedHash != "" {
+		startMeta["skills_installed_hash"] = installedHash
+	}
+
+	if model := strings.TrimSpace(os.Getenv("LOOPR_CODEX_MODEL")); model != "" {
+		startMeta["codex_model"] = model
+	}
+	if prompt := strings.TrimSpace(os.Getenv("LOOPR_CODEX_PROMPT")); prompt != "" {
+		startMeta["codex_prompt"] = prompt
+	}
+
+	if err := writeMeta(metaPath, startMeta); err != nil {
 		return 1, session, err
 	}
 
@@ -149,4 +188,105 @@ func writeMeta(path string, payload map[string]any) error {
 		return err
 	}
 	return nil
+}
+
+func embeddedSkillsHash() (string, error) {
+	spec, err := agents.Resolve("codex")
+	if err != nil {
+		return "", err
+	}
+	index, err := skills.LoadEmbedded(spec.EmbeddedFS, spec.EmbeddedRoot)
+	if err != nil {
+		return "", err
+	}
+	skillList := FilterSkills(index, nil)
+	if len(skillList) == 0 {
+		return "", fmt.Errorf("no embedded skills found")
+	}
+	entries := make([]string, 0, len(skillList))
+	for _, skill := range skillList {
+		for _, entry := range skill.Files {
+			perm := fmt.Sprintf("%#o", entry.Mode.Perm())
+			entries = append(entries, fmt.Sprintf("%s:%s:%s", entry.RelPath, entry.Hash, perm))
+		}
+	}
+	return hashLines(entries), nil
+}
+
+func installedSkillsHash() (string, error) {
+	spec, err := agents.Resolve("codex")
+	if err != nil {
+		return "", err
+	}
+	skillsRoot, err := spec.SkillsRoot()
+	if err != nil {
+		return "", err
+	}
+	if _, err := os.Stat(skillsRoot); err != nil {
+		if os.IsNotExist(err) {
+			return "", nil
+		}
+		return "", err
+	}
+	index, err := skills.LoadEmbedded(spec.EmbeddedFS, spec.EmbeddedRoot)
+	if err != nil {
+		return "", err
+	}
+	skillList := FilterSkills(index, nil)
+	if len(skillList) == 0 {
+		return "", nil
+	}
+	entries := make([]string, 0, len(skillList))
+	for _, skill := range skillList {
+		for _, entry := range skill.Files {
+			target := filepath.Join(skillsRoot, skill.Name, entry.SubPath)
+			data, err := os.ReadFile(target)
+			if err != nil {
+				if os.IsNotExist(err) {
+					entries = append(entries, fmt.Sprintf("%s:missing", entry.RelPath))
+					continue
+				}
+				return "", fmt.Errorf("read installed skill %s: %w", target, err)
+			}
+			hash := skills.HashFile(data)
+			perm := "unknown"
+			if info, err := os.Stat(target); err == nil {
+				perm = fmt.Sprintf("%#o", info.Mode().Perm())
+			}
+			entries = append(entries, fmt.Sprintf("%s:%s:%s", entry.RelPath, hash, perm))
+		}
+	}
+	return hashLines(entries), nil
+}
+
+func hashLines(lines []string) string {
+	sort.Strings(lines)
+	hasher := sha256.New()
+	for _, line := range lines {
+		hasher.Write([]byte(line))
+		hasher.Write([]byte{'\n'})
+	}
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
+func gitInfo(root string) (string, *bool) {
+	if _, err := exec.LookPath("git"); err != nil {
+		return "", nil
+	}
+	commitCmd := exec.Command("git", "-C", root, "rev-parse", "HEAD")
+	commitOut, err := commitCmd.Output()
+	if err != nil {
+		return "", nil
+	}
+	commit := strings.TrimSpace(string(commitOut))
+	if commit == "" {
+		return "", nil
+	}
+	statusCmd := exec.Command("git", "-C", root, "status", "--porcelain")
+	statusOut, err := statusCmd.Output()
+	if err != nil {
+		return commit, nil
+	}
+	dirty := len(bytes.TrimSpace(statusOut)) > 0
+	return commit, &dirty
 }

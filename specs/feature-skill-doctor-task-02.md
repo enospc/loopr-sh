@@ -39,5 +39,5 @@ Provide a simple list of skills and their status for quick inspection.
 
 ## Completion
 - Status: Done
-- Tests: go test ./...
-- Notes: Added integration-style list output check in CLI tests.
+- Tests: `go test ./...`
+- Notes: None.

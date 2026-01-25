@@ -1,12 +1,13 @@
 # Spec: Loopr CLI (Skill Installer + Doctor + Codex Wrapper)
 
 ## Summary
-Define a small, safe Go CLI that embeds Loopr skills and provides commands to install, validate, list, and uninstall those skills, plus a Codex wrapper that captures transcripts and metadata in the Loopr workspace.
+Define a small, safe Go CLI that embeds Loopr skills and provides commands to install, validate, list, and uninstall those skills, plus a Codex wrapper that captures transcripts and reproducibility metadata in the Loopr workspace and scaffolds decision logs.
 
 ## Goals
 - Provide deterministic installation of embedded Loopr skills into the local Codex skills directory.
 - Detect and report drift between installed skills and embedded source of truth.
-- Capture Codex transcripts and minimal session metadata in the Loopr workspace.
+- Capture Codex transcripts and reproducibility metadata in the Loopr workspace.
+- Scaffold decision logs under specs/decisions/ to make decisions explicit and reversible.
 - Keep operations local, safe, and reversible.
 
 ## Non-goals
@@ -48,6 +49,11 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
   - If `script` is available, use it to capture terminal session; otherwise tee stdout/stderr into the log file.
   - JSONL metadata must include `start` and `end` events with timestamp and exit code.
 - FR-09: `version` prints the binary version plus optional commit/date when provided via ldflags.
+- FR-10: Decision log scaffolding: the embedded Loopr skills must ensure `specs/decisions/` exists and include a `specs/decisions/template.md` file with the headings `Title`, `Date`, `Status`, `Context`, `Decision`, `Alternatives`, and `Consequences`.
+- FR-11: `codex` JSONL metadata must include reproducibility fields in the `start` event:
+  - Required: `loopr_version`, `loopr_commit`, `loopr_date`, `repo_root`, `repo_id`, `cwd`, `cmd`, `skills_embedded_hash`.
+  - Optional when available: `git_commit`, `git_dirty`, `skills_installed_hash`, `codex_model`, `codex_prompt`.
+  - `codex_model` and `codex_prompt` are populated from environment variables `LOOPR_CODEX_MODEL` and `LOOPR_CODEX_PROMPT` when set.
 
 ## Foundation / Tooling
 - FD-01: Provide deterministic build entry point: `make build` produces `bin/loopr`.
@@ -67,12 +73,18 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
 - `loopr codex -- <args>` → runs Codex and prints transcript/metadata paths.
 - `loopr codex --loopr-root <path> -- <args>` → targets a specific Loopr workspace.
 - `loopr version` → prints version, commit, and build date when available.
+- `loopr-init` (skill) → ensures `specs/decisions/` exists and installs the decision log template.
 
 ## Data Model
 - Embedded skills index: list of skills, each with file entries (path, content hash, mode).
 - Transcript artifacts:
   - `session-<timestamp>.log` (raw transcript)
   - `session-<timestamp>.jsonl` (start/end metadata)
+- Reproducibility metadata (JSONL `start` event):
+  - loopr version metadata, repo identifiers, command info, and skills hash snapshot.
+- Decision log scaffolding:
+  - `specs/decisions/` directory
+  - `specs/decisions/template.md`
 
 ## API / Interfaces
 - CLI flags:
@@ -84,6 +96,7 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
 - Environment variables:
   - `CODEX_HOME` to override the default Codex skills root.
   - `LOOPR_ROOT` to select a Loopr workspace for `loopr codex` (overridden by `--loopr-root`).
+  - `LOOPR_CODEX_MODEL` and `LOOPR_CODEX_PROMPT` to populate optional reproducibility metadata fields.
 
 ## Architecture / Components
 - `cmd/loopr`: CLI entry, command routing and flag parsing.
@@ -101,6 +114,7 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
 - Do not transmit data over the network.
 - Store transcripts locally under repo `specs/.loopr/`.
 - Treat transcript contents as sensitive local data (developer-controlled).
+- Treat optional prompt metadata as sensitive; only capture it when explicitly provided via env vars.
 
 ## Observability
 - Logs: `session-*.log` transcript files.
@@ -127,3 +141,5 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
 - `loopr uninstall` removes installed skills and backs them up unless `--force` is set.
 - `loopr codex` creates transcript + JSONL metadata files under `specs/.loopr/transcripts/<repo-id>/`.
 - `loopr version` prints version and includes commit/date when built with ldflags.
+- Running `loopr-init` results in `specs/decisions/template.md` with the required headings.
+- `loopr codex` JSONL `start` events include the required reproducibility fields.

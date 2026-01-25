@@ -4,26 +4,23 @@
 02
 
 ## Type
-Integration
+Unit
 
 ## Purpose
-Verify `loopr doctor` reports extra skills that exist locally but not in embedded skills.
+Verify doctor reports extra installed skills not present in embedded list.
 
 ## Preconditions
-- Temp directory available for CODEX_HOME.
+- None.
 
 ## Test Data
-- Create `$CODEX_HOME/skills/loopr-extra/` directory with a dummy file.
-- Command: `go run ./cmd/loopr doctor --verbose`
+- A manually created extra skill directory.
 
 ## Steps
-1. Create a temp skills root and set CODEX_HOME.
-2. Add a directory named `loopr-extra` under `$CODEX_HOME/skills/`.
-3. Run `go run ./cmd/loopr doctor --verbose`.
+1. Create an extra `loopr-*` skill directory in the skills root.
+2. Run doctor.
 
 ## Expected Results
-- Doctor exits with non-zero status.
-- Output includes `extra` skills or lists `loopr-extra` as extra.
+- Doctor reports the extra skill in the extra list.
 
 ## Automation Notes
-- Ensure `loopr-extra` matches the default `loopr-` filter.
+- Use temp directories and manual skill creation in unit tests.

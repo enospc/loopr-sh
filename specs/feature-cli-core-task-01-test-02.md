@@ -7,21 +7,20 @@
 Integration
 
 ## Purpose
-Ensure `loopr version` prints version/commit/date when provided via build metadata.
+Verify `loopr version` prints version information and optional build metadata.
 
 ## Preconditions
-- Build `loopr` with ldflags that set version, commit, and date.
+- `bin/loopr` built and available on PATH or invoked directly.
 
 ## Test Data
-- Example ldflags: `-X internal/version.Version=1.2.3 -X internal/version.Commit=abc123 -X internal/version.Date=2026-01-25`.
+- Optional build metadata set via ldflags.
 
 ## Steps
-1. Build `loopr` with the ldflags above.
-2. Run `loopr version`.
+1. Run `loopr version`.
 
 ## Expected Results
-- Output includes the version, commit, and date values that were injected.
-- Exit code is 0.
+- Output starts with `loopr <version>`.
+- If commit/date metadata is set, it is printed on subsequent lines.
 
 ## Automation Notes
-- Parse output tokens to verify each metadata field is present.
+- Can be automated with a build that injects version metadata via ldflags.

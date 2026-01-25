@@ -1,5 +1,5 @@
 ---
-order: 2
+order: 4
 depends_on:
   - cli-core
 ---

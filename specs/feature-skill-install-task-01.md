@@ -46,5 +46,5 @@ Safely install or update embedded skills into the Codex skills root with predict
 
 ## Completion
 - Status: Done
-- Tests: go test ./...
-- Notes: Added install coverage for new skill roots and script mode preservation.
+- Tests: `go test ./...`
+- Notes: None.

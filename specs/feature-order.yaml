@@ -1,9 +1,17 @@
 version: 1
 features:
+  - slug: build-tooling
+    title: Build and verification tooling
+    depends_on: []
+    notes: deterministic build and validation entry points
   - slug: cli-core
     title: CLI command surface and version info
     depends_on: []
     notes: base command routing and shared flag parsing
+  - slug: decision-log
+    title: Decision log scaffolding
+    depends_on: []
+    notes: ensure specs/decisions/ template scaffolding via embedded skills
   - slug: skill-install
     title: Skill install/uninstall with backup and filtering
     depends_on:
@@ -18,4 +26,4 @@ features:
     title: Codex wrapper transcript logging
     depends_on:
       - cli-core
-    notes: includes monorepo-aware workspace resolution with flag/env override
+    notes: includes monorepo-aware workspace resolution and reproducibility metadata

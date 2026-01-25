@@ -4,28 +4,25 @@
 02
 
 ## Type
-Integration
+Unit
 
 ## Purpose
-Ensure `--force` bypasses backups and still removes the targeted skills.
+Verify `--force` uninstall removes skills without creating backups.
 
 ## Preconditions
-- Temp directory available for CODEX_HOME.
-- `loopr-init` installed in skills root.
+- Skills installed in a temp root.
 
 ## Test Data
-- Command: `go run ./cmd/loopr uninstall --only loopr-init --force`
+- Embedded test skill.
 
 ## Steps
-1. Install `loopr-init` into a temp skills root.
-2. Run `go run ./cmd/loopr uninstall --only loopr-init --force`.
-3. Check that `$CODEX_HOME/skills/loopr-init` is removed.
-4. Verify no new backup directory is created for this uninstall.
+1. Install skills into a temp root.
+2. Run uninstall with `--force`.
+3. Check that skills are removed and no backup directory exists.
 
 ## Expected Results
-- Uninstall command exits successfully.
 - Skill directory is removed.
-- No backup directory is created for the forced uninstall.
+- `.backup/` is not created.
 
 ## Automation Notes
-- When automating, record the backup directory listing before and after the command.
+- Use temp directories and verify filesystem state in unit tests.

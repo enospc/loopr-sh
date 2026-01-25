@@ -43,5 +43,5 @@ Report missing, drifted, and installed skills with clear status output.
 
 ## Completion
 - Status: Done
-- Tests: go test ./...
-- Notes: Added drift/missing/extra coverage in ops doctor tests.
+- Tests: `go test ./...`
+- Notes: None.

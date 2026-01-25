@@ -89,8 +89,35 @@ def main() -> int:
     loopr_dir = specs_dir / ".loopr"
     init_state_path = loopr_dir / "init-state.json"
     repo_id_path = loopr_dir / "repo-id"
+    decisions_dir = specs_dir / "decisions"
+    decisions_template = decisions_dir / "template.md"
+
+    template_body = "\n".join(
+        [
+            "# Title",
+            "",
+            "## Date",
+            "",
+            "## Status",
+            "",
+            "## Context",
+            "",
+            "## Decision",
+            "",
+            "## Alternatives",
+            "",
+            "## Consequences",
+            "",
+        ]
+    )
+
+    def ensure_decision_template() -> None:
+        decisions_dir.mkdir(parents=True, exist_ok=True)
+        if not decisions_template.exists():
+            decisions_template.write_text(template_body)
 
     if init_state_path.exists():
+        ensure_decision_template()
         print("INIT_STATE_EXISTS")
         return 0
 
@@ -109,6 +136,7 @@ def main() -> int:
         mode = "existing" if signals else "greenfield"
 
     loopr_dir.mkdir(parents=True, exist_ok=True)
+    ensure_decision_template()
     state = {
         "mode": mode,
         "signals": signals,

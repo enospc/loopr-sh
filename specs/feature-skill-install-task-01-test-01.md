@@ -4,28 +4,25 @@
 01
 
 ## Type
-Integration
+Unit
 
 ## Purpose
-Verify `loopr install` installs embedded skills into a clean skills root with correct directory structure.
+Ensure install writes embedded skills into a fresh skills root and preserves script mode.
 
 ## Preconditions
-- Temp directory available for CODEX_HOME.
-- Go toolchain available.
+- None.
 
 ## Test Data
-- CODEX_HOME set to temp dir.
-- Command: `go run ./cmd/loopr install --only loopr-init`
+- Embedded test skill with a README and a script.
 
 ## Steps
-1. Create a temp directory and export `CODEX_HOME` to it.
-2. Run `go run ./cmd/loopr install --only loopr-init`.
-3. Inspect `$CODEX_HOME/skills/loopr-init` for installed files.
+1. Create a temp skills root.
+2. Run install against the temp root.
+3. Verify files exist and script is executable.
 
 ## Expected Results
-- Install command exits successfully.
-- `loopr-init` directory exists under the skills root.
-- At least one expected file from embedded skills is present.
+- Skill directory exists with expected files.
+- Script file has executable permissions.
 
 ## Automation Notes
-- For automated tests, read embedded skills index and assert files exist.
+- Use a test embedded filesystem and temp directories.

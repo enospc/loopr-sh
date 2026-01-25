@@ -4,30 +4,26 @@
 02
 
 ## Type
-Integration
+Unit
 
 ## Purpose
-Ensure backups are created when installing over modified skills.
+Verify install backs up modified skills before overwriting.
 
 ## Preconditions
-- Temp directory available for CODEX_HOME.
-- Go toolchain available.
-- `loopr-init` already installed under the skills root.
+- None.
 
 ## Test Data
-- Modify a file under `$CODEX_HOME/skills/loopr-init/`.
-- Command: `go run ./cmd/loopr install --only loopr-init`
+- Embedded test skill with a README.
 
 ## Steps
-1. Install `loopr-init` into a temp skills root.
-2. Modify one file under `$CODEX_HOME/skills/loopr-init/`.
-3. Re-run install for `loopr-init`.
-4. Inspect `$CODEX_HOME/skills/.backup/` for a `loopr-<timestamp>/loopr-init` backup.
+1. Install skills into a temp root.
+2. Modify a file in the installed skill.
+3. Run install again.
+4. Inspect the backup directory.
 
 ## Expected Results
-- Install command exits successfully.
-- A backup directory is created containing the modified skill.
-- The modified file is restored to the embedded version.
+- Backup directory is created under `.backup/loopr-<timestamp>/`.
+- Modified file contents appear in the backup.
 
 ## Automation Notes
-- Use filesystem checks to confirm backup and restored content hashes.
+- Use temp directories and check backup contents in the unit test.

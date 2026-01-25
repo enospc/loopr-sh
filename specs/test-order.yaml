@@ -1,5 +1,14 @@
 version: 1
 features:
+  - slug: build-tooling
+    tasks:
+      - id: "01"
+        title: Makefile build, fmt, and vet targets
+        tests:
+          - id: "01"
+            title: Make build produces bin/loopr
+          - id: "02"
+            title: Make fmt and vet complete
   - slug: cli-core
     tasks:
       - id: "01"
@@ -18,6 +27,15 @@ features:
             title: Only-list parsing trims and ignores empty values
           - id: "02"
             title: Agent resolution default and --all behavior
+  - slug: decision-log
+    tasks:
+      - id: "01"
+        title: Scaffold decision log template
+        tests:
+          - id: "01"
+            title: Decision log scaffolding created by loopr-init
+          - id: "02"
+            title: Decision log template includes required headings
   - slug: skill-install
     tasks:
       - id: "01"
@@ -54,8 +72,10 @@ features:
         title: Transcript capture wrapper
         tests:
           - id: "01"
-            title: Codex wrapper writes transcript and metadata
+            title: Codex wrapper writes transcript and reproducibility metadata
           - id: "02"
             title: Codex wrapper fails without repo-id
           - id: "03"
             title: Codex wrapper honors loopr root overrides
+          - id: "04"
+            title: Optional reproducibility fields follow env vars

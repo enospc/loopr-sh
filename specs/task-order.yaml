@@ -1,5 +1,12 @@
 version: 1
 features:
+  - slug: build-tooling
+    title: Build and verification tooling
+    depends_on: []
+    notes: deterministic build and validation entry points
+    tasks:
+      - id: "01"
+        title: Makefile build, fmt, and vet targets
   - slug: cli-core
     title: CLI command surface and version info
     depends_on: []
@@ -9,6 +16,13 @@ features:
         title: Command routing and usage
       - id: "02"
         title: Flag parsing helpers
+  - slug: decision-log
+    title: Decision log scaffolding
+    depends_on: []
+    notes: scaffold specs/decisions template via loopr-init
+    tasks:
+      - id: "01"
+        title: Scaffold decision log template
   - slug: skill-install
     title: Skill install/uninstall with backup and filtering
     depends_on:
@@ -33,7 +47,7 @@ features:
     title: Codex wrapper transcript logging
     depends_on:
       - cli-core
-    notes: workspace resolution with flag/env override
+    notes: workspace resolution with flag/env override and reproducibility metadata
     tasks:
       - id: "01"
         title: Transcript capture wrapper

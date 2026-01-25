@@ -1,5 +1,5 @@
 ---
-order: 4
+order: 6
 depends_on:
   - cli-core
 ---
@@ -7,10 +7,10 @@ depends_on:
 # Feature: Codex wrapper transcript logging
 
 ## Summary
-Wrap Codex execution and capture transcripts + metadata under the Loopr workspace, with monorepo-aware workspace resolution.
+Wrap Codex execution and capture transcripts + reproducibility metadata under the Loopr workspace, with monorepo-aware workspace resolution.
 
 ## Goals
-- Capture Codex transcripts and session metadata reliably.
+- Capture Codex transcripts and reproducibility metadata reliably.
 - Resolve the correct Loopr workspace when running inside a monorepo.
 - Keep transcript handling local, deterministic, and safe.
 
@@ -44,6 +44,9 @@ Wrap Codex execution and capture transcripts + metadata under the Loopr workspac
   - `session-<timestamp>.log` (raw transcript)
   - `session-<timestamp>.jsonl` (start/end metadata)
 - JSONL metadata must include `start` and `end` events with timestamp and exit code.
+- JSONL `start` event includes reproducibility fields:
+  - Required: `loopr_version`, `loopr_commit`, `loopr_date`, `repo_root`, `repo_id`, `cwd`, `cmd`, `skills_embedded_hash`.
+  - Optional when available: `git_commit`, `git_dirty`, `skills_installed_hash`, `codex_model`, `codex_prompt`.
 - If `script` is available, use it to capture the session; otherwise tee stdout/stderr into the log file.
 - Pass arguments after `--` directly to `codex` without modification.
 
@@ -53,6 +56,7 @@ Wrap Codex execution and capture transcripts + metadata under the Loopr workspac
 - Running `LOOPR_ROOT=<path> loopr codex -- <args>` stores transcripts under the specified workspace.
 - Missing `specs/.loopr/repo-id` yields a clear error and non-zero exit.
 - JSONL includes both `start` and `end` events with timestamps and exit code.
+- JSONL `start` event includes the required reproducibility fields and optional fields when available.
 
 ## UX / Flow
 - `loopr codex -- <args>` runs Codex and prints transcript/metadata paths.
@@ -61,6 +65,7 @@ Wrap Codex execution and capture transcripts + metadata under the Loopr workspac
 ## Data / API Impact
 - CLI flag: `--loopr-root` (codex command only).
 - Environment variable: `LOOPR_ROOT` (codex command only), overridden by `--loopr-root`.
+- Environment variables: `LOOPR_CODEX_MODEL`, `LOOPR_CODEX_PROMPT` (optional metadata capture).
 
 ## Dependencies
 - CLI core for command parsing and flag handling.

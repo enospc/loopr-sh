@@ -47,5 +47,5 @@ Provide a predictable command surface with clear help/usage, correct exit codes,
 
 ## Completion
 - Status: Done
-- Tests: go test ./...
-- Notes: Added `--` passthrough handling via `splitOnDoubleDash`.
+- Tests: `go test ./...` and manual CLI checks for usage/help/unknown/version, plus `loopr codex -- --help` passthrough.
+- Notes: Verified exit codes for usage/help/unknown.

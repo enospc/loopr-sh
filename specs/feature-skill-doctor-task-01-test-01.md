@@ -4,28 +4,25 @@
 01
 
 ## Type
-Integration
+Unit
 
 ## Purpose
-Verify `loopr doctor` reports missing and drifted files and returns a non-zero exit code.
+Ensure doctor reports missing skills and drifted files correctly.
 
 ## Preconditions
-- Temp directory available for CODEX_HOME.
-- `loopr-init` installed in skills root.
+- None.
 
 ## Test Data
-- Modify or delete a file under `$CODEX_HOME/skills/loopr-init/`.
-- Command: `go run ./cmd/loopr doctor --only loopr-init --verbose`
+- Embedded test skill with a README.
 
 ## Steps
-1. Install `loopr-init` into a temp skills root.
-2. Delete or modify one file under `loopr-init`.
-3. Run `go run ./cmd/loopr doctor --only loopr-init --verbose`.
+1. Run doctor with an empty skills root.
+2. Install skills and modify one file.
+3. Run doctor again.
 
 ## Expected Results
-- Doctor exits with non-zero status.
-- Output reports `drifted` for `loopr-init`.
-- Verbose output includes the missing or drifted file path.
+- Step 1 reports the skill as missing.
+- Step 3 reports the skill as drifted and includes the modified file.
 
 ## Automation Notes
-- Capture exit code and stdout/stderr for assertions.
+- Use temp directories and a test embedded filesystem.

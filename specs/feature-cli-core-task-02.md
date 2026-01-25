@@ -41,5 +41,5 @@ Provide reliable parsing for `--agent`, `--all`, and `--only` across commands th
 
 ## Completion
 - Status: Done
-- Tests: go test ./...
-- Notes: Added unit coverage for `splitList` and `resolveAgents`.
+- Tests: `go test ./...`
+- Notes: None.

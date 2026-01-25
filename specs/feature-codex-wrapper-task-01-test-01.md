@@ -1,4 +1,4 @@
-# Test: Codex wrapper writes transcript and metadata
+# Test: Codex wrapper writes transcript and reproducibility metadata
 
 ## Test ID
 01
@@ -7,24 +7,25 @@
 Integration
 
 ## Purpose
-Verify that `loopr codex` writes transcript and JSONL metadata under the nearest Loopr workspace.
+Verify `loopr codex` writes transcript and JSONL metadata files under the Loopr workspace with required reproducibility fields.
 
 ## Preconditions
-- A workspace exists with `specs/.loopr/repo-id`.
-- A stub `codex` binary is available in PATH to avoid invoking the real Codex.
+- `bin/loopr` built and available on PATH or invoked directly.
+- A Loopr workspace with `specs/.loopr/repo-id` present.
+- Codex CLI installed, or a stub `codex` script on PATH.
 
 ## Test Data
-- Command: `loopr codex -- --help`.
+- Example Codex args such as `--help`.
 
 ## Steps
-1. Create a temp workspace with `specs/.loopr/repo-id`.
-2. Run `loopr codex -- --help` from a nested directory inside the workspace.
-3. Locate `specs/.loopr/transcripts/<repo-id>/`.
-4. Inspect the latest `session-*.log` and `session-*.jsonl` files.
+1. Run `loopr codex -- --help` from within the workspace.
+2. Inspect `specs/.loopr/transcripts/<repo-id>/`.
+3. Inspect JSONL `start` event for required reproducibility fields.
 
 ## Expected Results
-- Both transcript and JSONL files exist under the workspace.
-- JSONL includes `start` and `end` events with timestamps and an exit code.
+- A new `session-*.log` and `session-*.jsonl` are created.
+- JSONL includes `start` and `end` events with timestamps and exit code.
+- JSONL `start` event includes required reproducibility fields.
 
 ## Automation Notes
-- The stub codex can print a known string to make log assertions deterministic.
+- Use a stub `codex` binary for deterministic runs in CI.
