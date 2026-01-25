@@ -7,52 +7,67 @@ depends_on:
 # Feature: Codex wrapper transcript logging
 
 ## Summary
-Wrap Codex runs to capture transcripts and metadata under the Loopr workspace for traceability.
+Wrap Codex execution and capture transcripts + metadata under the Loopr workspace, with monorepo-aware workspace resolution.
 
 ## Goals
-- Capture Codex session logs and metadata with minimal overhead.
-- Ensure logs are stored under `specs/.loopr/transcripts/<repo-id>/`.
+- Capture Codex transcripts and session metadata reliably.
+- Resolve the correct Loopr workspace when running inside a monorepo.
+- Keep transcript handling local, deterministic, and safe.
 
 ## Non-goals
-- Modifying Codex behavior beyond stdout/stderr capture.
-- Providing live streaming analytics or remote storage.
+- Running the Loopr workflow beyond Codex wrapping.
+- Altering Codex behavior beyond argument passthrough.
 
 ## User Stories
-- As a developer, I want a transcript of my Codex run so that I can audit and share what happened.
-- As a developer, I want metadata about the session for traceability.
+- As a developer, I want Codex transcripts saved under my Loopr workspace for traceability.
+- As a developer working in a monorepo, I want to choose or auto-detect the correct Loopr workspace.
 
 ## Scope
 - In scope:
-  - Locate repo root by finding `specs/.loopr/repo-id`.
-  - Create transcript directory when missing.
-  - Write `session-<timestamp>.log` and `session-<timestamp>.jsonl`.
-  - Use `script` when available, otherwise tee stdout/stderr.
+  - `loopr codex -- <args>` command that wraps Codex execution.
+  - Workspace resolution by searching upward for `specs/.loopr/repo-id`.
+  - Optional explicit workspace selection for monorepos.
+  - Transcript log and JSONL metadata creation.
+  - `script`-based capture when available with a tee fallback.
 - Out of scope:
-  - Custom log formats or remote log shipping.
+  - Post-processing transcript data.
+  - Network or remote storage of transcripts.
 
 ## Requirements
-- Fail fast if `specs/.loopr/repo-id` is missing.
-- Write JSONL metadata with `start` and `end` events.
-- Preserve Codex exit code and return it from the wrapper.
-- Print transcript and metadata paths on completion.
+- Resolve Loopr workspace root:
+  - If `--loopr-root <path>` is provided, use it and require `specs/.loopr/repo-id` under that root.
+  - Else if `LOOPR_ROOT` is set, use it and require `specs/.loopr/repo-id` under that root.
+  - Otherwise, search upward from the current directory for the nearest `specs/.loopr/repo-id`.
+  - If not found, exit non-zero with a hint to run `loopr-init`.
+- Create `specs/.loopr/transcripts/<repo-id>/` if missing.
+- Write session artifacts without overwriting existing files:
+  - `session-<timestamp>.log` (raw transcript)
+  - `session-<timestamp>.jsonl` (start/end metadata)
+- JSONL metadata must include `start` and `end` events with timestamp and exit code.
+- If `script` is available, use it to capture the session; otherwise tee stdout/stderr into the log file.
+- Pass arguments after `--` directly to `codex` without modification.
 
 ## Acceptance Criteria
-- `loopr codex -- <args>` creates a log file and metadata file for each run.
-- Metadata includes start timestamp, end timestamp, and exit code.
-- If `script` is not available, logs still capture stdout/stderr.
+- Running `loopr codex -- <args>` from a nested directory stores transcripts under the nearest workspace.
+- Running `loopr codex --loopr-root <path> -- <args>` stores transcripts under the specified workspace.
+- Running `LOOPR_ROOT=<path> loopr codex -- <args>` stores transcripts under the specified workspace.
+- Missing `specs/.loopr/repo-id` yields a clear error and non-zero exit.
+- JSONL includes both `start` and `end` events with timestamps and exit code.
 
 ## UX / Flow
-- `loopr codex -- <args>` prints transcript and metadata paths.
+- `loopr codex -- <args>` runs Codex and prints transcript/metadata paths.
+- `loopr codex --loopr-root <path> -- <args>` targets a specific workspace in a monorepo.
 
 ## Data / API Impact
-- Writes to `specs/.loopr/transcripts/<repo-id>/`.
+- CLI flag: `--loopr-root` (codex command only).
+- Environment variable: `LOOPR_ROOT` (codex command only), overridden by `--loopr-root`.
 
 ## Dependencies
-- CLI command parsing and repo-id discovery.
+- CLI core for command parsing and flag handling.
 
 ## Risks & Mitigations
-- Risk: `script` not installed → Mitigation: fallback to stdout/stderr tee.
-- Risk: repo-id missing → Mitigation: explicit error advising loopr-init.
+- Risk: ambiguous workspace selection in monorepos → Mitigation: `--loopr-root` override.
+- Risk: `script` not available → Mitigation: tee fallback.
 
 ## Open Questions
-- Should users be able to override transcript paths?
+- Should `--loopr-root` be supported by other commands or a global `LOOPR_ROOT` environment variable?

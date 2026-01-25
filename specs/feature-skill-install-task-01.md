@@ -43,3 +43,8 @@ Safely install or update embedded skills into the Codex skills root with predict
 
 ## Notes
 - Keep file operations local and deterministic.
+
+## Completion
+- Status: Done
+- Tests: go test ./...
+- Notes: Added install coverage for new skill roots and script mode preservation.

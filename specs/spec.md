@@ -39,7 +39,10 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
   - Support `--force` to remove without backup and proceed if backup fails.
   - Support `--agent`, `--all`, `--only`, `--verbose`.
 - FR-08: `codex` wraps a Codex run and captures transcripts:
-  - Locate repo root by searching upward for `specs/.loopr/repo-id` (created by loopr-init).
+  - Resolve the repo root for transcripts:
+    - If `--loopr-root <path>` is provided, use it and require `specs/.loopr/repo-id` under that root.
+    - Else if `LOOPR_ROOT` is set, use it and require `specs/.loopr/repo-id` under that root.
+    - Otherwise, search upward for the nearest `specs/.loopr/repo-id` (created by loopr-init).
   - Create `specs/.loopr/transcripts/<repo-id>/` if missing.
   - Write `session-<timestamp>.log` and `session-<timestamp>.jsonl`.
   - If `script` is available, use it to capture terminal session; otherwise tee stdout/stderr into the log file.
@@ -62,6 +65,7 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
 - `loopr list` → prints skill names with status.
 - `loopr uninstall` → removes skills and prints summary counts and backup path.
 - `loopr codex -- <args>` → runs Codex and prints transcript/metadata paths.
+- `loopr codex --loopr-root <path> -- <args>` → targets a specific Loopr workspace.
 - `loopr version` → prints version, commit, and build date when available.
 
 ## Data Model
@@ -76,8 +80,10 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
   - Filters: `--only skill1,skill2`
   - Safety: `--force` on install/uninstall
   - Output: `--verbose`
+  - Codex: `--loopr-root <path>`
 - Environment variables:
   - `CODEX_HOME` to override the default Codex skills root.
+  - `LOOPR_ROOT` to select a Loopr workspace for `loopr codex` (overridden by `--loopr-root`).
 
 ## Architecture / Components
 - `cmd/loopr`: CLI entry, command routing and flag parsing.

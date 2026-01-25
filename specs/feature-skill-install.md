@@ -7,61 +7,64 @@ depends_on:
 # Feature: Skill install/uninstall with backup and filtering
 
 ## Summary
-Install and remove embedded Loopr skills in the local Codex skills directory with safe defaults, backups, and filtering by skill name.
+Provide deterministic install and uninstall commands for embedded Loopr skills, with safe backups, filtering, and atomic writes.
 
 ## Goals
-- Provide safe, deterministic installation of embedded skills.
-- Prevent accidental data loss via backups and atomic writes.
-- Support targeted operations via `--only` and agent selection.
+- Install embedded `loopr-*` skills safely and repeatably.
+- Allow clean uninstalls with reversible backups.
+- Keep operations local, safe, and deterministic.
 
 ## Non-goals
-- Detecting skill drift (handled by the doctor feature).
-- Managing workflow execution beyond skill files.
+- Drift detection and listing (handled by skill-doctor).
 
 ## User Stories
-- As a developer, I want to install Loopr skills so that Codex can run the workflow.
-- As a developer, I want to uninstall Loopr skills so that I can reset or clean up.
-- As a developer, I want backups so that I can recover local edits.
+- As a developer, I want to install Loopr skills into my Codex environment safely.
+- As a developer, I want to uninstall Loopr skills and keep backups for rollback.
 
 ## Scope
 - In scope:
-  - Install embedded skills into `$CODEX_HOME/skills` or `~/.codex/skills`.
-  - Backup modified skills before overwrite.
-  - Uninstall skills with optional backup.
-  - `--only` filters and `--force` behavior.
+  - `loopr install` and `loopr uninstall` commands.
+  - Backup creation for changes/removals.
+  - Filtering by agent and skill names.
 - Out of scope:
-  - Skill drift reporting.
-  - Remote or network-based installs.
+  - Drift reporting or per-skill status output.
 
 ## Requirements
-- Use embedded skills as the source of truth for installation.
-- Default filter installs only skills prefixed with `loopr-`.
-- Back up any skill that would be overwritten to `.backup/loopr-<timestamp>/`.
-- Write changed files atomically; skip unchanged files.
-- Preserve executable mode for scripts (`/scripts/` entries).
-- `--force` bypasses backup failures and allows uninstall without backup.
-- Support agent selection: `--agent` and `--all`.
+- Determine Codex skills root:
+  - If `CODEX_HOME` is set, use `$CODEX_HOME/skills`.
+  - Otherwise, default to `~/.codex/skills`.
+- Default skill selection to the embedded skills with prefix `loopr-` unless `--only` is provided.
+- `install` behavior:
+  - Back up existing skills that would change into `.backup/loopr-<timestamp>/`.
+  - Skip unchanged files based on content hash.
+  - Write changed files atomically.
+  - Preserve executable mode for scripts.
+  - Support `--agent`, `--all`, `--only`, `--force`, `--verbose`.
+- `uninstall` behavior:
+  - Back up removed skills into `.backup/loopr-<timestamp>/` by default.
+  - Support `--force` to remove without backup and to proceed if backup fails.
+  - Support `--agent`, `--all`, `--only`, `--verbose`.
 
 ## Acceptance Criteria
-- `loopr install` installs or updates skills and prints summary counts.
-- Modified skills are backed up before overwrite; unchanged skills are skipped.
-- `loopr uninstall` removes skills and backs them up unless `--force` is set.
-- `--only` limits installs/uninstalls to named skills.
+- `loopr install` reports counts of installed/updated/unchanged skills and the backup path.
+- `loopr uninstall` reports counts of removed skills and the backup path (unless `--force`).
+- Unchanged skills are not rewritten during install.
+- Executable bits on scripts are preserved after install.
 
 ## UX / Flow
-- `loopr install [--only <list>] [--force]` outputs backup path and counts.
-- `loopr uninstall [--only <list>] [--force]` outputs backup path and count.
+- `loopr install` → installs/updates skills and prints summary counts + backup path.
+- `loopr uninstall` → removes skills and prints summary counts + backup path.
 
 ## Data / API Impact
-- Writes to `$CODEX_HOME/skills` or `~/.codex/skills`.
-- Backup directory: `$SKILLS_ROOT/.backup/loopr-<timestamp>/`.
+- Uses `CODEX_HOME` to resolve the skills root.
+- CLI flags: `--agent`, `--all`, `--only`, `--force`, `--verbose`.
 
 ## Dependencies
-- CLI command parsing and agent resolution.
+- CLI core for command parsing and flag handling.
 
 ## Risks & Mitigations
-- Risk: data loss during install/uninstall → Mitigation: backups + atomic writes by default.
-- Risk: partial backup on failure → Mitigation: `--force` for explicit override.
+- Risk: accidental overwrite of local changes → Mitigation: backup by default and atomic writes.
+- Risk: backup failure blocks uninstall → Mitigation: `--force` bypasses backup.
 
 ## Open Questions
-- Should the backup retention policy be configurable?
+- Should backups be optionally created in a user-specified location?

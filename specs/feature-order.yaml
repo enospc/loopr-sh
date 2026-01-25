@@ -3,7 +3,7 @@ features:
   - slug: cli-core
     title: CLI command surface and version info
     depends_on: []
-    notes: base command routing and flag parsing
+    notes: base command routing and shared flag parsing
   - slug: skill-install
     title: Skill install/uninstall with backup and filtering
     depends_on:
@@ -18,4 +18,4 @@ features:
     title: Codex wrapper transcript logging
     depends_on:
       - cli-core
-    notes: uses CLI parsing and shared filesystem helpers
+    notes: includes monorepo-aware workspace resolution with flag/env override

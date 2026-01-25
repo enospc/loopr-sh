@@ -7,52 +7,51 @@ depends_on:
 # Feature: Skill drift detection and listing
 
 ## Summary
-Validate installed skills against the embedded source of truth and report missing, drifted, or extra skills. Provide a list view of skill status.
+Provide `doctor` and `list` commands to compare installed skills against embedded sources, reporting drift and status.
 
 ## Goals
-- Make drift and missing skills visible before running the workflow.
-- Provide a quick summary of skill status via `list`.
+- Detect missing or drifted skills compared to embedded source of truth.
+- Expose a consistent, script-friendly listing of skill status.
 
 ## Non-goals
-- Repairing drift automatically (handled by install).
-- Tracking telemetry or remote reporting.
+- Installing or removing skills (handled by skill-install).
 
 ## User Stories
-- As a developer, I want to verify skills are installed correctly so that the workflow runs reliably.
-- As a developer, I want a compact list of skills and status.
+- As a developer, I want to know if my installed Loopr skills have drifted.
+- As a developer, I want a quick list of skills and their status.
 
 ## Scope
 - In scope:
-  - Compare installed skills with embedded skills by hash.
-  - Report status per skill: installed, missing, drifted.
-  - Report extra skills that exist locally but not in embedded set.
-  - Provide verbose output for missing/drifted files.
+  - `loopr doctor` command for per-skill status.
+  - `loopr list` command built on doctor results.
+  - Reporting extra installed skills not present in embedded list.
 - Out of scope:
-  - Automatic remediation.
+  - Writing or modifying skill files.
 
 ## Requirements
-- Use embedded skills as the source of truth for comparisons.
-- `doctor` reports status per skill and returns non-zero when drift or extras exist.
-- `list` prints skill names with status derived from doctor results.
-- Support `--only`, `--agent`, `--all`, and `--verbose`.
+- Compare installed skills against embedded skills using content hashes.
+- Report status per skill: `installed`, `missing`, or `drifted`.
+- Report extra installed skills not present in the embedded list.
+- Support filtering by `--agent`, `--all`, `--only`, and `--verbose`.
+- `list` should reuse doctor logic and print skill names with status.
 
 ## Acceptance Criteria
-- `loopr doctor` reports missing/drifted skills and extra skills accurately.
-- `loopr list` prints skill names with status and respects `--only`.
-- Verbose mode prints missing or drifted file paths.
+- `loopr doctor` reports correct status for all embedded skills.
+- `loopr doctor` reports extra installed skills separately.
+- `loopr list` prints skill names with their status for the selected agent(s).
 
 ## UX / Flow
-- `loopr doctor [--verbose]` prints status lines and extra count.
-- `loopr list` prints a compact tabular status.
+- `loopr doctor` → prints per-skill status and drift details when `--verbose`.
+- `loopr list` → prints skill names with status.
 
 ## Data / API Impact
-- Reads installed skills from skills root; no writes.
+- CLI flags: `--agent`, `--all`, `--only`, `--verbose`.
 
 ## Dependencies
-- CLI command parsing and agent resolution.
+- CLI core for command parsing and flag handling.
 
 ## Risks & Mitigations
-- Risk: false positives if skills root is incorrect → Mitigation: consistent root resolution logic.
+- Risk: false drift reports due to newline normalization → Mitigation: hash raw bytes as stored.
 
 ## Open Questions
-- Should doctor optionally auto-fix by invoking install?
+- Should `list` output be machine-readable (e.g., JSON) in addition to text?

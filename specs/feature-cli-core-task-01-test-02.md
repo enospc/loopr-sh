@@ -4,26 +4,24 @@
 02
 
 ## Type
-Manual
+Integration
 
 ## Purpose
-Verify `loopr version` prints version and optional commit/date lines when built with ldflags.
+Ensure `loopr version` prints version/commit/date when provided via build metadata.
 
 ## Preconditions
-- Go toolchain available.
-- Makefile present.
+- Build `loopr` with ldflags that set version, commit, and date.
 
 ## Test Data
-- Command: `make build`
-- Command: `./bin/loopr version`
+- Example ldflags: `-X internal/version.Version=1.2.3 -X internal/version.Commit=abc123 -X internal/version.Date=2026-01-25`.
 
 ## Steps
-1. Run `make build` to build `bin/loopr` with ldflags.
-2. Run `./bin/loopr version`.
+1. Build `loopr` with the ldflags above.
+2. Run `loopr version`.
 
 ## Expected Results
-- Output includes `loopr <version>` (non-empty).
-- If commit/date were injected, output includes `commit:` and `date:` lines.
+- Output includes the version, commit, and date values that were injected.
+- Exit code is 0.
 
 ## Automation Notes
-- A Go test can invoke the built binary and assert output contains `loopr ` prefix.
+- Parse output tokens to verify each metadata field is present.

@@ -7,26 +7,24 @@
 Integration
 
 ## Purpose
-Verify `loopr codex` creates transcript and JSONL metadata files when repo-id is present.
+Verify that `loopr codex` writes transcript and JSONL metadata under the nearest Loopr workspace.
 
 ## Preconditions
-- Temp repo directory with `specs/.loopr/repo-id` initialized.
-- A dummy `codex` executable available on PATH.
+- A workspace exists with `specs/.loopr/repo-id`.
+- A stub `codex` binary is available in PATH to avoid invoking the real Codex.
 
 ## Test Data
-- Dummy `codex` script that prints a line and exits 0.
-- Command: `go run ./cmd/loopr codex -- --help`
+- Command: `loopr codex -- --help`.
 
 ## Steps
-1. Create a temp repo and run `loopr-init --allow-existing` to generate `repo-id`.
-2. Create a dummy `codex` script in a temp bin directory and prepend it to PATH.
-3. Run `go run ./cmd/loopr codex -- --help` from the repo root.
-4. Inspect `specs/.loopr/transcripts/<repo-id>/` for new `session-*.log` and `session-*.jsonl` files.
-5. Verify JSONL contains `start` and `end` events with an exit code.
+1. Create a temp workspace with `specs/.loopr/repo-id`.
+2. Run `loopr codex -- --help` from a nested directory inside the workspace.
+3. Locate `specs/.loopr/transcripts/<repo-id>/`.
+4. Inspect the latest `session-*.log` and `session-*.jsonl` files.
 
 ## Expected Results
-- Transcript log and metadata files are created.
-- JSONL includes `start` and `end` events with timestamps and exit code 0.
+- Both transcript and JSONL files exist under the workspace.
+- JSONL includes `start` and `end` events with timestamps and an exit code.
 
 ## Automation Notes
-- Use a temp directory and stub `codex` to avoid depending on the real Codex binary.
+- The stub codex can print a known string to make log assertions deterministic.

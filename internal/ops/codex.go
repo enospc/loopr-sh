@@ -20,12 +20,16 @@ type CodexSession struct {
 	Started  time.Time
 }
 
-func RunCodex(args []string) (int, *CodexSession, error) {
+type CodexOptions struct {
+	LooprRoot string
+}
+
+func RunCodex(args []string, opts CodexOptions) (int, *CodexSession, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return 1, nil, err
 	}
-	root, repoID, err := FindLooprRoot(cwd)
+	root, repoID, err := ResolveLooprRoot(cwd, opts.LooprRoot)
 	if err != nil {
 		return 1, nil, err
 	}

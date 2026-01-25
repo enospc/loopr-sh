@@ -47,42 +47,8 @@ func usage() {
 	fmt.Println("  doctor      Validate installed skills")
 	fmt.Println("  list        List skills and status")
 	fmt.Println("  uninstall   Remove loopr skills")
-	fmt.Println("  codex       Run Codex with transcript logging")
+	fmt.Println("  codex       Run Codex with transcript logging (use -- to pass args)")
 	fmt.Println("  version     Show version info")
-}
-
-func parseAgents(fs *flag.FlagSet) ([]agents.Spec, error) {
-	agent := fs.String("agent", "codex", "target agent (default: codex)")
-	all := fs.Bool("all", false, "operate on all supported agents")
-	if err := fs.Parse(fs.Args()); err != nil {
-		return nil, err
-	}
-	if *all {
-		return agents.All(), nil
-	}
-	spec, err := agents.Resolve(*agent)
-	if err != nil {
-		return nil, err
-	}
-	return []agents.Spec{spec}, nil
-}
-
-func parseOnly(fs *flag.FlagSet) []string {
-	only := fs.String("only", "", "comma-separated list of skills to target")
-	_ = fs.Parse(fs.Args())
-	if *only == "" {
-		return nil
-	}
-	parts := strings.Split(*only, ",")
-	var out []string
-	for _, part := range parts {
-		name := strings.TrimSpace(part)
-		if name == "" {
-			continue
-		}
-		out = append(out, name)
-	}
-	return out
 }
 
 func runInstall(args []string) {
@@ -204,7 +170,14 @@ func runUninstall(args []string) {
 }
 
 func runCodex(args []string) {
-	exitCode, session, err := ops.RunCodex(args)
+	looprArgs, codexArgs := splitOnDoubleDash(args)
+	fs := flag.NewFlagSet("codex", flag.ContinueOnError)
+	fs.SetOutput(os.Stderr)
+	looprRoot := fs.String("loopr-root", "", "loopr workspace root (codex only)")
+	if err := fs.Parse(looprArgs); err != nil {
+		os.Exit(2)
+	}
+	exitCode, session, err := ops.RunCodex(codexArgs, ops.CodexOptions{LooprRoot: *looprRoot})
 	if err != nil {
 		fail(err)
 	}
@@ -248,6 +221,18 @@ func splitList(value string) []string {
 		out = append(out, name)
 	}
 	return out
+}
+
+func splitOnDoubleDash(args []string) ([]string, []string) {
+	for i, arg := range args {
+		if arg == "--" {
+			if i == 0 {
+				return nil, args[i+1:]
+			}
+			return args[:i], args[i+1:]
+		}
+	}
+	return nil, args
 }
 
 func printInstallReport(report ops.InstallReport, verbose bool) {

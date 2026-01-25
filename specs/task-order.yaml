@@ -3,7 +3,7 @@ features:
   - slug: cli-core
     title: CLI command surface and version info
     depends_on: []
-    notes: base CLI routing and shared flag parsing
+    notes: base CLI routing, usage, and codex passthrough
     tasks:
       - id: "01"
         title: Command routing and usage
@@ -33,7 +33,7 @@ features:
     title: Codex wrapper transcript logging
     depends_on:
       - cli-core
-    notes: relies on CLI routing and repo-id discovery
+    notes: workspace resolution with flag/env override
     tasks:
       - id: "01"
         title: Transcript capture wrapper

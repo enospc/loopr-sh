@@ -9,6 +9,8 @@ features:
             title: Usage and unknown command handling
           - id: "02"
             title: Version output includes build metadata
+          - id: "03"
+            title: Codex passthrough respects -- delimiter
       - id: "02"
         title: Flag parsing helpers
         tests:
@@ -55,3 +57,5 @@ features:
             title: Codex wrapper writes transcript and metadata
           - id: "02"
             title: Codex wrapper fails without repo-id
+          - id: "03"
+            title: Codex wrapper honors loopr root overrides

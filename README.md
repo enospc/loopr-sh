@@ -58,6 +58,25 @@ loopr codex     # run Codex with transcript logging
 loopr version   # show version info
 ```
 
+## Monorepo usage (Codex wrapper)
+
+`loopr codex` needs a Loopr workspace root (the directory that contains `specs/.loopr/repo-id`).
+In a monorepo, you can pick the workspace explicitly or let Loopr find the nearest one.
+
+Resolution order:
+1. `--loopr-root <path>` (explicit flag)
+2. `LOOPR_ROOT=<path>` (environment variable)
+3. Nearest ancestor with `specs/.loopr/repo-id`
+
+Note: Only `loopr codex` resolves a Loopr workspace. Other commands are repo-agnostic and only use `CODEX_HOME` to locate the skills directory.
+
+Examples:
+
+```
+loopr codex --loopr-root /repo/apps/service-a -- --help
+LOOPR_ROOT=/repo/apps/service-b loopr codex -- --help
+```
+
 ## Codex skills installed
 
 Loopr installs the following skills into your Codex skills directory. You invoke these inside Codex (they are not CLI subcommands):
@@ -87,14 +106,15 @@ This is a complete greenfield example for developers.
 
 ### Seed prompt
 
-"Build a simple local CLI that tracks personal TODOs, stores them in a local SQLite database, and exports to CSV."
+"Build a monorepo with two apps: (1) a local TODO CLI that stores tasks in SQLite and exports to CSV, and (2) a small website that documents the CLI and provides usage examples."
 
-### 0) Create a clean repo
+### 0) Create a clean monorepo
 
 Start in a new empty repo with no application code:
 
 ```
-mkdir todo-cli && cd todo-cli
+mkdir todo && cd todo
+mkdir -p cli website
 ```
 
 ### 1) Install Loopr skills
@@ -104,19 +124,20 @@ mkdir todo-cli && cd todo-cli
 /path/to/loopr doctor
 ```
 
-For transcript logging, run Codex through the wrapper:
+For transcript logging in a monorepo, run Codex through the wrapper and point it at the target workspace:
 
 ```
-/path/to/loopr codex -- <codex args>
+/path/to/loopr codex --loopr-root ./cli -- <codex args>
 ```
 
 
 ### 2) Run the workflow in Codex
 
-Open Codex in this repo and run the skills in order. Each step creates concrete artifacts
-under `specs/` and the later steps implement code.
+Open Codex in the subproject you are working on and run the skills in order. Each step
+creates concrete artifacts under `specs/` and the later steps implement code.
 
-Use `loopr codex` to capture transcripts into `specs/.loopr/transcripts/<repo-id>/`.
+Use `loopr codex --loopr-root ./cli` (or `./website`) to capture transcripts into that
+workspace’s `specs/.loopr/transcripts/<repo-id>/`.
 
 Tip: If you want a guided walkthrough, run `loopr-help`. If you want a single orchestrated run, run `loopr-runner`.
 
@@ -181,6 +202,12 @@ Once tasks are complete, you should have a working binary with commands like:
 ```
 
 (Exact command names may vary depending on what the spec/tasks defined.)
+
+### 4) Document the CLI in the website app
+
+Repeat the workflow in `website` with a seed prompt focused on documentation and examples
+for the CLI. Use `loopr codex --loopr-root ./website` so transcripts and `specs/` artifacts
+live under the website workspace.
 
 ## Updating or re-installing skills
 

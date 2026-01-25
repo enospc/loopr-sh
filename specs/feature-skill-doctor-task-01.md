@@ -4,40 +4,44 @@
 01
 
 ## Summary
-Implement skill drift detection by comparing installed skills to embedded skill hashes and report missing/drifted/extra skills.
+Implement skill drift detection against the embedded skills source of truth.
 
 ## Goal
-Make drift and installation issues visible before running the Loopr workflow.
+Report missing, drifted, and installed skills with clear status output.
 
 ## Scope
 - In scope:
   - Load embedded skill index.
-  - Compare installed skill files by hash.
-  - Report per-skill status: installed, missing, drifted.
-  - Report extra local skills not in the embedded set.
+  - Compare installed skills by hash and report `installed`, `missing`, or `drifted`.
+  - Report extra installed skills not present in embedded list.
 - Out of scope:
-  - Auto-remediation (install handles fixes).
+  - Writing or modifying installed skill files.
 
 ## Acceptance Criteria
-- `loopr doctor` identifies missing skills and drifted files accurately.
-- `loopr doctor` reports extra skills in the skills root.
-- Verbose mode prints lists of missing/drifted files.
+- `loopr doctor` reports correct status for each embedded skill.
+- Extra installed skills are reported separately.
+- `--only` filters the report to specified skills.
 
 ## Implementation Plan
-- Load embedded skills and filter by `--only`.
-- Walk the installed skills root and compare file hashes.
-- Produce a structured report (skills, missing, drifted, extras).
-- Expose a CLI printer that uses the report to render output.
+- Load embedded skills and compute expected hashes.
+- Resolve installed skills root and scan for skill directories.
+- Compare content hashes and generate per-skill status.
+- Print a summary and per-skill status list.
 
 ## Dependencies
 - CLI flag parsing helpers (cli-core task 02).
 
 ## Risks
-- False positives from incorrect skills root → rely on shared resolution logic.
+- False drift due to normalization → hash raw bytes as stored.
 
 ## Test Plan
-- Unit: verify detection for missing and modified files using temp dirs.
-- Manual: edit an installed skill file and run `loopr doctor`.
+- Unit: create temp skill trees and validate drift detection logic.
+- Manual: edit an installed skill file and verify `drifted` status.
 
 ## Notes
-- Keep hash comparison deterministic; ignore hidden files.
+- Keep output stable for scripting.
+
+## Completion
+- Status: Done
+- Tests: go test ./...
+- Notes: Added drift/missing/extra coverage in ops doctor tests.
