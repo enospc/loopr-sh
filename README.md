@@ -177,6 +177,23 @@ Tip: If you want a guided walkthrough, run `loopr-help`. If you want a single or
    - Interaction: Mostly autonomous; **user input required** if the agent needs missing context (e.g., test command choice or failure resolution)
    - Output: working code, tests, and `specs/implementation-progress.md`
 
+### Adding a new feature in an existing Loopr repo
+
+If the repo is already Loopr-initialized (has `specs/.loopr/repo-id`), prefer the targeted skills so you do not regenerate unrelated artifacts.
+
+1. **Update intent (optional)**
+   - If requirements changed: update `specs/prd.md` and/or `specs/spec.md`, then re-run "loopr-specify" and "loopr-features" as needed.
+2. **Add the feature**
+   - Prompt: "Run loopr-features" (full regen), **or** add `specs/feature-<slug>.md` and append it to `specs/feature-order.yaml`.
+3. **Create tasks**
+   - Prompt: "Run loopr-taskify for feature <slug>" (preferred), **or** "Run loopr-tasks" to regenerate all tasks.
+4. **Create tests**
+   - Prompt: "Run loopr-testify for task <id> in feature <slug>" (preferred), **or** "Run loopr-tests".
+5. **Preflight**
+   - Prompt: "Run loopr-doctor" (validates order YAMLs + referenced files).
+6. **Implement**
+   - Prompt: "Run loopr-run-task on specs/feature-<slug>-task-<id>.md" for each new task (or "Run loopr-execute" to run the full order).
+
 ### 3) Verify the build
 
 The foundation tasks define the build/test entry points. In most cases this will be
