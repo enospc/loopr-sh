@@ -12,6 +12,7 @@ agent (Codex) after the skills are installed.
 
 - Linux host (desktop, VM, Docker, or bare metal)
 - Codex CLI available on your PATH
+- Optional for skill preflight scripts: Python 3 (`loopr-init`, `loopr-doctor`) and `pyyaml` (`loopr-doctor`)
 - If building from source: Go 1.25+
 
 ## Build
@@ -55,6 +56,29 @@ loopr codex     # run Codex with transcript logging
 loopr version   # show version info
 ```
 
+## Codex skills installed
+
+Loopr installs the following skills into your Codex skills directory. You invoke these inside Codex (they are not CLI subcommands):
+
+Primary workflow:
+- `loopr-init`: create repo metadata + transcript locations under `specs/.loopr/`.
+- `loopr-prd`: MCQ interview -> `specs/prd.md`.
+- `loopr-specify`: PRD -> `specs/spec.md`.
+- `loopr-features`: Spec -> `specs/feature-*.md` + `specs/feature-order.yaml`.
+- `loopr-tasks`: Features -> `specs/feature-*-task-*.md` + `specs/task-order.yaml`.
+- `loopr-tests`: Tasks -> `specs/feature-*-task-*-test-*.md` + `specs/test-order.yaml`.
+- `loopr-execute`: implement tasks in order and record progress.
+
+Supporting/targeted skills:
+- `loopr-help`: explain the Loopr workflow and decision tree.
+- `loopr-runner`: orchestrate the full workflow end-to-end (skips completed steps).
+- `loopr-run-task`: implement a single task end-to-end.
+- `loopr-taskify`: split one feature into tasks (updates `specs/task-order.yaml`).
+- `loopr-testify`: split one task into tests (updates `specs/test-order.yaml`).
+- `loopr-doctor`: validate order YAMLs and referenced files.
+
+Note: `loopr doctor` (CLI) validates installed skill drift; `loopr-doctor` (skill) validates `specs/*-order.yaml` and referenced artifacts.
+
 ## End-to-end walkthrough (seed prompt → working code)
 
 This is a complete greenfield example for developers.
@@ -91,6 +115,8 @@ Open Codex in this repo and run the skills in order. Each step creates concrete 
 under `specs/` and the later steps implement code.
 
 Use `loopr codex` to capture transcripts into `specs/.loopr/transcripts/<repo-id>/`.
+
+Tip: If you want a guided walkthrough, run `loopr-help`. If you want a single orchestrated run, run `loopr-runner`.
 
 1. **Initialize Loopr metadata**
    - Prompt: "Run loopr-init"
