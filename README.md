@@ -25,6 +25,8 @@ make build
 
 Binary will be at `bin/loopr`.
 
+Note: `make build` checks for Go and exits with a helpful message if it isn't installed.
+
 ## Install the skills
 
 ```
