@@ -24,6 +24,17 @@ Create a clear PRD by interviewing the author with MCQs thorough, confirming ass
 - Select an intelligent default from the seed prompt and label it "Default:".
 - If the user selects "Other", ask for a brief free-text answer and move on.
 - Stop early if the PRD already has enough detail.
+- Formatting: write the question as a standalone sentence (not numbered), then list options as a numbered list starting at 1. The question itself must never be an item in the numbered list.
+
+Example:
+```
+What is the primary user?
+1. Default: Developers evaluating Loopr for new projects
+2. Admin/operators managing internal tooling
+3. Internal team only
+4. Decision makers / engineering managers
+5. Other / Not sure
+```
 
 ## MCQ question bank (pick only relevant)
 1. Product surface: Web app, Mobile app, API/SDK, CLI, Integration/automation, Backend service, Other.
