@@ -4,8 +4,7 @@ description: Generate test files for tasks listed in specs/task-order.yaml and w
 ---
 
 ## Prerequisite
-- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
-- Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
+- Follow `codex-skills/loopr-common/COMMON.md`.
 
 # Loopr Tests
 
@@ -13,10 +12,18 @@ description: Generate test files for tasks listed in specs/task-order.yaml and w
 Read specs/task-order.yaml, then for each task in that order, generate test files using the Loopr test template and output a consolidated specs/test-order.yaml.
 This assumes task-order.yaml follows the canonical format produced by loopr-tasks.
 
+## Inputs
+- `specs/task-order.yaml`
+- `specs/feature-*-task-*.md`
+
+## Outputs
+- `specs/feature-<slug>-task-<id>-test-*.md`
+- `specs/test-order.yaml`
+
 ## Workflow
-1. Preflight: run **loopr-doctor**; if it fails, stop and fix inputs.
+1. Verify specs/task-order.yaml exists; if missing, stop and ask to run loopr-tasks.
 2. Read specs/task-order.yaml and extract the ordered task IDs by feature.
-3. For each task, open specs/feature-<slug>-task-<id>.md.
+3. For each task, open specs/feature-<slug>-task-<id>.md; if missing, stop and ask to regenerate tasks.
 4. Derive tests covering each acceptance criterion and key edge cases.
 5. Remove any existing specs/feature-<slug>-task-<id>-test-*.md to avoid stale tests.
 6. Write new test files to specs/feature-<slug>-task-<id>-test-<test_id>.md.

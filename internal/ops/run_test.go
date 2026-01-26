@@ -1,0 +1,73 @@
+package ops
+
+import (
+	"os"
+	"path/filepath"
+	"testing"
+)
+
+func writeSpecFile(t *testing.T, root, rel string) {
+	t.Helper()
+	path := filepath.Join(root, rel)
+	if err := EnsureDir(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("mkdir %s: %v", path, err)
+	}
+	if err := os.WriteFile(path, []byte("ok\n"), 0o644); err != nil {
+		t.Fatalf("write %s: %v", path, err)
+	}
+}
+
+func TestPlanStepsDefaultsToPrd(t *testing.T) {
+	root := t.TempDir()
+	steps, err := planSteps(root, RunOptions{})
+	if err != nil {
+		t.Fatalf("planSteps error: %v", err)
+	}
+	if len(steps) == 0 || steps[0].Name != "prd" {
+		t.Fatalf("steps[0] = %#v, want prd", steps)
+	}
+}
+
+func TestPlanStepsSkipsPrdWhenPresent(t *testing.T) {
+	root := t.TempDir()
+	writeSpecFile(t, root, "specs/prd.md")
+
+	steps, err := planSteps(root, RunOptions{})
+	if err != nil {
+		t.Fatalf("planSteps error: %v", err)
+	}
+	if len(steps) == 0 || steps[0].Name != "spec" {
+		t.Fatalf("steps[0] = %#v, want spec", steps)
+	}
+}
+
+func TestPlanStepsReturnsExecuteWhenAllOutputsPresent(t *testing.T) {
+	root := t.TempDir()
+	writeSpecFile(t, root, "specs/prd.md")
+	writeSpecFile(t, root, "specs/spec.md")
+	writeSpecFile(t, root, "specs/feature-order.yaml")
+	writeSpecFile(t, root, "specs/feature-demo.md")
+	writeSpecFile(t, root, "specs/task-order.yaml")
+	writeSpecFile(t, root, "specs/feature-demo-task-01.md")
+	writeSpecFile(t, root, "specs/test-order.yaml")
+	writeSpecFile(t, root, "specs/feature-demo-task-01-test-01.md")
+
+	steps, err := planSteps(root, RunOptions{})
+	if err != nil {
+		t.Fatalf("planSteps error: %v", err)
+	}
+	if len(steps) != 1 || steps[0].Name != "execute" {
+		t.Fatalf("steps = %#v, want execute only", steps)
+	}
+}
+
+func TestPlanStepsRange(t *testing.T) {
+	root := t.TempDir()
+	steps, err := planSteps(root, RunOptions{From: "tasks", To: "tests"})
+	if err != nil {
+		t.Fatalf("planSteps error: %v", err)
+	}
+	if len(steps) != 2 || steps[0].Name != "tasks" || steps[1].Name != "tests" {
+		t.Fatalf("steps = %#v, want tasks->tests", steps)
+	}
+}

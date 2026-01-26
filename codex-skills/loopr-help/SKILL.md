@@ -11,6 +11,12 @@ description: Guide users through the Loopr workflow and the correct order of loo
 ## Overview
 Provide a thorough, step-by-step guide for using the Loopr workflow, including the correct order of loopr-* skills, when to use each, and a non-trivial greenfield example from a seed prompt. This workflow is optimized for brand-new, empty repos; existing repos require explicit `loopr init --allow-existing` and may skip foundation.
 
+## Inputs
+- None (informational)
+
+## Outputs
+- Guidance and step-by-step instructions
+
 Important: This skill must not invoke or trigger any other skills. It should only explain what to run and when, without executing anything.
 
 ## Greenfield Preflight
@@ -28,7 +34,7 @@ If disallowed signals exist, stop and ask for confirmation.
 - If you already have tasks in `specs/task-order.yaml` → use **loopr-tests** (or **loopr-testify** for a single task).
 - To execute tasks end-to-end → use **loopr-execute**.
 - To execute a single task → use **loopr-run-task**.
-- To run everything end-to-end (from PRD onward) → use **loopr-runner**.
+- To run everything end-to-end (from PRD onward) → run the steps in order (PRD → Spec → Features → Tasks → Tests → Execute).
 - To validate order files and references at any point → use **loopr-doctor**.
 
 ## Canonical Order (Greenfield)
@@ -49,7 +55,6 @@ If disallowed signals exist, stop and ask for confirmation.
 - **loopr-tests**: Generates test files + `specs/test-order.yaml`.
 - **loopr-run-task**: Implements a single task to completion and appends completion notes.
 - **loopr-execute**: Executes all tasks in order and stops on first failure.
-- **loopr-runner**: Orchestrates the full Loopr pipeline end-to-end.
 - **loopr-doctor**: Validates order YAML files and referenced artifacts before implementation.
 
 ## Greenfield Example (Lightweight)
@@ -96,10 +101,6 @@ If disallowed signals exist, stop and ask for confirmation.
 - **Over-sized tasks**: split tasks into 0.5–2 day units; keep dependencies explicit.
 - **Unbounded scope creep**: update PRD/spec and reflow the pipeline before coding.
 - **Missing foundation**: ensure `foundation` is first in feature/task order for greenfield scaffolding.
-
-## When to Prefer loopr-runner
-- Use **loopr-runner** if you want a single command to walk from PRD to tasks/tests.
-- Use manual steps if you need tighter control between phases.
 
 ## Version
 - 2026-01-24

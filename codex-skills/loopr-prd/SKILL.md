@@ -4,13 +4,19 @@ description: Create a PRD from a seed prompt using an MCQ-style interview with i
 ---
 
 ## Prerequisite
-- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
-- Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
+- Follow `codex-skills/loopr-common/COMMON.md`.
 
 # Loopr PRD
 
 ## Overview
 Create a clear PRD by interviewing the author with MCQs thorough, confirming assumptions, and writing specs/prd.md.
+
+## Inputs
+- Seed prompt and explicit constraints (user-provided).
+- Existing `specs/prd.md` (optional, if refining).
+
+## Outputs
+- `specs/prd.md`
 
 ## Workflow
 1. Capture the seed prompt and any explicit constraints.

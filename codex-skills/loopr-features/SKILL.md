@@ -4,14 +4,21 @@ description: Split specs/spec.md into feature documents at specs/feature-<slug>.
 ---
 
 ## Prerequisite
-- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
-- Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
-- Read `specs/.loopr/init-state.json` to determine `mode` (if missing, assume `existing`).
+- Follow `codex-skills/loopr-common/COMMON.md`.
+- This skill requires `mode` (read `specs/.loopr/init-state.json`; if missing, assume `existing`).
 
 # Loopr Features
 
 ## Overview
 Split specs/spec.md into independent, implementable features, generate a pragmatic dependency-based order, and write each feature to specs/feature-<feature-slug>.md with ordering metadata. For greenfield repos (`mode=greenfield`), always include a Foundation feature for scaffolding and test harness setup.
+
+## Inputs
+- `specs/spec.md`
+- `specs/.loopr/init-state.json` (for `mode`)
+
+## Outputs
+- `specs/feature-*.md`
+- `specs/feature-order.yaml`
 
 ## Workflow
 1. Read specs/spec.md and identify distinct features.

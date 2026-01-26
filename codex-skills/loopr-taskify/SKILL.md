@@ -4,13 +4,20 @@ description: Break a single feature into tasks and write specs/feature-<slug>-ta
 ---
 
 ## Prerequisite
-- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
-- Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
+- Follow `codex-skills/loopr-common/COMMON.md`.
 
 # Loopr Taskify
 
 ## Overview
 Turn a feature document into a set of executable tasks sized for safe, incremental delivery.
+
+## Inputs
+- `specs/feature-<slug>.md`
+- `specs/task-order.yaml` (optional; update if present)
+
+## Outputs
+- `specs/feature-<slug>-task-*.md`
+- `specs/task-order.yaml` (updated if present)
 
 ## Workflow
 1. Read the feature file and identify distinct implementation steps.

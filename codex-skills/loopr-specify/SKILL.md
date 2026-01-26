@@ -4,13 +4,19 @@ description: Expand specs/prd.md into a detailed, implementable specification at
 ---
 
 ## Prerequisite
-- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
-- Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
+- Follow `codex-skills/loopr-common/COMMON.md`.
 
 # Loopr Specify
 
 ## Overview
 Transform specs/prd.md into a detailed, implementable spec at specs/spec.md.
+
+## Inputs
+- `specs/prd.md`
+- `specs/.loopr/init-state.json` (optional; for mode)
+
+## Outputs
+- `specs/spec.md`
 
 ## Workflow
 1. Read specs/prd.md and note goals, scope, and open questions.

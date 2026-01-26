@@ -4,13 +4,20 @@ description: Break a single task into tests and write specs/feature-<slug>-task-
 ---
 
 ## Prerequisite
-- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
-- Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
+- Follow `codex-skills/loopr-common/COMMON.md`.
 
 # Loopr Testify
 
 ## Overview
 Create focused tests that fully cover a task's acceptance criteria and edge cases.
+
+## Inputs
+- `specs/feature-<slug>-task-<id>.md`
+- `specs/test-order.yaml` (optional; update if present)
+
+## Outputs
+- `specs/feature-<slug>-task-<id>-test-*.md`
+- `specs/test-order.yaml` (updated if present)
 
 ## Workflow
 1. Read the task file and acceptance criteria.

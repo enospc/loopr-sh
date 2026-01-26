@@ -33,8 +33,8 @@ func TestSplitOnDoubleDash(t *testing.T) {
 		{
 			name:      "no delimiter",
 			args:      []string{"--help"},
-			looprArgs: nil,
-			codexArgs: []string{"--help"},
+			looprArgs: []string{"--help"},
+			codexArgs: nil,
 		},
 	}
 

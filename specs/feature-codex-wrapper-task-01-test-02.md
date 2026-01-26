@@ -7,7 +7,7 @@
 Integration
 
 ## Purpose
-Ensure `loopr codex` fails with a clear error when `specs/.loopr/repo-id` is missing.
+Ensure `loopr run --codex` fails with a clear error when `specs/.loopr/repo-id` is missing.
 
 ## Preconditions
 - `bin/loopr` built and available on PATH or invoked directly.
@@ -17,7 +17,7 @@ Ensure `loopr codex` fails with a clear error when `specs/.loopr/repo-id` is mis
 - Example Codex args such as `--help`.
 
 ## Steps
-1. Run `loopr codex -- --help` from a directory without `specs/.loopr/repo-id`.
+1. Run `loopr run --codex --step execute -- --help` from a directory without `specs/.loopr/repo-id`.
 
 ## Expected Results
 - Command exits non-zero.

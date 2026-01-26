@@ -17,7 +17,7 @@ description: Core Loopr CLI commands and Codex skills.
     <li><code>loopr doctor</code> - validates installed skills against the embedded source.</li>
     <li><code>loopr list</code> - lists skills and status.</li>
     <li><code>loopr uninstall</code> - removes skills (backs up by default).</li>
-    <li><code>loopr codex</code> - runs Codex with transcript logging for the chosen workspace.</li>
+    <li><code>loopr run --codex</code> - runs the workflow via Codex with transcript logging for the chosen workspace.</li>
     <li><code>loopr version</code> - prints version info.</li>
   </ul>
 
@@ -35,7 +35,6 @@ description: Core Loopr CLI commands and Codex skills.
   <h3>Supporting skills</h3>
   <ul>
     <li><code>loopr-help</code> - guided workflow overview.</li>
-    <li><code>loopr-runner</code> - orchestrate the full workflow end-to-end.</li>
     <li><code>loopr-run-task</code> - implement a single task.</li>
     <li><code>loopr-taskify</code> / <code>loopr-testify</code> - split a single feature/task into tasks/tests.</li>
     <li><code>loopr-doctor</code> - validates <code>specs/*-order.yaml</code> and referenced artifacts.</li>

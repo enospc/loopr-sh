@@ -4,9 +4,8 @@ description: Generate task files for features listed in specs/feature-order.yaml
 ---
 
 ## Prerequisite
-- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
-- Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
-- Read `specs/.loopr/init-state.json` to determine `mode` (if missing, assume `existing`).
+- Follow `codex-skills/loopr-common/COMMON.md`.
+- This skill requires `mode` (read `specs/.loopr/init-state.json`; if missing, assume `existing`).
 
 # Loopr Tasks
 
@@ -14,11 +13,20 @@ description: Generate task files for features listed in specs/feature-order.yaml
 Read specs/feature-order.yaml, then for each feature in that order, generate task files using the Loopr task template and output a consolidated specs/task-order.yaml.
 This assumes feature-order.yaml follows the canonical format produced by loopr-features.
 
+## Inputs
+- `specs/feature-order.yaml`
+- `specs/feature-*.md`
+- `specs/.loopr/init-state.json` (for `mode`)
+
+## Outputs
+- `specs/feature-<slug>-task-*.md`
+- `specs/task-order.yaml`
+
 ## Workflow
-1. Preflight: run **loopr-doctor**; if it fails, stop and fix inputs.
+1. Verify specs/feature-order.yaml exists; if missing, stop and ask to run loopr-features.
 2. Read specs/feature-order.yaml and extract the ordered feature slugs.
    - If `mode=greenfield`, verify the first feature is `foundation`; if missing, stop and ask to re-run loopr-features.
-3. For each slug, open specs/feature-<slug>.md.
+3. For each slug, open specs/feature-<slug>.md; if missing, stop and ask to regenerate features.
 4. Derive tasks (0.5–2 days each) in dependency order with zero-padded IDs.
    - If the feature slug is `foundation`, include tasks for repo scaffold, test harness smoke tests, and cross-component contract stubs.
 5. Remove any existing specs/feature-<slug>-task-*.md to avoid stale tasks.

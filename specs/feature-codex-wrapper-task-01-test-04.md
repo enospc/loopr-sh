@@ -19,8 +19,8 @@ Verify optional reproducibility fields are present only when env vars are set.
 - `LOOPR_CODEX_PROMPT=example-prompt`
 
 ## Steps
-1. Run `loopr codex -- --help` without the env vars and inspect JSONL `start` event.
-2. Run `loopr codex -- --help` with the env vars set and inspect JSONL `start` event.
+1. Run `loopr run --codex --step execute -- --help` without the env vars and inspect JSONL `start` event.
+2. Run `loopr run --codex --step execute -- --help` with the env vars set and inspect JSONL `start` event.
 
 ## Expected Results
 - Step 1: optional fields are absent.

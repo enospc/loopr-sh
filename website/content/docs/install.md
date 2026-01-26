@@ -34,9 +34,9 @@ make build</code></pre>
   <pre><code>./bin/loopr init</code></pre>
   <p>This also writes <code>specs/.loopr/.gitignore</code> to keep transcripts local.</p>
 
-  <h2>Use the Codex wrapper</h2>
-  <p>For transcript logging, run Codex through the Loopr wrapper and point it at the workspace you want to manage.</p>
-  <pre><code>./bin/loopr codex --loopr-root ./website -- --help</code></pre>
+  <h2>Run the workflow</h2>
+  <p>Run the workflow through Codex and log transcripts to the workspace you want to manage.</p>
+  <pre><code>./bin/loopr run --codex --seed "&lt;seed prompt&gt;" --loopr-root ./website</code></pre>
 
   <div class="callout">
     <strong>Greenfield note:</strong> Loopr expects a clean repo. If you must run it in an existing repo, use <code>loopr init --allow-existing</code> and ensure strong tests.

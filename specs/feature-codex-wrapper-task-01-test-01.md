@@ -7,7 +7,7 @@
 Integration
 
 ## Purpose
-Verify `loopr codex` writes transcript and JSONL metadata files under the Loopr workspace with required reproducibility fields.
+Verify `loopr run --codex` writes transcript and JSONL metadata files under the Loopr workspace with required reproducibility fields.
 
 ## Preconditions
 - `bin/loopr` built and available on PATH or invoked directly.
@@ -18,7 +18,7 @@ Verify `loopr codex` writes transcript and JSONL metadata files under the Loopr 
 - Example Codex args such as `--help`.
 
 ## Steps
-1. Run `loopr codex -- --help` from within the workspace.
+1. Run `loopr run --codex --step execute -- --help` from within the workspace.
 2. Inspect `specs/.loopr/transcripts/<repo-id>/`.
 3. Inspect JSONL `start` event for required reproducibility fields.
 

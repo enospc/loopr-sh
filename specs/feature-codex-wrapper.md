@@ -24,7 +24,7 @@ Wrap Codex execution and capture transcripts + reproducibility metadata under th
 
 ## Scope
 - In scope:
-  - `loopr codex -- <args>` command that wraps Codex execution.
+  - `loopr run --codex -- <args>` command that wraps Codex execution.
   - Workspace resolution by searching upward for `specs/.loopr/repo-id`.
   - Optional explicit workspace selection for monorepos.
   - Transcript log and JSONL metadata creation.
@@ -51,16 +51,16 @@ Wrap Codex execution and capture transcripts + reproducibility metadata under th
 - Pass arguments after `--` directly to `codex` without modification.
 
 ## Acceptance Criteria
-- Running `loopr codex -- <args>` from a nested directory stores transcripts under the nearest workspace.
-- Running `loopr codex --loopr-root <path> -- <args>` stores transcripts under the specified workspace.
-- Running `LOOPR_ROOT=<path> loopr codex -- <args>` stores transcripts under the specified workspace.
+- Running `loopr run --codex -- <args>` from a nested directory stores transcripts under the nearest workspace.
+- Running `loopr run --codex --loopr-root <path> -- <args>` stores transcripts under the specified workspace.
+- Running `LOOPR_ROOT=<path> loopr run --codex -- <args>` stores transcripts under the specified workspace.
 - Missing `specs/.loopr/repo-id` yields a clear error and non-zero exit.
 - JSONL includes both `start` and `end` events with timestamps and exit code.
 - JSONL `start` event includes the required reproducibility fields and optional fields when available.
 
 ## UX / Flow
-- `loopr codex -- <args>` runs Codex and prints transcript/metadata paths.
-- `loopr codex --loopr-root <path> -- <args>` targets a specific workspace in a monorepo.
+- `loopr run --codex -- <args>` runs Codex and prints transcript/metadata paths.
+- `loopr run --codex --loopr-root <path> -- <args>` targets a specific workspace in a monorepo.
 
 ## Data / API Impact
 - CLI flag: `--loopr-root` (codex command only).

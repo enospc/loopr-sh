@@ -21,6 +21,8 @@ func main() {
 	switch os.Args[1] {
 	case "init":
 		runInit(os.Args[2:])
+	case "run":
+		runRun(os.Args[2:])
 	case "install":
 		runInstall(os.Args[2:])
 	case "doctor":
@@ -29,8 +31,6 @@ func main() {
 		runList(os.Args[2:])
 	case "uninstall":
 		runUninstall(os.Args[2:])
-	case "codex":
-		runCodex(os.Args[2:])
 	case "version":
 		runVersion()
 	case "-h", "--help", "help":
@@ -47,11 +47,11 @@ func usage() {
 	fmt.Println("")
 	fmt.Println("Commands:")
 	fmt.Println("  init       Initialize Loopr metadata in a repo")
+	fmt.Println("  run        Orchestrate Loopr steps")
 	fmt.Println("  install     Install loopr skills")
 	fmt.Println("  doctor      Validate installed skills")
 	fmt.Println("  list        List skills and status")
 	fmt.Println("  uninstall   Remove loopr skills")
-	fmt.Println("  codex       Run Codex with transcript logging (use -- to pass args)")
 	fmt.Println("  version     Show version info")
 }
 
@@ -214,21 +214,62 @@ func runUninstall(args []string) {
 	}
 }
 
-func runCodex(args []string) {
-	looprArgs, codexArgs := splitOnDoubleDash(args)
-	fs := flag.NewFlagSet("codex", flag.ContinueOnError)
+func runRun(args []string) {
+	looprArgs, agentArgs := splitOnDoubleDash(args)
+	fs := flag.NewFlagSet("run", flag.ContinueOnError)
 	fs.SetOutput(os.Stderr)
-	looprRoot := fs.String("loopr-root", "", "loopr workspace root (codex only)")
+	from := fs.String("from", "", "start step (prd|spec|features|tasks|tests|execute)")
+	to := fs.String("to", "", "end step (prd|spec|features|tasks|tests|execute)")
+	step := fs.String("step", "", "single step to run (overrides --from/--to)")
+	seed := fs.String("seed", "", "seed prompt for PRD (required if prd is missing)")
+	force := fs.Bool("force", false, "rerun steps even if outputs exist")
+	confirm := fs.Bool("confirm", false, "ask before each step")
+	codex := fs.Bool("codex", false, "run steps with Codex (pass Codex args after --)")
+	looprRoot := fs.String("loopr-root", "", "loopr workspace root")
 	if err := fs.Parse(looprArgs); err != nil {
 		os.Exit(2)
 	}
-	exitCode, session, err := ops.RunCodex(codexArgs, ops.CodexOptions{LooprRoot: *looprRoot})
+	if len(agentArgs) > 0 && !*codex {
+		fail(fmt.Errorf("agent args provided but --codex not set"))
+	}
+
+	opts := ops.RunOptions{
+		LooprRoot: *looprRoot,
+		From:      *from,
+		To:        *to,
+		Step:      *step,
+		Seed:      *seed,
+		Force:     *force,
+		Confirm:   *confirm,
+		Codex:     *codex,
+		CodexArgs: agentArgs,
+	}
+	if *codex {
+		opts.Progress = func(event ops.ProgressEvent) {
+			fmt.Printf("Step %d/%d %s: %s\n", event.Index, event.Total, event.Step.Name, event.Status)
+		}
+	}
+	report, err := ops.RunWorkflow(opts)
 	if err != nil {
 		fail(err)
 	}
-	fmt.Printf("Transcript: %s\n", session.LogPath)
-	fmt.Printf("Metadata:   %s\n", session.MetaPath)
-	os.Exit(exitCode)
+	if !*codex {
+		for _, step := range report.Steps {
+			fmt.Printf("Step: %s\n", step.Name)
+			fmt.Printf("  skill: %s\n", step.Skill)
+			for _, input := range step.Inputs {
+				fmt.Printf("  input: %s\n", input)
+			}
+			for _, output := range step.Outputs {
+				fmt.Printf("  output: %s\n", output)
+			}
+		}
+		return
+	}
+	if report.LastSession != nil {
+		fmt.Printf("Transcript: %s\n", report.LastSession.LogPath)
+		fmt.Printf("Metadata:   %s\n", report.LastSession.MetaPath)
+	}
 }
 
 func runVersion() {
@@ -277,7 +318,7 @@ func splitOnDoubleDash(args []string) ([]string, []string) {
 			return args[:i], args[i+1:]
 		}
 	}
-	return nil, args
+	return args, nil
 }
 
 func printInstallReport(report ops.InstallReport, verbose bool) {

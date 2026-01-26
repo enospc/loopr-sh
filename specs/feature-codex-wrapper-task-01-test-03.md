@@ -18,8 +18,8 @@ Verify `--loopr-root` and `LOOPR_ROOT` override workspace resolution.
 - Example Codex args such as `--help`.
 
 ## Steps
-1. Run `loopr codex --loopr-root <workspace-a> -- --help`.
-2. Run `LOOPR_ROOT=<workspace-b> loopr codex -- --help`.
+1. Run `loopr run --codex --step execute --loopr-root <workspace-a> -- --help`.
+2. Run `LOOPR_ROOT=<workspace-b> loopr run --codex --step execute -- --help`.
 3. Inspect transcript directories for each workspace.
 
 ## Expected Results

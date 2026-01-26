@@ -23,9 +23,9 @@ Ensure each Codex session is logged with reproducibility metadata in the correct
   - Capturing prompt data unless explicitly provided via env vars.
 
 ## Acceptance Criteria
-- `loopr codex -- <args>` writes a log and metadata file for each run under the nearest workspace.
-- `loopr codex --loopr-root <path> -- <args>` writes artifacts under the specified workspace.
-- `LOOPR_ROOT=<path> loopr codex -- <args>` writes artifacts under the specified workspace.
+- `loopr run --codex -- <args>` writes a log and metadata file for each run under the nearest workspace.
+- `loopr run --codex --loopr-root <path> -- <args>` writes artifacts under the specified workspace.
+- `LOOPR_ROOT=<path> loopr run --codex -- <args>` writes artifacts under the specified workspace.
 - Missing `specs/.loopr/repo-id` yields a clear error and non-zero exit.
 - Metadata includes start timestamp, end timestamp, and exit code.
 - `start` event includes required reproducibility fields and optional fields when available.
@@ -53,7 +53,7 @@ Ensure each Codex session is logged with reproducibility metadata in the correct
 - Prompt metadata may contain sensitive content → capture only when explicitly provided.
 
 ## Test Plan
-- Integration: run `loopr codex -- --help` and verify transcript artifacts and reproducibility fields in JSONL.
+- Integration: run `loopr run --codex --step execute -- --help` and verify transcript artifacts and reproducibility fields in JSONL.
 - Integration: run with `--loopr-root` and `LOOPR_ROOT` to verify override behavior.
 - Unit: verify reproducibility fields are present in start event and optional fields are conditional.
 
@@ -62,5 +62,5 @@ Ensure each Codex session is logged with reproducibility metadata in the correct
 
 ## Completion
 - Status: Done
-- Tests: `go test ./...` and manual `loopr codex -- --help` runs verifying reproducibility fields (with and without `LOOPR_CODEX_MODEL`/`LOOPR_CODEX_PROMPT`).
+- Tests: `go test ./...` and manual `loopr run --codex --step execute -- --help` runs verifying reproducibility fields (with and without `LOOPR_CODEX_MODEL`/`LOOPR_CODEX_PROMPT`).
 - Notes: Optional fields only appear when env vars are set; git commit/dirty and skills hash fields captured when available.

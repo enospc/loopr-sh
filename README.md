@@ -55,13 +55,13 @@ loopr init      # initialize Loopr metadata in a repo
 loopr doctor    # validate installed skills
 loopr list      # list skills and status
 loopr uninstall # remove skills (backed up by default)
-loopr codex     # run Codex with transcript logging
+loopr run       # orchestrate workflow (use --codex to run Codex)
 loopr version   # show version info
 ```
 
-## Monorepo usage (Codex wrapper)
+## Monorepo usage (run --codex)
 
-`loopr codex` needs a Loopr workspace root (the directory that contains `specs/.loopr/repo-id`).
+`loopr run --codex` needs a Loopr workspace root (the directory that contains `specs/.loopr/repo-id`).
 In a monorepo, you can pick the workspace explicitly or let Loopr find the nearest one.
 
 Resolution order:
@@ -69,13 +69,13 @@ Resolution order:
 2. `LOOPR_ROOT=<path>` (environment variable)
 3. Nearest ancestor with `specs/.loopr/repo-id`
 
-Note: Only `loopr codex` resolves a Loopr workspace. Other commands are repo-agnostic and only use `CODEX_HOME` to locate the skills directory.
+Note: Only `loopr run --codex` resolves a Loopr workspace. Other commands are repo-agnostic and only use `CODEX_HOME` to locate the skills directory.
 
 Examples:
 
 ```
-loopr codex --loopr-root /repo/apps/service-a -- --help
-LOOPR_ROOT=/repo/apps/service-b loopr codex -- --help
+loopr run --codex --step execute --loopr-root /repo/apps/service-a -- --help
+LOOPR_ROOT=/repo/apps/service-b loopr run --codex --step execute -- --help
 ```
 
 ## Codex skills installed
@@ -92,7 +92,6 @@ Primary workflow:
 
 Supporting/targeted skills:
 - `loopr-help`: explain the Loopr workflow and decision tree.
-- `loopr-runner`: orchestrate the full workflow end-to-end (skips completed steps).
 - `loopr-run-task`: implement a single task end-to-end.
 - `loopr-taskify`: split one feature into tasks (updates `specs/task-order.yaml`).
 - `loopr-testify`: split one task into tests (updates `specs/test-order.yaml`).
@@ -124,10 +123,10 @@ mkdir -p cli website
 /path/to/loopr doctor
 ```
 
-For transcript logging in a monorepo, run Codex through the wrapper and point it at the target workspace:
+For transcript logging in a monorepo, run the workflow through Loopr and point it at the target workspace:
 
 ```
-/path/to/loopr codex --loopr-root ./cli -- <codex args>
+/path/to/loopr run --codex --seed "<seed prompt>" --loopr-root ./cli -- <codex args>
 ```
 
 
@@ -136,10 +135,10 @@ For transcript logging in a monorepo, run Codex through the wrapper and point it
 Open Codex in the subproject you are working on and run the skills in order. Each step
 creates concrete artifacts under `specs/` and the later steps implement code.
 
-Use `loopr codex --loopr-root ./cli` (or `./website`) to capture transcripts into that
+Use `loopr run --codex --seed "<seed prompt>" --loopr-root ./cli` (or `./website`) to run the workflow and capture transcripts into that
 workspace’s `specs/.loopr/transcripts/<repo-id>/`.
 
-Tip: If you want a guided walkthrough, run `loopr-help`. If you want a single orchestrated run, run `loopr-runner`.
+Tip: If you want a guided walkthrough, run `loopr-help`.
 
 1. **Initialize Loopr metadata**
    - Command: `loopr init`
@@ -223,7 +222,7 @@ Once tasks are complete, you should have a working binary with commands like:
 ### 4) Document the CLI in the website app
 
 Repeat the workflow in `website` with a seed prompt focused on documentation and examples
-for the CLI. Use `loopr codex --loopr-root ./website` so transcripts and `specs/` artifacts
+for the CLI. Use `loopr run --codex --seed "<seed prompt>" --loopr-root ./website` so transcripts and `specs/` artifacts
 live under the website workspace.
 
 ## Updating or re-installing skills

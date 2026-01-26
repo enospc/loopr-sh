@@ -4,13 +4,21 @@ description: Implement a single task end-to-end until all its tests pass. Use wh
 ---
 
 ## Prerequisite
-- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
-- Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
+- Follow `codex-skills/loopr-common/COMMON.md`.
 
 # Loopr Run Task
 
 ## Overview
 Complete one task end-to-end, ensuring all associated tests pass before marking it done.
+
+## Inputs
+- `specs/feature-<slug>-task-<id>.md`
+- `specs/feature-<slug>-task-<id>-test-*.md`
+- Codebase files relevant to the task
+
+## Outputs
+- Code changes required by the task
+- Updated task file completion section
 
 ## Workflow
 1. Read the task file and identify acceptance criteria and dependencies.
