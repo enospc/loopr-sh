@@ -14,7 +14,7 @@ Provide a predictable command surface with clear help/usage, correct exit codes,
   - Command switch for init/run/install/doctor/list/uninstall/version/help.
   - Usage output and error messages for unknown commands or missing args.
   - Exit code conventions (usage errors vs success).
-  - Respect the `--` delimiter so arguments after it are passed to Codex unchanged (Loopr appends its prompt after them).
+  - Respect the `--` delimiter so arguments after it are passed to Codex unchanged (Loopr appends its prompt after them unless a Codex subcommand or help/version flag is supplied).
 - Out of scope:
   - The underlying behavior of install/doctor/uninstall/run operations.
   - Validation of Codex arguments.
@@ -24,12 +24,12 @@ Provide a predictable command surface with clear help/usage, correct exit codes,
 - Running `loopr help`, `loopr -h`, or `loopr --help` prints usage and exits successfully.
 - Unknown commands print a clear error plus usage and exit with code 2.
 - `loopr version` prints version metadata from `internal/version`.
-- `loopr run --codex --step execute -- --help` passes `--help` through to the Codex runner unchanged and appends the Loopr prompt.
+- `loopr run --codex --step execute -- --help` passes `--help` through to the Codex runner unchanged and does not append the Loopr prompt.
 
 ## Implementation Plan
 - Define a `usage()` function that prints a concise command list.
 - Add a command switch in `cmd/loopr/main.go` with explicit cases and a default error path.
-- Split args on `--` and pass the trailing args through to the codex handler without modification (prompt appended after them).
+- Split args on `--` and pass the trailing args through to the codex handler without modification (prompt appended after them unless a Codex subcommand or help/version flag is supplied).
 - Ensure `version` uses the build metadata values (version/commit/date) when available.
 
 ## Dependencies

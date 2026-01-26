@@ -23,8 +23,9 @@ Turn a feature document into a set of executable tasks sized for safe, increment
 1. Read the feature file and identify distinct implementation steps.
 2. Split work into tasks sized for 0.5-2 days.
 3. Assign task IDs starting at 01 in dependency order.
-4. Remove any existing specs/feature-<feature-slug>-task-*.md to avoid stale tasks.
-5. Write each task to specs/feature-<feature-slug>-task-<task_id>.md.
+4. If the feature marks PBT as recommended or optional, include task acceptance criteria for generators, properties, budgets, and seed logging.
+5. Remove any existing specs/feature-<feature-slug>-task-*.md to avoid stale tasks.
+6. Write each task to specs/feature-<feature-slug>-task-<task_id>.md.
 
 ## Task template
 ```
@@ -55,6 +56,12 @@ Turn a feature document into a set of executable tasks sized for safe, increment
 
 ## Test Plan
 - 
+
+## Testing Notes
+- PBT suitability: <Recommended | Optional | Not Suitable>
+- Properties to cover:
+- Generator notes:
+- Seed / replay guidance:
 
 ## Notes
 - 

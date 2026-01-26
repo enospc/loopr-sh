@@ -29,6 +29,7 @@ This assumes feature-order.yaml follows the canonical format produced by loopr-f
 3. For each slug, open specs/feature-<slug>.md; if missing, stop and ask to regenerate features.
 4. Derive tasks (0.5–2 days each) in dependency order with zero-padded IDs.
    - If the feature slug is `foundation`, include tasks for repo scaffold, test harness smoke tests, and cross-component contract stubs.
+   - If the feature marks PBT as recommended or optional, include task acceptance criteria for generators, properties, budgets, and seed logging.
 5. Remove any existing specs/feature-<slug>-task-*.md to avoid stale tasks.
 6. Write new task files to specs/feature-<slug>-task-<id>.md.
 7. Generate specs/task-order.yaml listing tasks in the same feature order, including brief dependency notes.
@@ -64,6 +65,12 @@ Use the same template as loopr-taskify:
 
 ## Test Plan
 - 
+
+## Testing Notes
+- PBT suitability: <Recommended | Optional | Not Suitable>
+- Properties to cover:
+- Generator notes:
+- Seed / replay guidance:
 
 ## Notes
 - 

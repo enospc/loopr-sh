@@ -37,6 +37,7 @@ make build</code></pre>
   <h2>Run the workflow</h2>
   <p>Run the workflow through Codex and log transcripts to the workspace you want to manage.</p>
   <pre><code>./bin/loopr run --codex --seed "&lt;seed prompt&gt;" --loopr-root ./website</code></pre>
+  <p>To pass Codex flags, add them after <code>--</code> (or use <code>--help</code>/<code>--version</code> with <code>--codex</code> to see Codex output).</p>
 
   <div class="callout">
     <strong>Greenfield note:</strong> Loopr expects a clean repo. If you must run it in an existing repo, use <code>loopr init --allow-existing</code> and ensure strong tests.

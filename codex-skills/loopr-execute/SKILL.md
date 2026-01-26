@@ -18,6 +18,7 @@ Execute all tasks in specs/task-order.yaml sequentially. Stop on first failure a
 - `specs/feature-*-task-*.md`
 - `specs/feature-*-task-*-test-*.md`
 - `specs/.loopr/init-state.json` (for `mode`)
+- `specs/spec.md`
 
 ## Outputs
 - Code changes required by the tasks
@@ -33,6 +34,7 @@ Execute all tasks in specs/task-order.yaml sequentially. Stop on first failure a
 3. For each task in order:
    - Verify specs/feature-<slug>-task-<id>.md exists; if missing, stop and ask to regenerate tasks.
    - Verify tests for the task exist; if missing, stop and ask to run loopr-testify (or loopr-tests).
+   - Use specs/spec.md testing strategy for PBT seed/budget guidance; if missing and PBT tests are present, stop and ask.
    - Implement the task and run the tests for that task.
    - Update the task file with completion notes and test results.
    - If tests fail or implementation errors occur, stop and report the blocking task.
@@ -43,6 +45,7 @@ Execute all tasks in specs/task-order.yaml sequentially. Stop on first failure a
 - Do not skip tasks or reorder them.
 - Stop immediately on failure; do not proceed to the next task.
 - Keep specs/implementation-progress.md updated with completed task IDs and notes, including exact failing test slugs when applicable.
+- If property-based tests are involved, record seed/replay information in the task completion notes and implementation-progress.md.
 
 ## Version
 - 2026-01-24

@@ -62,6 +62,16 @@ func RunWorkflow(opts RunOptions) (RunReport, error) {
 	if err != nil {
 		return RunReport{}, err
 	}
+	appendPrompt := shouldAppendPrompt(opts.CodexArgs)
+	if opts.Codex && !appendPrompt && len(opts.CodexArgs) > 0 {
+		args := append([]string{"--cd", root}, opts.CodexArgs...)
+		_, session, err := RunCodex(args, CodexOptions{LooprRoot: root})
+		report := RunReport{LastSession: session}
+		if err != nil {
+			return report, err
+		}
+		return report, nil
+	}
 	handoffPath, err := ensureHandoff(root)
 	if err != nil {
 		return RunReport{}, err
@@ -100,7 +110,7 @@ func RunWorkflow(opts RunOptions) (RunReport, error) {
 			}
 			continue
 		}
-		if step.RequiresSeed && strings.TrimSpace(opts.Seed) == "" {
+		if appendPrompt && step.RequiresSeed && strings.TrimSpace(opts.Seed) == "" {
 			return report, fmt.Errorf("seed prompt required for %s (use --seed)", step.Name)
 		}
 		if opts.Confirm {
@@ -121,9 +131,11 @@ func RunWorkflow(opts RunOptions) (RunReport, error) {
 				Status: ProgressStart,
 			})
 		}
-		prompt := buildPrompt(step, opts.Seed, handoffPath)
 		args := append([]string{"--cd", root}, opts.CodexArgs...)
-		args = append(args, prompt)
+		if appendPrompt {
+			prompt := buildPrompt(step, opts.Seed, handoffPath)
+			args = append(args, prompt)
+		}
 		_, session, err := RunCodex(args, CodexOptions{LooprRoot: root})
 		if err != nil {
 			report.LastSession = session
@@ -343,4 +355,35 @@ func confirmStep(name string) (bool, error) {
 	}
 	answer := strings.TrimSpace(strings.ToLower(line))
 	return answer == "y" || answer == "yes", nil
+}
+
+var codexSubcommands = map[string]struct{}{
+	"exec":       {},
+	"review":     {},
+	"login":      {},
+	"logout":     {},
+	"mcp":        {},
+	"mcp-server": {},
+	"app-server": {},
+	"completion": {},
+	"sandbox":    {},
+	"apply":      {},
+	"resume":     {},
+	"fork":       {},
+	"cloud":      {},
+	"features":   {},
+	"help":       {},
+}
+
+func shouldAppendPrompt(args []string) bool {
+	for _, arg := range args {
+		switch arg {
+		case "-h", "--help", "-V", "--version":
+			return false
+		}
+		if _, ok := codexSubcommands[arg]; ok {
+			return false
+		}
+	}
+	return true
 }

@@ -51,6 +51,12 @@ description: Frequently asked questions about Loopr.
   </details>
 
   <details>
+    <summary>How do I see Codex help or pass Codex flags?</summary>
+    <p>Use <code>loopr run --help</code> for Loopr run flags. If you include <code>--codex</code>, help/version flags are forwarded to Codex (for example, <code>loopr run --codex --help</code>).</p>
+    <p>For other Codex flags, place them after <code>--</code>, like <code>loopr run --codex -- --model o3</code>.</p>
+  </details>
+
+  <details>
     <summary>Where do the artifacts live?</summary>
     <p>All artifacts live under <code>specs/</code> in your repo.</p>
   </details>

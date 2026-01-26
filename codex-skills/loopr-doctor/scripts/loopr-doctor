@@ -58,6 +58,7 @@ def main() -> int:
     feature_order_path = specs_dir / "feature-order.yaml"
     task_order_path = specs_dir / "task-order.yaml"
     test_order_path = specs_dir / "test-order.yaml"
+    spec_path = specs_dir / "spec.md"
     init_state_path = specs_dir / ".loopr" / "init-state.json"
 
     mode = "existing"
@@ -88,6 +89,13 @@ def main() -> int:
     feature_order = load_yaml(feature_order_path) if feature_order_path.exists() else None
     task_order = load_yaml(task_order_path) if task_order_path.exists() else None
     test_order = load_yaml(test_order_path) if test_order_path.exists() else None
+
+    if spec_path.exists():
+        spec_text = spec_path.read_text()
+        if "## Testing Strategy" not in spec_text:
+            warn(f"{spec_path}: missing '## Testing Strategy' section")
+    else:
+        warn(f"Missing {spec_path}; skipping testing strategy checks")
 
     feature_slugs: list[str] = []
     feature_titles: dict[str, str] = {}
@@ -135,6 +143,12 @@ def main() -> int:
         fpath = specs_dir / f"feature-{slug}.md"
         if not fpath.exists():
             err(f"Missing feature file: {fpath}")
+            continue
+        text = fpath.read_text()
+        if "## Invariants / Properties" not in text:
+            warn(f"{fpath}: missing '## Invariants / Properties' section")
+        if "## PBT Suitability" not in text:
+            warn(f"{fpath}: missing '## PBT Suitability' section")
 
     expected_tasks: dict[str, list[str]] = {}
 

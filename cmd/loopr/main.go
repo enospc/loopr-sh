@@ -216,6 +216,7 @@ func runUninstall(args []string) {
 
 func runRun(args []string) {
 	looprArgs, agentArgs := splitOnDoubleDash(args)
+	looprArgs, agentArgs = extractCodexPassthroughFlags(looprArgs, agentArgs)
 	fs := flag.NewFlagSet("run", flag.ContinueOnError)
 	fs.SetOutput(os.Stderr)
 	from := fs.String("from", "", "start step (prd|spec|features|tasks|tests|execute)")
@@ -319,6 +320,39 @@ func splitOnDoubleDash(args []string) ([]string, []string) {
 		}
 	}
 	return args, nil
+}
+
+func extractCodexPassthroughFlags(looprArgs, agentArgs []string) ([]string, []string) {
+	if len(agentArgs) > 0 || !hasCodexFlag(looprArgs) {
+		return looprArgs, agentArgs
+	}
+	filtered := make([]string, 0, len(looprArgs))
+	for _, arg := range looprArgs {
+		if isCodexHelpFlag(arg) {
+			agentArgs = append(agentArgs, arg)
+			continue
+		}
+		filtered = append(filtered, arg)
+	}
+	return filtered, agentArgs
+}
+
+func hasCodexFlag(args []string) bool {
+	for _, arg := range args {
+		if arg == "--codex" || strings.HasPrefix(arg, "--codex=") {
+			return true
+		}
+	}
+	return false
+}
+
+func isCodexHelpFlag(arg string) bool {
+	switch arg {
+	case "-h", "-help", "--help", "-V", "--version":
+		return true
+	default:
+		return strings.HasPrefix(arg, "--help=") || strings.HasPrefix(arg, "--version=")
+	}
 }
 
 func printInstallReport(report ops.InstallReport, verbose bool) {

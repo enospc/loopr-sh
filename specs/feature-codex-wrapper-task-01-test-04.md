@@ -12,7 +12,7 @@ Verify optional reproducibility fields are present only when env vars are set.
 ## Preconditions
 - `bin/loopr` built and available on PATH or invoked directly.
 - A Loopr workspace with `specs/.loopr/repo-id` present.
-- Codex CLI installed, or a stub `codex` script on PATH.
+- Codex CLI installed and available on PATH.
 
 ## Test Data
 - `LOOPR_CODEX_MODEL=example-model`
@@ -27,4 +27,4 @@ Verify optional reproducibility fields are present only when env vars are set.
 - Step 2: optional fields are present and match the env var values.
 
 ## Automation Notes
-- Use a stub `codex` binary for deterministic runs in CI.
+- Use the real Codex CLI; this test assumes it is installed and runnable.

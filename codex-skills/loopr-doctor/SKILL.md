@@ -35,6 +35,7 @@ Validate the Loopr order artifacts (`feature-order.yaml`, `task-order.yaml`, `te
 - Order files reference existing feature/task/test markdown files
 - Duplicate IDs or unknown references are flagged
 - Missing tests are reported as warnings
+- Advisory checks (warnings): feature files include `Invariants / Properties` and `PBT Suitability` sections; spec includes `Testing Strategy`
 
 ## Resources
 ### scripts/loopr-doctor

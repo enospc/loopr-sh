@@ -71,3 +71,27 @@ func TestPlanStepsRange(t *testing.T) {
 		t.Fatalf("steps = %#v, want tasks->tests", steps)
 	}
 }
+
+func TestShouldAppendPrompt(t *testing.T) {
+	cases := []struct {
+		name string
+		args []string
+		want bool
+	}{
+		{name: "no args", args: nil, want: true},
+		{name: "help flag", args: []string{"--help"}, want: false},
+		{name: "short help", args: []string{"-h"}, want: false},
+		{name: "version flag", args: []string{"--version"}, want: false},
+		{name: "subcommand", args: []string{"exec"}, want: false},
+		{name: "flags with values", args: []string{"--model", "o3"}, want: true},
+		{name: "config value", args: []string{"--config", "model=\"o3\""}, want: true},
+		{name: "cd flag", args: []string{"--cd", "/tmp"}, want: true},
+	}
+
+	for _, tc := range cases {
+		got := shouldAppendPrompt(tc.args)
+		if got != tc.want {
+			t.Fatalf("%s: shouldAppendPrompt(%v) = %v, want %v", tc.name, tc.args, got, tc.want)
+		}
+	}
+}

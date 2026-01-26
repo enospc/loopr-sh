@@ -26,7 +26,7 @@ Split specs/spec.md into independent, implementable features, generate a pragmat
 3. Prefer orthogonal features with minimal coupling.
 4. Generate a short slug for each feature (kebab-case, unique).
 5. Determine dependencies between features and produce a pragmatic build order.
-6. Create one file per feature using the template, including ordering metadata.
+6. Create one file per feature using the template, including ordering metadata and the invariants/properties that should be tested.
 7. Write an ordered list file (specs/feature-order.yaml) with the recommended sequence and brief dependency rationale.
 
 ## Slug rules
@@ -84,6 +84,13 @@ depends_on:
 
 ## UX / Flow
 - 
+
+## Invariants / Properties
+- 
+
+## PBT Suitability
+- Recommended | Optional | Not Suitable
+- Rationale:
 
 ## Data / API Impact
 - 

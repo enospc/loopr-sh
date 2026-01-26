@@ -21,7 +21,7 @@ Transform specs/prd.md into a detailed, implementable spec at specs/spec.md.
 ## Workflow
 1. Read specs/prd.md and note goals, scope, and open questions.
 2. Ask up clarifying questions if key details are missing.
-3. Produce a detailed spec with clear requirements and acceptance criteria.
+3. Produce a detailed spec with clear requirements, acceptance criteria, and a testing strategy (including property-based testing guidance when suitable).
 4. Write specs/spec.md.
 5. For greenfield repos, include explicit foundation requirements (repo scaffolding, test harness, and build/test entry points).
 
@@ -49,6 +49,12 @@ Use concise Markdown and include requirement IDs for traceability.
 ## Foundation / Tooling
 - FD-01: 
 - FD-02: 
+
+## Testing Strategy
+- Stack: <language + test framework>
+- Property-based testing: <recommended | optional | not suitable> + <library or TBD>
+- Invariants / properties: <list key properties that must hold>
+- Determinism: <seed policy, time/iteration budget, replay notes>
 
 ## Non-functional Requirements
 - NFR-01: 

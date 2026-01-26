@@ -12,7 +12,7 @@ Verify `--loopr-root` and `LOOPR_ROOT` override workspace resolution.
 ## Preconditions
 - `bin/loopr` built and available on PATH or invoked directly.
 - Two Loopr workspaces with distinct `specs/.loopr/repo-id` values.
-- Codex CLI installed, or a stub `codex` script on PATH.
+- Codex CLI installed and available on PATH.
 
 ## Test Data
 - Example Codex args such as `--help`.

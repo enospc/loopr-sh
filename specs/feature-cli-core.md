@@ -24,7 +24,7 @@ Provide the `loopr` CLI interface with consistent command routing, shared flag p
 - In scope:
   - Command routing for init/run/install/doctor/list/uninstall/version/help.
   - Parsing global flags: `--agent`, `--all`, `--only`, `--force`, `--verbose`.
-  - Respecting the `--` delimiter so Codex args are passed through untouched (Loopr appends its prompt as the final argument).
+  - Respecting the `--` delimiter so Codex args are passed through untouched (Loopr appends its prompt as the final argument unless a Codex subcommand or help/version flag is supplied).
   - Usage output and error handling for unknown commands.
 - Out of scope:
   - File operations, skill management logic, or transcript capture.
@@ -35,14 +35,14 @@ Provide the `loopr` CLI interface with consistent command routing, shared flag p
 - Exit with non-zero status for unknown commands or flag parsing errors.
 - Default `--agent` to `codex`; support `--all` where applicable.
 - Parse `--only` as a comma-separated list and drop empty entries.
-- Leave arguments after `--` untouched for `loopr run --codex` and append the Loopr step prompt after them.
+- Leave arguments after `--` untouched for `loopr run --codex` and append the Loopr step prompt after them unless a Codex subcommand or help/version flag is supplied.
 - Print version, commit, and date when available via build metadata.
 
 ## Acceptance Criteria
 - Running `loopr` with no args prints usage and exits with code 2.
 - Running `loopr help` prints usage and exits successfully.
 - Running `loopr version` prints version and includes commit/date when set.
-- `loopr run --codex --step execute -- --help` passes `--help` through to Codex and appends the Loopr prompt.
+- `loopr run --codex --step execute -- --help` passes `--help` through to Codex without appending the Loopr prompt.
 
 ## UX / Flow
 - `loopr <command> [flags]` is the standard invocation.

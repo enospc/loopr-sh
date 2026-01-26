@@ -12,7 +12,7 @@ Verify `loopr run --codex` writes transcript and JSONL metadata files under the 
 ## Preconditions
 - `bin/loopr` built and available on PATH or invoked directly.
 - A Loopr workspace with `specs/.loopr/repo-id` present.
-- Codex CLI installed, or a stub `codex` script on PATH.
+- Codex CLI installed and available on PATH.
 
 ## Test Data
 - Example Codex args such as `--help`.
@@ -28,4 +28,4 @@ Verify `loopr run --codex` writes transcript and JSONL metadata files under the 
 - JSONL `start` event includes required reproducibility fields.
 
 ## Automation Notes
-- Use a stub `codex` binary for deterministic runs in CI.
+- Use the real Codex CLI; this test assumes it is installed and runnable.

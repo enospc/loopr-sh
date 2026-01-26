@@ -45,7 +45,7 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
   - Support `--force` to re-run steps even if outputs exist.
   - Support `--confirm` to request confirmation before each step.
   - Create or update `specs/.loopr/handoff.md` as the minimal context handoff file.
-  - When `--codex` is set, run Codex for each step using a minimal prompt that lists allowed inputs/outputs.
+  - When `--codex` is set, run Codex for each step using a minimal prompt that lists allowed inputs/outputs (skip prompt append when Codex args include `--help`/`-h`/`--version` or a Codex subcommand).
   - When `--codex` is set, print per-step progress (start/skip/done) for long-running runs.
 - FR-09: `run --codex` wraps Codex execution and captures transcripts:
   - Resolve the repo root for transcripts:

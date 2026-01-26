@@ -20,6 +20,11 @@ description: Core Loopr CLI commands and Codex skills.
     <li><code>loopr run --codex</code> - runs the workflow via Codex with transcript logging for the chosen workspace.</li>
     <li><code>loopr version</code> - prints version info.</li>
   </ul>
+  <p>
+    Tip: use <code>loopr run --help</code> to see Loopr run flags. If you include <code>--codex</code>, help/version flags
+    are forwarded to Codex (for example, <code>loopr run --codex --help</code> shows Codex help). To pass other Codex
+    flags, place them after <code>--</code>.
+  </p>
 
   <h2>Codex skills (installed by Loopr)</h2>
   <p>Run these inside Codex after installing:</p>

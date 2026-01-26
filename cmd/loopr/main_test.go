@@ -49,6 +49,58 @@ func TestSplitOnDoubleDash(t *testing.T) {
 	}
 }
 
+func TestExtractCodexPassthroughFlags(t *testing.T) {
+	cases := []struct {
+		name      string
+		looprArgs []string
+		codexArgs []string
+		wantLoopr []string
+		wantCodex []string
+	}{
+		{
+			name:      "no codex flag",
+			looprArgs: []string{"--help"},
+			wantLoopr: []string{"--help"},
+			wantCodex: nil,
+		},
+		{
+			name:      "codex help flag",
+			looprArgs: []string{"--codex", "--help"},
+			wantLoopr: []string{"--codex"},
+			wantCodex: []string{"--help"},
+		},
+		{
+			name:      "codex version flag",
+			looprArgs: []string{"--codex", "--version"},
+			wantLoopr: []string{"--codex"},
+			wantCodex: []string{"--version"},
+		},
+		{
+			name:      "codex equals flag",
+			looprArgs: []string{"--codex=true", "--help"},
+			wantLoopr: []string{"--codex=true"},
+			wantCodex: []string{"--help"},
+		},
+		{
+			name:      "agent args preserved",
+			looprArgs: []string{"--codex"},
+			codexArgs: []string{"--help"},
+			wantLoopr: []string{"--codex"},
+			wantCodex: []string{"--help"},
+		},
+	}
+
+	for _, tc := range cases {
+		looprArgs, codexArgs := extractCodexPassthroughFlags(tc.looprArgs, tc.codexArgs)
+		if !reflect.DeepEqual(looprArgs, tc.wantLoopr) {
+			t.Fatalf("%s: looprArgs = %#v, want %#v", tc.name, looprArgs, tc.wantLoopr)
+		}
+		if !reflect.DeepEqual(codexArgs, tc.wantCodex) {
+			t.Fatalf("%s: codexArgs = %#v, want %#v", tc.name, codexArgs, tc.wantCodex)
+		}
+	}
+}
+
 func TestSplitListTrimsAndIgnoresEmpty(t *testing.T) {
 	list := splitList("loopr-prd, ,loopr-doctor,,")
 	expected := []string{"loopr-prd", "loopr-doctor"}
