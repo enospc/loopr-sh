@@ -57,6 +57,8 @@ What is the primary user?
 ## PRD template
 Write concise Markdown and keep bullets short.
 
+Optional reference: Plan template is in `Loopr.md` Appendix A.
+
 ```
 # PRD: <title>
 

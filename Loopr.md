@@ -69,11 +69,12 @@ If you use Codex or any frontier model, the principles below apply. Models will 
     31. Ethics and Product Impact
     32. Stay Adaptable
 - **Appendices**
-  - A. Spec Template
-  - B. Agent Handoff Template
-  - C. Review Checklist
-  - D. Incident Checklist
-  - E. Glossary
+  - A. Plan Template
+  - B. Spec Template
+  - C. Agent Handoff Template
+  - D. Review Checklist
+  - E. Incident Checklist
+  - F. Glossary
 
 ---
 
@@ -362,7 +363,55 @@ Model capabilities will change quickly. Treat model upgrades as migrations.
 
 ---
 
-# Appendix A. Spec Template
+# Appendix A. Plan Template
+
+Use this as a lightweight execution plan alongside the PRD or spec.
+
+```
+# PRD: <title>
+
+## Summary
+
+## Problem / Opportunity
+
+## Goals
+- 
+
+## Non-goals
+- 
+
+## Users & Use Cases
+- 
+
+## Scope
+- 
+
+## Requirements (high level)
+- 
+
+## Success Metrics
+- 
+
+## Assumptions
+- 
+
+## Constraints
+- 
+
+## UX Notes / Flows
+- 
+
+## Risks & Mitigations
+- 
+
+## Dependencies
+- 
+
+## Open Questions
+- 
+```
+
+# Appendix B. Spec Template
 
 Canonical template: `codex-skills/loopr-specify/SKILL.md`.
 
@@ -434,7 +483,7 @@ Canonical template: `codex-skills/loopr-specify/SKILL.md`.
 - 
 ```
 
-# Appendix B. Agent Handoff Template
+# Appendix C. Agent Handoff Template
 
 Canonical template: `specs/.loopr/handoff.md` (created by `loopr run --codex`).
 
@@ -453,7 +502,7 @@ Initialized: <timestamp>
 - Notes:
 ```
 
-# Appendix C. Review Checklist
+# Appendix D. Review Checklist
 
 - Does the change meet the spec?
 - Are tests added or updated?
@@ -463,7 +512,7 @@ Initialized: <timestamp>
 - Are security and privacy covered?
 - Are docs updated?
 
-# Appendix D. Incident Checklist
+# Appendix E. Incident Checklist
 
 - Stabilize the system and stop the bleed.
 - Capture timeline and evidence.
@@ -471,7 +520,7 @@ Initialized: <timestamp>
 - Fix the root cause and add guards.
 - Document the incident and share learnings.
 
-# Appendix E. Glossary
+# Appendix F. Glossary
 
 - **Agent:** A model-driven process that can take actions using tools.
 - **Context:** The information supplied to a model for a task.
