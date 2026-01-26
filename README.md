@@ -251,4 +251,4 @@ If you have local edits, Loopr will back them up automatically before overwritin
 ## Notes
 
 - Loopr defaults to **greenfield**: it assumes a blank repo unless you explicitly run `loopr init --allow-existing`.
-- The CLI installs skills only. Planning and coding happen through Codex.
+- The CLI installs skills, initializes Loopr metadata, and orchestrates Codex runs; planning and coding happen through Codex.
