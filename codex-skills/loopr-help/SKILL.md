@@ -9,7 +9,7 @@ description: Guide users through the Loopr workflow and the correct order of loo
 # Loopr Help
 
 ## Overview
-Provide a thorough, step-by-step guide for using the Loopr workflow, including the correct order of loopr-* skills, when to use each, and a non-trivial greenfield example from a seed prompt. This workflow is optimized for brand-new, empty repos; existing repos require explicit `--allow-existing` and may skip foundation.
+Provide a thorough, step-by-step guide for using the Loopr workflow, including the correct order of loopr-* skills, when to use each, and a non-trivial greenfield example from a seed prompt. This workflow is optimized for brand-new, empty repos; existing repos require explicit `loopr init --allow-existing` and may skip foundation.
 
 Important: This skill must not invoke or trigger any other skills. It should only explain what to run and when, without executing anything.
 
@@ -32,7 +32,7 @@ If disallowed signals exist, stop and ask for confirmation.
 - To validate order files and references at any point → use **loopr-doctor**.
 
 ## Canonical Order (Greenfield)
-1. **loopr-init**
+1. **loopr init (CLI)**
 2. **loopr-prd**
 3. **loopr-specify**
 4. **loopr-features**
@@ -41,7 +41,7 @@ If disallowed signals exist, stop and ask for confirmation.
 7. **loopr-execute**
 
 ## Skill Map (What Each Does)
-- **loopr-init**: Creates repo-id and transcript location under `specs/.loopr/` (idempotent).
+- **loopr init (CLI)**: Creates repo-id and transcript location under `specs/.loopr/` (idempotent).
 - **loopr-prd**: MCQ interview → `specs/prd.md`.
 - **loopr-specify**: Expands PRD → `specs/spec.md` with requirement IDs.
 - **loopr-features**: Splits spec → `specs/feature-*.md` + `specs/feature-order.yaml` (includes `foundation` for greenfield).
@@ -57,7 +57,7 @@ If disallowed signals exist, stop and ask for confirmation.
 "Build a simple local CLI that tracks personal TODOs, stores them in a local SQLite database, and exports to CSV."
 
 **Step-by-step guide:**
-1) Run **loopr-init**
+1) Run `loopr init`
 - Creates `specs/.loopr/repo-id` and session log path under `specs/.loopr/transcripts/<repo-id>/`.
 
 2) Run **loopr-prd**
@@ -91,7 +91,7 @@ If disallowed signals exist, stop and ask for confirmation.
 - If only a Task changes → re-run **loopr-testify** for that task.
 
 ## Common Pitfalls & Guardrails
-- **Skipping loopr-init**: you lose session correlation and transcript consistency.
+- **Skipping `loopr init`**: you lose session correlation and transcript consistency.
 - **Divergent docs**: keep PRD/spec/features in sync; rerun downstream skills after changes.
 - **Over-sized tasks**: split tasks into 0.5–2 day units; keep dependencies explicit.
 - **Unbounded scope creep**: update PRD/spec and reflow the pipeline before coding.

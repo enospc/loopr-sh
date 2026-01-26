@@ -15,7 +15,7 @@ description: Build and install Loopr from source.
     <li>Linux host (desktop, VM, Docker, or bare metal)</li>
     <li>Codex CLI on your PATH</li>
     <li>Go 1.25+ (to build the Loopr CLI)</li>
-    <li>Python 3 (optional, for <code>loopr-init</code> and <code>loopr-doctor</code> preflights)</li>
+    <li>Python 3 (optional, for <code>loopr-doctor</code> preflight)</li>
   </ul>
 
   <h2>Build the CLI</h2>
@@ -29,11 +29,16 @@ make build</code></pre>
 
   <p>This installs Loopr skills into your Codex skills directory (usually <code>~/.codex/skills</code>).</p>
 
+  <h2>Initialize metadata</h2>
+  <p>From your repo root, initialize Loopr metadata and decision logs:</p>
+  <pre><code>./bin/loopr init</code></pre>
+  <p>This also writes <code>specs/.loopr/.gitignore</code> to keep transcripts local.</p>
+
   <h2>Use the Codex wrapper</h2>
   <p>For transcript logging, run Codex through the Loopr wrapper and point it at the workspace you want to manage.</p>
   <pre><code>./bin/loopr codex --loopr-root ./website -- --help</code></pre>
 
   <div class="callout">
-    <strong>Greenfield note:</strong> Loopr expects a clean repo. If you must run it in an existing repo, use <code>--allow-existing</code> and ensure strong tests.
+    <strong>Greenfield note:</strong> Loopr expects a clean repo. If you must run it in an existing repo, use <code>loopr init --allow-existing</code> and ensure strong tests.
   </div>
 </section>

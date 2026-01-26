@@ -4,7 +4,7 @@ description: Create a PRD from a seed prompt using an MCQ-style interview with i
 ---
 
 ## Prerequisite
-- Run loopr-init to ensure repo-id and transcript logging are initialized.
+- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
 - Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
 
 # Loopr PRD

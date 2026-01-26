@@ -34,7 +34,7 @@ Provide reliable parsing for `--agent`, `--all`, and `--only` across commands th
 
 ## Test Plan
 - Unit: tests for `--only` parsing and agent resolution behaviors.
-- Manual: run `loopr install --only loopr-init` to verify parsing.
+- Manual: run `loopr install --only loopr-prd` to verify parsing.
 
 ## Notes
 - Keep helpers small and reusable.

@@ -47,7 +47,7 @@ Developers using the Loopr workflow need a consistent way to install and validat
 - Backup existing skills before overwrite/removal (unless forced).
 - Support `--only` filters and `--agent` / `--all` targeting (codex supported today).
 - Wrap Codex execution with transcript logging; write JSONL metadata entries.
-- Require `specs/.loopr/repo-id` for transcript logging (created by loopr-init).
+- Require `specs/.loopr/repo-id` for transcript logging (created by `loopr init`).
 - Provide deterministic build metadata via ldflags (version/commit/date).
 
 ## Success Metrics
@@ -58,7 +58,7 @@ Developers using the Loopr workflow need a consistent way to install and validat
 ## Assumptions
 - Linux is the primary target environment.
 - Codex CLI is installed and available on PATH.
-- Repos using Loopr have `specs/.loopr/repo-id` initialized via loopr-init.
+- Repos using Loopr have `specs/.loopr/repo-id` initialized via `loopr init`.
 
 ## Constraints
 - Must remain a small, safe Go CLI with embedded skill assets.
@@ -75,7 +75,7 @@ Developers using the Loopr workflow need a consistent way to install and validat
 ## Risks & Mitigations
 - Codex CLI changes break wrapper behavior → keep wrapper minimal; document assumptions.
 - Skill drift or local edits → doctor command surfaces drift; backups on install.
-- Missing repo-id for transcripts → fail fast with clear error; require loopr-init.
+- Missing repo-id for transcripts → fail fast with clear error; require `loopr init`.
 
 ## Dependencies
 - Go toolchain (1.25+) for building from source.

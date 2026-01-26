@@ -22,7 +22,7 @@ Provide the `loopr` CLI interface with consistent command routing, shared flag p
 
 ## Scope
 - In scope:
-  - Command routing for install/doctor/list/uninstall/codex/version/help.
+  - Command routing for init/install/doctor/list/uninstall/codex/version/help.
   - Parsing global flags: `--agent`, `--all`, `--only`, `--force`, `--verbose`.
   - Respecting the `--` delimiter so Codex args are passed through untouched.
   - Usage output and error handling for unknown commands.

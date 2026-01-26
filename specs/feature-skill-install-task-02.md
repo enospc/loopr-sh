@@ -36,7 +36,7 @@ Allow developers to cleanly remove skills while preserving local edits by defaul
 
 ## Test Plan
 - Unit: verify backups are created and files removed in temp dirs.
-- Manual: run `loopr uninstall --only loopr-init` and confirm removal.
+- Manual: run `loopr uninstall --only loopr-prd` and confirm removal.
 
 ## Notes
 - Use consistent backup behavior with install.

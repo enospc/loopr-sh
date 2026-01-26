@@ -19,7 +19,7 @@ features:
   - slug: decision-log
     title: Decision log scaffolding
     depends_on: []
-    notes: scaffold specs/decisions template via loopr-init
+    notes: scaffold specs/decisions template via loopr init
     tasks:
       - id: "01"
         title: Scaffold decision log template

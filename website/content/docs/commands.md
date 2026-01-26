@@ -12,6 +12,7 @@ description: Core Loopr CLI commands and Codex skills.
 <section class="doc-body">
   <h2>CLI commands</h2>
   <ul>
+    <li><code>loopr init</code> - initialize repo metadata in <code>specs/.loopr/</code> and write init-state + transcript ignore.</li>
     <li><code>loopr install</code> - installs Loopr skills into your Codex skills directory.</li>
     <li><code>loopr doctor</code> - validates installed skills against the embedded source.</li>
     <li><code>loopr list</code> - lists skills and status.</li>
@@ -23,7 +24,6 @@ description: Core Loopr CLI commands and Codex skills.
   <h2>Codex skills (installed by Loopr)</h2>
   <p>Run these inside Codex after installing:</p>
   <ul>
-    <li><code>loopr-init</code> - initialize repo metadata in <code>specs/.loopr/</code>.</li>
     <li><code>loopr-prd</code> - interview and write <code>specs/prd.md</code>.</li>
     <li><code>loopr-specify</code> - expand PRD into <code>specs/spec.md</code>.</li>
     <li><code>loopr-features</code> - split the spec into feature files.</li>

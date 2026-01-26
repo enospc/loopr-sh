@@ -13,14 +13,14 @@ Verify `--only` parsing trims whitespace and ignores empty entries.
 - None.
 
 ## Test Data
-- Example input: "loopr-init,, loopr-prd , ,loopr-specify".
+- Example input: "loopr-prd,, loopr-specify , ,loopr-features".
 
 ## Steps
 1. Call the `--only` parsing helper with the example input.
 2. Inspect the returned slice.
 
 ## Expected Results
-- Output contains `loopr-init`, `loopr-prd`, and `loopr-specify` in order.
+- Output contains `loopr-prd`, `loopr-specify`, and `loopr-features` in order.
 - Empty entries are discarded.
 
 ## Automation Notes

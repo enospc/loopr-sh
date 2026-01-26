@@ -21,7 +21,7 @@ Ensure `loopr codex` fails with a clear error when `specs/.loopr/repo-id` is mis
 
 ## Expected Results
 - Command exits non-zero.
-- Error message instructs to run `loopr-init`.
+- Error message instructs to run `loopr init`.
 
 ## Automation Notes
 - Use a temp directory without `specs/.loopr/` for automation.

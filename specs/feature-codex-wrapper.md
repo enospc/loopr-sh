@@ -38,7 +38,7 @@ Wrap Codex execution and capture transcripts + reproducibility metadata under th
   - If `--loopr-root <path>` is provided, use it and require `specs/.loopr/repo-id` under that root.
   - Else if `LOOPR_ROOT` is set, use it and require `specs/.loopr/repo-id` under that root.
   - Otherwise, search upward from the current directory for the nearest `specs/.loopr/repo-id`.
-  - If not found, exit non-zero with a hint to run `loopr-init`.
+  - If not found, exit non-zero with a hint to run `loopr init`.
 - Create `specs/.loopr/transcripts/<repo-id>/` if missing.
 - Write session artifacts without overwriting existing files:
   - `session-<timestamp>.log` (raw transcript)

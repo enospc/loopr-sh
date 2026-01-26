@@ -87,4 +87,7 @@ func TestResolveLooprRootMissing(t *testing.T) {
 	if !strings.Contains(err.Error(), "specs/.loopr/repo-id") {
 		t.Fatalf("error = %q, want missing repo-id message", err.Error())
 	}
+	if !strings.Contains(err.Error(), "loopr init") {
+		t.Fatalf("error = %q, want loopr init hint", err.Error())
+	}
 }

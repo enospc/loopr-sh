@@ -14,8 +14,8 @@ description: Run the Loopr workflow end-to-end.
   <pre><code>mkdir my-project && cd my-project</code></pre>
 
   <h2>2) Initialize Loopr metadata</h2>
-  <p>Inside Codex, run:</p>
-  <pre><code>loopr-init</code></pre>
+  <p>From your repo root, run:</p>
+  <pre><code>loopr init</code></pre>
 
   <h2>3) Create a PRD</h2>
   <p>Provide a seed prompt and answer the MCQ interview:</p>

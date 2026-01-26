@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -18,6 +19,8 @@ func main() {
 	}
 
 	switch os.Args[1] {
+	case "init":
+		runInit(os.Args[2:])
 	case "install":
 		runInstall(os.Args[2:])
 	case "doctor":
@@ -43,12 +46,54 @@ func usage() {
 	fmt.Println("loopr <command> [options]")
 	fmt.Println("")
 	fmt.Println("Commands:")
+	fmt.Println("  init       Initialize Loopr metadata in a repo")
 	fmt.Println("  install     Install loopr skills")
 	fmt.Println("  doctor      Validate installed skills")
 	fmt.Println("  list        List skills and status")
 	fmt.Println("  uninstall   Remove loopr skills")
 	fmt.Println("  codex       Run Codex with transcript logging (use -- to pass args)")
 	fmt.Println("  version     Show version info")
+}
+
+func runInit(args []string) {
+	fs := flag.NewFlagSet("init", flag.ContinueOnError)
+	fs.SetOutput(os.Stderr)
+	root := fs.String("root", ".", "repo root to scan")
+	specsDir := fs.String("specs-dir", "specs", "specs directory relative to root")
+	allowExisting := fs.Bool("allow-existing", false, "allow initialization in non-greenfield repos")
+	if err := fs.Parse(args); err != nil {
+		os.Exit(2)
+	}
+
+	report, err := ops.Init(ops.InitOptions{
+		Root:          *root,
+		SpecsDir:      *specsDir,
+		AllowExisting: *allowExisting,
+	})
+	if err != nil {
+		var ng ops.NonGreenfieldError
+		if errors.As(err, &ng) {
+			fmt.Fprintln(os.Stderr, "non-greenfield signals detected (rerun with --allow-existing):")
+			for _, signal := range ng.Signals {
+				fmt.Fprintf(os.Stderr, "- %s\n", signal)
+			}
+			os.Exit(1)
+		}
+		fail(err)
+	}
+
+	fmt.Printf("Repo root:   %s\n", report.Root)
+	fmt.Printf("Repo ID:     %s\n", report.RepoID)
+	if report.Mode != "" {
+		fmt.Printf("Mode:        %s\n", report.Mode)
+	}
+	if report.InitStateCreated {
+		fmt.Printf("Init state:  %s\n", report.InitStatePath)
+	} else {
+		fmt.Printf("Init state:  %s (exists)\n", report.InitStatePath)
+	}
+	fmt.Printf("Decisions:   %s\n", report.DecisionsDir)
+	fmt.Printf("Transcripts: %s\n", report.TranscriptsDir)
 }
 
 func runInstall(args []string) {

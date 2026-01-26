@@ -1,4 +1,4 @@
-# Test: Decision log scaffolding created by loopr-init
+# Test: Decision log scaffolding created by loopr init
 
 ## Test ID
 01
@@ -7,17 +7,16 @@
 Integration
 
 ## Purpose
-Ensure `loopr-init` creates `specs/decisions/` and the decision log template.
+Ensure `loopr init` creates `specs/decisions/` and the decision log template.
 
 ## Preconditions
-- Python 3 available.
-- loopr-init script accessible in the installed skills.
+- `loopr` binary built and available on PATH or invoked directly.
 
 ## Test Data
 - A temp directory with an empty `specs/`.
 
 ## Steps
-1. Run the loopr-init script with `--specs-dir` pointing at the temp `specs/` directory.
+1. Run `loopr init --root <temp> --specs-dir specs`.
 2. Check for `specs/decisions/` and `specs/decisions/template.md`.
 
 ## Expected Results
@@ -25,4 +24,4 @@ Ensure `loopr-init` creates `specs/decisions/` and the decision log template.
 - The template file exists.
 
 ## Automation Notes
-- Can be automated by invoking the loopr-init script and checking filesystem state.
+- Can be automated by invoking `loopr init` and checking filesystem state.

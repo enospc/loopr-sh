@@ -4,7 +4,7 @@ description: Break a single task into tests and write specs/feature-<slug>-task-
 ---
 
 ## Prerequisite
-- Run loopr-init to ensure repo-id and transcript logging are initialized.
+- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
 - Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
 
 # Loopr Testify

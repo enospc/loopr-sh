@@ -12,7 +12,7 @@ agent (Codex) after the skills are installed.
 
 - Linux host (desktop, VM, Docker, or bare metal)
 - Codex CLI available on your PATH
-- Optional for skill preflight scripts: Python 3 (`loopr-init`, `loopr-doctor`) and `pyyaml` (`loopr-doctor`)
+- Optional for skill preflight scripts: Python 3 and `pyyaml` (`loopr-doctor`)
 - If building from source: Go 1.25+
 
 ## Build
@@ -51,6 +51,7 @@ This compares installed skills against the embedded source and reports drift.
 
 ```
 loopr install   # plant skills
+loopr init      # initialize Loopr metadata in a repo
 loopr doctor    # validate installed skills
 loopr list      # list skills and status
 loopr uninstall # remove skills (backed up by default)
@@ -82,7 +83,6 @@ LOOPR_ROOT=/repo/apps/service-b loopr codex -- --help
 Loopr installs the following skills into your Codex skills directory. You invoke these inside Codex (they are not CLI subcommands):
 
 Primary workflow:
-- `loopr-init`: create repo metadata + transcript locations under `specs/.loopr/`.
 - `loopr-prd`: MCQ interview -> `specs/prd.md`.
 - `loopr-specify`: PRD -> `specs/spec.md`.
 - `loopr-features`: Spec -> `specs/feature-*.md` + `specs/feature-order.yaml`.
@@ -98,7 +98,7 @@ Supporting/targeted skills:
 - `loopr-testify`: split one task into tests (updates `specs/test-order.yaml`).
 - `loopr-doctor`: validate order YAMLs and referenced files.
 
-Note: `loopr doctor` (CLI) validates installed skill drift; `loopr-doctor` (skill) validates `specs/*-order.yaml` and referenced artifacts.
+Note: `loopr init` (CLI) initializes `specs/.loopr/` and `specs/decisions/`; `loopr doctor` (CLI) validates installed skill drift; `loopr-doctor` (skill) validates `specs/*-order.yaml` and referenced artifacts.
 
 ## End-to-end walkthrough (seed prompt → working code)
 
@@ -142,10 +142,10 @@ workspace’s `specs/.loopr/transcripts/<repo-id>/`.
 Tip: If you want a guided walkthrough, run `loopr-help`. If you want a single orchestrated run, run `loopr-runner`.
 
 1. **Initialize Loopr metadata**
-   - Prompt: "Run loopr-init"
-   - If the repo already has code, prompt: "Run loopr-init with --allow-existing"
+   - Command: `loopr init`
+   - If the repo already has code: `loopr init --allow-existing`
    - Interaction: Autonomous (no questions expected)
-   - Output: `specs/.loopr/` with repo id, init-state, and transcript path
+   - Output: `specs/.loopr/` with repo id, init-state (schema + build metadata), transcript path, and a `.gitignore` for transcripts
 
 2. **Create a PRD**
    - Prompt: "Run loopr-prd with seed prompt: <seed prompt above>"
@@ -238,5 +238,5 @@ If you have local edits, Loopr will back them up automatically before overwritin
 
 ## Notes
 
-- Loopr defaults to **greenfield**: it assumes a blank repo unless you explicitly run `loopr-init` with `--allow-existing`.
+- Loopr defaults to **greenfield**: it assumes a blank repo unless you explicitly run `loopr init --allow-existing`.
 - The CLI installs skills only. Planning and coding happen through Codex.

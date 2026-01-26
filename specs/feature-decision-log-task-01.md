@@ -18,14 +18,14 @@ Ensure every Loopr workspace starts with a decision log template aligned to Loop
   - Enforcing decision log usage.
 
 ## Acceptance Criteria
-- Running `loopr-init` creates `specs/decisions/` if missing.
+- Running `loopr init` creates `specs/decisions/` if missing.
 - `specs/decisions/template.md` exists and includes `Title`, `Date`, `Status`, `Context`, `Decision`, `Alternatives`, `Consequences`.
 - Existing templates are left unchanged.
 
 ## Implementation Plan
-- Update the loopr-init script to create the decisions directory and template if missing.
+- Add `loopr init` CLI behavior to create the decisions directory and template if missing.
 - Add a small template with the required headings.
-- Update loopr-init skill documentation to mention decision log scaffolding.
+- Update documentation to mention decision log scaffolding via `loopr init`.
 
 ## Dependencies
 - None.
@@ -34,7 +34,7 @@ Ensure every Loopr workspace starts with a decision log template aligned to Loop
 - Risk: overwriting user content → Mitigation: only create files when missing.
 
 ## Test Plan
-- Integration: run the loopr-init script on a temp specs dir and confirm template creation.
+- Integration: run `loopr init` on a temp specs dir and confirm template creation.
 - Unit: verify the template includes the required headings.
 
 ## Notes
@@ -42,5 +42,5 @@ Ensure every Loopr workspace starts with a decision log template aligned to Loop
 
 ## Completion
 - Status: Done
-- Tests: `python3 codex-skills/loopr-init/scripts/loopr-init --root <temp> --specs-dir specs` (verified template headings)
+- Tests: `loopr init --root <temp> --specs-dir specs` (verified template headings)
 - Notes: Template creation is idempotent and skipped if present.

@@ -50,8 +50,8 @@ func TestSplitOnDoubleDash(t *testing.T) {
 }
 
 func TestSplitListTrimsAndIgnoresEmpty(t *testing.T) {
-	list := splitList("loopr-init, ,loopr-doctor,,")
-	expected := []string{"loopr-init", "loopr-doctor"}
+	list := splitList("loopr-prd, ,loopr-doctor,,")
+	expected := []string{"loopr-prd", "loopr-doctor"}
 	if !reflect.DeepEqual(list, expected) {
 		t.Fatalf("splitList = %#v, want %#v", list, expected)
 	}
@@ -92,7 +92,7 @@ func TestRunListMatchesDoctorStatus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Resolve agent error: %v", err)
 	}
-	if _, err := ops.Install(agent, []string{"loopr-init"}, false); err != nil {
+	if _, err := ops.Install(agent, []string{"loopr-prd"}, false); err != nil {
 		t.Fatalf("Install error: %v", err)
 	}
 
@@ -106,7 +106,7 @@ func TestRunListMatchesDoctorStatus(t *testing.T) {
 		os.Stdout = stdout
 	}()
 
-	runList([]string{"--only", "loopr-init"})
+	runList([]string{"--only", "loopr-prd"})
 	_ = w.Close()
 
 	output, err := io.ReadAll(r)
@@ -114,14 +114,14 @@ func TestRunListMatchesDoctorStatus(t *testing.T) {
 		t.Fatalf("read output error: %v", err)
 	}
 
-	report, err := ops.Doctor(agent, []string{"loopr-init"})
+	report, err := ops.Doctor(agent, []string{"loopr-prd"})
 	if err != nil {
 		t.Fatalf("Doctor error: %v", err)
 	}
 	if len(report.Skills) != 1 {
 		t.Fatalf("Doctor skills = %#v, want 1 entry", report.Skills)
 	}
-	expectedLine := "loopr-init\t" + report.Skills[0].Status
+	expectedLine := "loopr-prd\t" + report.Skills[0].Status
 	if !strings.Contains(string(output), expectedLine) {
 		t.Fatalf("output missing %q: %s", expectedLine, string(output))
 	}

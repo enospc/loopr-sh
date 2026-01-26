@@ -4,7 +4,7 @@ description: Implement every task listed in specs/task-order.yaml in order, usin
 ---
 
 ## Prerequisite
-- Run loopr-init to ensure repo-id and transcript logging are initialized.
+- Run `loopr init` (CLI) to ensure repo-id and transcript logging are initialized.
 - Ensure the repo is greenfield (empty) or already Loopr-managed; otherwise stop and clarify scope.
 - Read `specs/.loopr/init-state.json` to determine `mode` (if missing, assume `existing`).
 

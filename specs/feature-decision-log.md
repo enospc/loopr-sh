@@ -28,16 +28,16 @@ Ensure Loopr scaffolds a decision log directory and template to capture key arch
   - Enforcing decision log usage or validation.
 
 ## Requirements
-- `loopr-init` (skill) ensures `specs/decisions/` exists.
+- `loopr init` (CLI) ensures `specs/decisions/` exists.
 - `specs/decisions/template.md` contains the headings: `Title`, `Date`, `Status`, `Context`, `Decision`, `Alternatives`, `Consequences`.
 - Do not overwrite an existing template.
 
 ## Acceptance Criteria
-- Running `loopr-init` creates `specs/decisions/` if it does not exist.
+- Running `loopr init` creates `specs/decisions/` if it does not exist.
 - `specs/decisions/template.md` exists and includes the required headings.
 
 ## UX / Flow
-- `loopr-init` scaffolds the decision log directory and template alongside other Loopr metadata.
+- `loopr init` scaffolds the decision log directory and template alongside other Loopr metadata.
 
 ## Data / API Impact
 - Adds `specs/decisions/` and `specs/decisions/template.md` to the repo.

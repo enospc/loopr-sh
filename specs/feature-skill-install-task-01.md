@@ -39,7 +39,7 @@ Safely install or update embedded skills into the Codex skills root with predict
 
 ## Test Plan
 - Unit: use temp directories to verify backup creation and file writes.
-- Manual: run `loopr install --only loopr-init` and verify files under skills root.
+- Manual: run `loopr install --only loopr-prd` and verify files under skills root.
 
 ## Notes
 - Keep file operations local and deterministic.

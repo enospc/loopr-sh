@@ -11,7 +11,7 @@ Provide a predictable command surface with clear help/usage, correct exit codes,
 
 ## Scope
 - In scope:
-  - Command switch for install/doctor/list/uninstall/codex/version/help.
+  - Command switch for init/install/doctor/list/uninstall/codex/version/help.
   - Usage output and error messages for unknown commands or missing args.
   - Exit code conventions (usage errors vs success).
   - Respect the `--` delimiter so arguments after it are passed to Codex unchanged.

@@ -33,7 +33,7 @@ features:
         title: Scaffold decision log template
         tests:
           - id: "01"
-            title: Decision log scaffolding created by loopr-init
+            title: Decision log scaffolding created by loopr init
           - id: "02"
             title: Decision log template includes required headings
   - slug: skill-install
