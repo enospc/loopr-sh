@@ -34,6 +34,8 @@ If disallowed signals exist, stop and ask for confirmation.
 - If you already have tasks in `specs/task-order.yaml` → use **loopr-tests** (or **loopr-testify** for a single task).
 - To execute tasks end-to-end → use **loopr-execute**.
 - To execute a single task → use **loopr-run-task**.
+- To use dryrun mode (show workflow steps without running Codex) → use `loopr run --dry-run`.
+- To run the workflow through Codex → use `loopr run --codex`.
 - To run everything end-to-end (from PRD onward) → run the steps in order (PRD → Spec → Features → Tasks → Tests → Execute).
 - To validate order files and references at any point → use **loopr-doctor**.
 
@@ -56,6 +58,8 @@ If disallowed signals exist, stop and ask for confirmation.
 - **loopr-run-task**: Implements a single task to completion and appends completion notes.
 - **loopr-execute**: Executes all tasks in order and stops on first failure.
 - **loopr-doctor**: Validates order YAML files and referenced artifacts before implementation.
+- **loopr run --dry-run (CLI)**: Prints the workflow steps without running Codex.
+- **loopr run --codex (CLI)**: Runs the workflow via Codex and records transcripts.
 
 ## Greenfield Example (Lightweight)
 **Seed prompt:**

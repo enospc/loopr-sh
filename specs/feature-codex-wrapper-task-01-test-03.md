@@ -1,4 +1,4 @@
-# Test: Codex wrapper honors loopr root overrides
+# Test: Codex wrapper honors --loopr-root override
 
 ## Test ID
 03
@@ -7,11 +7,11 @@
 Integration
 
 ## Purpose
-Verify `--loopr-root` and `LOOPR_ROOT` override workspace resolution.
+Verify `--loopr-root` overrides workspace resolution.
 
 ## Preconditions
 - `bin/loopr` built and available on PATH or invoked directly.
-- Two Loopr workspaces with distinct `specs/.loopr/repo-id` values.
+- A Loopr workspace with `specs/.loopr/repo-id` present.
 - Codex CLI installed and available on PATH.
 
 ## Test Data
@@ -19,12 +19,10 @@ Verify `--loopr-root` and `LOOPR_ROOT` override workspace resolution.
 
 ## Steps
 1. Run `loopr run --codex --step execute --loopr-root <workspace-a> -- --help`.
-2. Run `LOOPR_ROOT=<workspace-b> loopr run --codex --step execute -- --help`.
-3. Inspect transcript directories for each workspace.
+2. Inspect transcript directories for the workspace.
 
 ## Expected Results
 - Step 1 writes transcripts under workspace A.
-- Step 2 writes transcripts under workspace B.
 
 ## Automation Notes
 - Use temp workspaces with repo-id files for deterministic checks.

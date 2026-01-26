@@ -13,7 +13,7 @@ const requiredPages = [
   "docs/commands/index.html",
   "docs/workflow/index.html",
   "docs/faq/index.html",
-  "codex-power-user/index.html",
+  "ai-engineers/index.html",
   "404.html",
   "go/install/index.html",
   "go/github/index.html"
@@ -27,7 +27,7 @@ const corePages = [
   "docs/commands/index.html",
   "docs/workflow/index.html",
   "docs/faq/index.html",
-  "codex-power-user/index.html"
+  "ai-engineers/index.html"
 ];
 
 function collectHtmlFiles(dir) {

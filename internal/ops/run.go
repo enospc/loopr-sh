@@ -58,9 +58,17 @@ func RunWorkflow(opts RunOptions) (RunReport, error) {
 	if err != nil {
 		return RunReport{}, err
 	}
-	root, _, err := ResolveLooprRoot(cwd, opts.LooprRoot)
-	if err != nil {
-		return RunReport{}, err
+	root := ""
+	if opts.Codex {
+		root, _, err = ResolveLooprRoot(cwd, opts.LooprRoot)
+		if err != nil {
+			return RunReport{}, err
+		}
+	} else {
+		root, err = resolvePlanRoot(cwd, opts.LooprRoot)
+		if err != nil {
+			return RunReport{}, err
+		}
 	}
 	appendPrompt := shouldAppendPrompt(opts.CodexArgs)
 	if opts.Codex && !appendPrompt && len(opts.CodexArgs) > 0 {
@@ -72,12 +80,20 @@ func RunWorkflow(opts RunOptions) (RunReport, error) {
 		}
 		return report, nil
 	}
-	handoffPath, err := ensureHandoff(root)
-	if err != nil {
-		return RunReport{}, err
+	handoffPath := ""
+	if opts.Codex {
+		handoffPath, err = ensureHandoff(root)
+		if err != nil {
+			return RunReport{}, err
+		}
 	}
 
-	steps, err := planSteps(root, opts)
+	var steps []RunStep
+	if opts.Codex {
+		steps, err = planSteps(root, opts)
+	} else {
+		steps, err = viewSteps(opts)
+	}
 	if err != nil {
 		return RunReport{}, err
 	}
@@ -164,6 +180,13 @@ func RunWorkflow(opts RunOptions) (RunReport, error) {
 	return report, nil
 }
 
+func resolvePlanRoot(cwd, override string) (string, error) {
+	if root := strings.TrimSpace(override); root != "" {
+		return filepath.Abs(root)
+	}
+	return cwd, nil
+}
+
 func planSteps(root string, opts RunOptions) ([]RunStep, error) {
 	steps := defaultRunSteps()
 	if opts.Step != "" {
@@ -193,6 +216,21 @@ func planSteps(root string, opts RunOptions) ([]RunStep, error) {
 		return nil, errors.New("missing execute step")
 	}
 	return []RunStep{execStep}, nil
+}
+
+func viewSteps(opts RunOptions) ([]RunStep, error) {
+	steps := defaultRunSteps()
+	if opts.Step != "" {
+		step, ok := findStep(steps, opts.Step)
+		if !ok {
+			return nil, fmt.Errorf("unknown step: %s", opts.Step)
+		}
+		return []RunStep{step}, nil
+	}
+	if opts.From != "" || opts.To != "" {
+		return selectRange(steps, opts.From, opts.To)
+	}
+	return steps, nil
 }
 
 func defaultRunSteps() []RunStep {

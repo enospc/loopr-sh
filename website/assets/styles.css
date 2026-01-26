@@ -748,6 +748,16 @@ details summary {
     padding: 32px 6vw 70px;
   }
 
+  .page ul:not(.hero-list):not(.step-list),
+  .page ol:not(.step-list) {
+    padding-left: 20px;
+  }
+
+  .page ul:not(.hero-list):not(.step-list) > li,
+  .page ol:not(.step-list) > li {
+    margin-bottom: 0.35em;
+  }
+
   .hero {
     padding: 32px;
   }

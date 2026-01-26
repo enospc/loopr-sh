@@ -96,6 +96,35 @@ func TestInstallBacksUpModifiedSkills(t *testing.T) {
 	}
 }
 
+func TestInstallFixesFileMode(t *testing.T) {
+	skillsRoot := t.TempDir()
+	agent := testAgent(skillsRoot)
+
+	if _, err := Install(agent, nil, false); err != nil {
+		t.Fatalf("initial Install error: %v", err)
+	}
+
+	script := filepath.Join(skillsRoot, "loopr-demo", "scripts", "run.sh")
+	if err := os.Chmod(script, 0o644); err != nil {
+		t.Fatalf("chmod script: %v", err)
+	}
+
+	report, err := Install(agent, nil, false)
+	if err != nil {
+		t.Fatalf("Install error: %v", err)
+	}
+	if len(report.Updated) == 0 && len(report.Installed) == 0 && len(report.Skipped) == 0 {
+		t.Fatalf("Install report empty, want counts")
+	}
+	info, err := os.Stat(script)
+	if err != nil {
+		t.Fatalf("stat script: %v", err)
+	}
+	if info.Mode()&0o111 == 0 {
+		t.Fatalf("script mode = %v, want executable bit set", info.Mode())
+	}
+}
+
 func TestUninstallRemovesSkillsWithBackup(t *testing.T) {
 	skillsRoot := t.TempDir()
 	agent := testAgent(skillsRoot)
@@ -175,6 +204,30 @@ func TestDoctorReportsMissingAndDrifted(t *testing.T) {
 	}
 	if len(report.Skills[0].Drifted) != 1 || report.Skills[0].Drifted[0] != "README.md" {
 		t.Fatalf("drifted files = %#v, want README.md", report.Skills[0].Drifted)
+	}
+}
+
+func TestDoctorReportsModeDrift(t *testing.T) {
+	skillsRoot := t.TempDir()
+	agent := testAgent(skillsRoot)
+
+	if _, err := Install(agent, nil, false); err != nil {
+		t.Fatalf("Install error: %v", err)
+	}
+	script := filepath.Join(skillsRoot, "loopr-demo", "scripts", "run.sh")
+	if err := os.Chmod(script, 0o644); err != nil {
+		t.Fatalf("chmod script: %v", err)
+	}
+
+	report, err := Doctor(agent, nil)
+	if err != nil {
+		t.Fatalf("Doctor error: %v", err)
+	}
+	if len(report.Skills) != 1 || report.Skills[0].Status != "drifted" {
+		t.Fatalf("drifted status = %#v, want drifted", report.Skills)
+	}
+	if len(report.Skills[0].Drifted) != 1 || report.Skills[0].Drifted[0] != "scripts/run.sh" {
+		t.Fatalf("drifted files = %#v, want scripts/run.sh", report.Skills[0].Drifted)
 	}
 }
 

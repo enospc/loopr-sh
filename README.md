@@ -55,7 +55,7 @@ loopr init      # initialize Loopr metadata in a repo
 loopr doctor    # validate installed skills
 loopr list      # list skills and status
 loopr uninstall # remove skills (backed up by default)
-loopr run       # orchestrate workflow (use --codex to run Codex)
+loopr run       # orchestrate workflow (requires --codex or --dry-run)
 loopr version   # show version info
 ```
 
@@ -63,21 +63,20 @@ Tip: `loopr run --help` shows Loopr-specific flags. If you include `--codex`, he
 
 ## Monorepo usage (run --codex)
 
+`loopr run` requires `--codex` (run Codex) or `--dry-run` (dryrun mode).
 `loopr run --codex` needs a Loopr workspace root (the directory that contains `specs/.loopr/repo-id`).
 In a monorepo, you can pick the workspace explicitly or let Loopr find the nearest one.
 
 Resolution order:
 1. `--loopr-root <path>` (explicit flag)
-2. `LOOPR_ROOT=<path>` (environment variable)
-3. Nearest ancestor with `specs/.loopr/repo-id`
+2. Nearest ancestor with `specs/.loopr/repo-id`
 
-Note: Only `loopr run --codex` resolves a Loopr workspace. Other commands are repo-agnostic and only use `CODEX_HOME` to locate the skills directory.
+Note: Only `loopr run --codex` resolves a Loopr workspace. `loopr run --dry-run` and other commands are repo-agnostic and only use `CODEX_HOME` to locate the skills directory.
 
 Examples:
 
 ```
 loopr run --codex --step execute --loopr-root /repo/apps/service-a -- --help
-LOOPR_ROOT=/repo/apps/service-b loopr run --codex --step execute -- --help
 ```
 
 ## Codex skills installed

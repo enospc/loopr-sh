@@ -4,7 +4,7 @@ description: Implement a single task end-to-end until all its tests pass. Use wh
 ---
 
 ## Prerequisite
-- Follow `codex-skills/loopr-common/COMMON.md`.
+- Follow the installed `loopr-common/COMMON.md` (use `$CODEX_HOME/skills/loopr-common/COMMON.md` if set, otherwise `~/.codex/skills/loopr-common/COMMON.md`). Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 
 # Loopr Run Task
 

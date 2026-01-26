@@ -90,13 +90,6 @@ func RunCodex(args []string, opts CodexOptions) (int, *CodexSession, error) {
 		startMeta["skills_installed_hash"] = installedHash
 	}
 
-	if model := strings.TrimSpace(os.Getenv("LOOPR_CODEX_MODEL")); model != "" {
-		startMeta["codex_model"] = model
-	}
-	if prompt := strings.TrimSpace(os.Getenv("LOOPR_CODEX_PROMPT")); prompt != "" {
-		startMeta["codex_prompt"] = prompt
-	}
-
 	if err := writeMeta(metaPath, startMeta); err != nil {
 		return 1, session, err
 	}

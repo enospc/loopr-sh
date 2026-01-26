@@ -52,6 +52,7 @@ description: Frequently asked questions about Loopr.
 
   <details>
     <summary>How do I see Codex help or pass Codex flags?</summary>
+    <p><code>loopr run</code> requires <code>--codex</code> (execute) or <code>--dry-run</code> (dryrun mode).</p>
     <p>Use <code>loopr run --help</code> for Loopr run flags. If you include <code>--codex</code>, help/version flags are forwarded to Codex (for example, <code>loopr run --codex --help</code>).</p>
     <p>For other Codex flags, place them after <code>--</code>, like <code>loopr run --codex -- --model o3</code>.</p>
   </details>

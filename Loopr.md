@@ -2,15 +2,13 @@
 
 **Build. Verify. Iterate.**
 
-*A field guide for AI coding agents and software engineers (2026 and beyond)*
-
-Edition: 2026-01
+*A field guide for AI software engineers*
 
 ---
 
 ## Foreword
 
-This is a guide for Human software engineers in the era of AI coding agents. The center of gravity has shifted from writing every line of source code to defining intent, verifying outcomes, and building systems that evolve safely. The Loopr software engineer respects models but does not defer to them. They set clear goals, curate context, and build feedback loops that turn uncertainty into reliable software. A 500-line patch from an agent is not progress until you can explain it and test it.
+This is a guide for AI software engineers (human's as of today ;) ) in the era of AI coding agents. The center of gravity has shifted from writing every line of source code to defining intent, verifying outcomes, and building systems that evolve safely. The Loopr AI engineer respects models but does not defer to them. They set clear goals, curate context, and build feedback loops that turn uncertainty into reliable software. A 500-line patch from an agent is not progress until you can explain it and test it.
 
 If you use Codex or any frontier model, the principles below apply. Models will change. The responsibilities will not. When output is cheap, judgment is expensive.
 
@@ -23,45 +21,53 @@ If you use Codex or any frontier model, the principles below apply. Models will 
 ## Contents
 
 - **Part 1. The Loopr Mindset**
-  1. Own Outcomes, Not Output
-  2. Design for Verification
-  3. Short Loops, Fast Reality
-  4. Software Entropy in the Age of Agents
+
+    1. Own Outcomes, Not Output
+    2. Design for Verification
+    3. Short Loops, Fast Reality
+    4. Software Entropy in the Age of Agents
 - **Part 2. Intent, Specs, and Contracts**
-  5. Specs That Compile
-  6. Interfaces First, Always
-  7. Reversibility and Decision Logs
-  8. Data Is a Product
+
+    5. Specs That Compile
+    6. Interfaces First, Always
+    7. Reversibility and Decision Logs
+    8. Data Is a Product
 - **Part 3. Collaboration With Agents**
-  9. Roles, Boundaries, and Delegation
-  10. Context Hygiene and Retrieval
-  11. Determinism, Reproducibility, and Seeds
-  12. Prompt Assets as Code
+
+    9. Roles, Boundaries, and Delegation
+    10. Context Hygiene and Retrieval
+    11. Determinism, Reproducibility, and Seeds
+    12. Prompt Assets as Code
 - **Part 4. Quality and Reliability**
-  13. Tests as the Primary Oracle
-  14. Property-Based Testing and Fuzzing
-  15. Observability by Default
-  16. Failure Containment and Graceful Degradation
+
+    13. Tests as the Primary Oracle
+    14. Property-Based Testing and Fuzzing
+    15. Observability by Default
+    16. Failure Containment and Graceful Degradation
 - **Part 5. Architecture and Systems**
-  17. Boundaries, Not Monoliths or Microservices
-  18. Event-Driven and Async by Design
-  19. Performance, Cost, and Token Budgets
-  20. Evolve the Build and Release Pipeline
+
+    17. Boundaries, Not Monoliths or Microservices
+    18. Event-Driven and Async by Design
+    19. Performance, Cost, and Token Budgets
+    20. Evolve the Build and Release Pipeline
 - **Part 6. Security, Safety, and Compliance**
-  21. Threat Models for Agents
-  22. Secrets, Permissions, and Isolation
-  23. Supply Chain and Provenance
-  24. Human-in-the-Loop as a Safety Valve
+
+    21. Threat Models for Agents
+    22. Secrets, Permissions, and Isolation
+    23. Supply Chain and Provenance
+    24. Human-in-the-Loop as a Safety Valve
 - **Part 7. Teams and Delivery**
-  25. AI Pair Programming Rituals
-  26. Review as Collaboration, Not Judgment
-  27. Documentation That Stays True
-  28. Operate What You Build
+
+    25. AI Pair Programming Rituals
+    26. Review as Collaboration, Not Judgment
+    27. Documentation That Stays True
+    28. Operate What You Build
 - **Part 8. Craft and Future-Proofing**
-  29. The Modern Knowledge Portfolio
-  30. Build Internal Platforms, Not One-Offs
-  31. Ethics and Product Impact
-  32. Stay Adaptable
+
+    29. The Modern Knowledge Portfolio
+    30. Build Internal Platforms, Not One-Offs
+    31. Ethics and Product Impact
+    32. Stay Adaptable
 - **Appendices**
   - A. Spec Template
   - B. Agent Handoff Template
@@ -430,7 +436,7 @@ Canonical template: `codex-skills/loopr-specify/SKILL.md`.
 
 # Appendix B. Agent Handoff Template
 
-Canonical template: `specs/.loopr/handoff.md` (created by `loopr run`).
+Canonical template: `specs/.loopr/handoff.md` (created by `loopr run --codex`).
 
 ```
 # Loopr Handoff

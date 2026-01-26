@@ -4,7 +4,7 @@ description: Break a single task into tests and write specs/feature-<slug>-task-
 ---
 
 ## Prerequisite
-- Follow `codex-skills/loopr-common/COMMON.md`.
+- Follow the installed `loopr-common/COMMON.md` (use `$CODEX_HOME/skills/loopr-common/COMMON.md` if set, otherwise `~/.codex/skills/loopr-common/COMMON.md`). Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 
 # Loopr Testify
 
@@ -16,6 +16,10 @@ Create focused tests that fully cover a task's acceptance criteria and edge case
 - `specs/feature-<slug>.md`
 - `specs/spec.md`
 - `specs/test-order.yaml` (optional; update if present)
+- `$CODEX_HOME/skills/loopr-common/test-templates.md` (if CODEX_HOME is set)
+- `~/.codex/skills/loopr-common/test-templates.md` (fallback; use the first path that exists, otherwise stop and ask to reinstall Loopr skills)
+- `$CODEX_HOME/skills/loopr-common/pbt-guidance.md` (if CODEX_HOME is set)
+- `~/.codex/skills/loopr-common/pbt-guidance.md` (fallback; use the first path that exists, otherwise stop and ask to reinstall Loopr skills)
 
 ## Outputs
 - `specs/feature-<slug>-task-<id>-test-*.md`
@@ -23,81 +27,15 @@ Create focused tests that fully cover a task's acceptance criteria and edge case
 
 ## Workflow
 1. Read the task file and acceptance criteria.
-2. Read the feature file and spec testing strategy for PBT guidance.
-   - If the feature marks PBT recommended and the framework is missing, stop and ask whether to select a framework or opt out.
-   - If PBT is optional and the framework is missing, proceed with example-based tests and note the gap.
+2. Read the feature file, spec testing strategy, and the installed `loopr-common/pbt-guidance.md` (see Inputs) for PBT guidance. Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 3. Identify test types (unit, integration, e2e, manual, property-based) as needed.
 4. Create 1+ tests per acceptance criterion plus key edge cases.
-   - If PBT is recommended, include at least one property-based test referencing feature invariants and generator notes.
-   - If PBT is optional, include a property-based test only if the framework is known; otherwise use example-based tests and note the optional PBT gap.
-   - If PBT is not suitable, use example-based tests only.
+   - Follow the installed `loopr-common/pbt-guidance.md` (see Inputs) for PBT inclusion rules. Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 5. Remove any existing specs/feature-<feature-slug>-task-<task_id>-test-*.md to avoid stale tests.
 6. Write each test to specs/feature-<feature-slug>-task-<task_id>-test-<test_id>.md.
 
 ## Test template
-```
-# Test: <short title>
-
-## Test ID
-<test_id>
-
-## Type
-<Unit | Integration | E2E | Manual>
-
-## Purpose
-
-## Preconditions
-- 
-
-## Test Data
-- 
-
-## Steps
-1. 
-
-## Expected Results
-- 
-
-## Automation Notes
-- 
-```
-
-### Property-based test template
-```
-# Test: <short title>
-
-## Test ID
-<test_id>
-
-## Type
-Property-based
-
-## Purpose
-
-## Properties
-- 
-
-## Generators
-- 
-
-## Preconditions
-- 
-
-## Test Data
-- 
-
-## Steps
-1. Run the property tests with the configured budget and seed.
-
-## Expected Results
-- All properties hold across generated cases.
-
-## Automation Notes
-- Framework: <library>
-- Budget: <iterations/time>
-- Seed / replay: <how to reproduce a failure>
-- Shrinking: <notes if supported>
-```
+Use the installed `loopr-common/test-templates.md` (see Inputs). Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 
 ## Output requirements
 - Ensure specs/ exists.

@@ -4,7 +4,7 @@ description: Validate Loopr order YAML files and referenced feature/task/test ar
 ---
 
 ## Prerequisite
-- Follow `codex-skills/loopr-common/COMMON.md`.
+- Follow the installed `loopr-common/COMMON.md` (use `$CODEX_HOME/skills/loopr-common/COMMON.md` if set, otherwise `~/.codex/skills/loopr-common/COMMON.md`). Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 
 # Loopr Doctor
 
@@ -24,7 +24,8 @@ Validate the Loopr order artifacts (`feature-order.yaml`, `task-order.yaml`, `te
 ## Workflow
 1. Ensure `specs/` exists.
 2. Run the doctor script:
-   - `python3 ~/.codex/skills/loopr-doctor/scripts/loopr-doctor --specs-dir specs`
+   - If `CODEX_HOME` is set: `python3 $CODEX_HOME/skills/loopr-doctor/scripts/loopr-doctor --specs-dir specs`
+   - Otherwise: `python3 ~/.codex/skills/loopr-doctor/scripts/loopr-doctor --specs-dir specs`
 3. If validation fails, fix the reported issues and re-run until it passes.
 4. If `python3` or PyYAML is missing, stop and ask to install prerequisites or proceed without validation.
 

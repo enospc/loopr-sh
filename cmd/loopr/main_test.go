@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"os"
+	"os/exec"
 	"reflect"
 	"strings"
 	"testing"
@@ -177,4 +178,86 @@ func TestRunListMatchesDoctorStatus(t *testing.T) {
 	if !strings.Contains(string(output), expectedLine) {
 		t.Fatalf("output missing %q: %s", expectedLine, string(output))
 	}
+}
+
+func TestRunRequiresCodexOrDryRun(t *testing.T) {
+	output, code := runLooprHelper(t, "run")
+	if code == 0 {
+		t.Fatalf("expected non-zero exit, got 0")
+	}
+	if !strings.Contains(output, "requires --codex or --dry-run") {
+		t.Fatalf("output missing requirement message: %s", output)
+	}
+}
+
+func TestRunDryRunPrintsSteps(t *testing.T) {
+	root := t.TempDir()
+	output, code := runLooprHelper(t, "run", "--dry-run", "--loopr-root", root)
+	if code != 0 {
+		t.Fatalf("expected exit 0, got %d: %s", code, output)
+	}
+	if !strings.Contains(output, "Step: prd") {
+		t.Fatalf("output missing Step: prd: %s", output)
+	}
+}
+
+func TestRunRejectsCodexAndDryRun(t *testing.T) {
+	output, code := runLooprHelper(t, "run", "--codex", "--dry-run")
+	if code != 0 {
+		t.Fatalf("expected exit 0, got %d: %s", code, output)
+	}
+	if !strings.Contains(output, "Step: prd") {
+		t.Fatalf("output missing Step: prd: %s", output)
+	}
+}
+
+func TestRunDryRunIgnoresConfirmForceAndAgentArgs(t *testing.T) {
+	output, code := runLooprHelper(t, "run", "--dry-run", "--confirm", "--force", "--", "--help")
+	if code != 0 {
+		t.Fatalf("expected exit 0, got %d: %s", code, output)
+	}
+	if !strings.Contains(output, "Step: prd") {
+		t.Fatalf("output missing Step: prd: %s", output)
+	}
+}
+
+func TestRunDryRunRejectsInvalidStep(t *testing.T) {
+	output, code := runLooprHelper(t, "run", "--dry-run", "--step", "nope")
+	if code == 0 {
+		t.Fatalf("expected non-zero exit, got 0")
+	}
+	if !strings.Contains(output, "unknown step: nope") {
+		t.Fatalf("output missing unknown step message: %s", output)
+	}
+}
+
+func runLooprHelper(t *testing.T, args ...string) (string, int) {
+	t.Helper()
+	cmdArgs := append([]string{"-test.run=TestHelperProcess", "--"}, args...)
+	cmd := exec.Command(os.Args[0], cmdArgs...)
+	cmd.Env = append(os.Environ(), "GO_WANT_HELPER_PROCESS=1")
+	out, err := cmd.CombinedOutput()
+	if err == nil {
+		return string(out), 0
+	}
+	exitErr, ok := err.(*exec.ExitError)
+	if !ok {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	return string(out), exitErr.ExitCode()
+}
+
+func TestHelperProcess(t *testing.T) {
+	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
+		return
+	}
+	args := []string{}
+	for i, arg := range os.Args {
+		if arg == "--" {
+			args = os.Args[i+1:]
+			break
+		}
+	}
+	os.Args = append([]string{os.Args[0]}, args...)
+	main()
 }

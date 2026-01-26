@@ -4,6 +4,7 @@ const matter = require("gray-matter");
 const MarkdownIt = require("markdown-it");
 
 const ROOT = path.resolve(__dirname, "..");
+const REPO_ROOT = path.resolve(ROOT, "..");
 const CONTENT_DIR = path.join(ROOT, "content");
 const DIST_DIR = path.join(ROOT, "dist");
 const ASSETS_DIR = path.join(ROOT, "assets");
@@ -81,6 +82,29 @@ function ensureTrailingSlash(p) {
     return "/";
   }
   return p.endsWith("/") ? p : `${p}/`;
+}
+
+function isWithinRoot(targetPath, rootPath) {
+  const normalizedRoot = path.resolve(rootPath);
+  const normalizedTarget = path.resolve(targetPath);
+  if (normalizedTarget === normalizedRoot) {
+    return true;
+  }
+  return normalizedTarget.startsWith(`${normalizedRoot}${path.sep}`);
+}
+
+function loadMarkdownContent(filePath, parsed, frontMatter) {
+  if (!frontMatter.source) {
+    return parsed.content || "";
+  }
+  const sourcePath = path.resolve(ROOT, frontMatter.source);
+  if (!isWithinRoot(sourcePath, REPO_ROOT)) {
+    throw new Error(`Content source outside repo root: ${frontMatter.source}`);
+  }
+  if (!fs.existsSync(sourcePath)) {
+    throw new Error(`Content source not found: ${frontMatter.source}`);
+  }
+  return fs.readFileSync(sourcePath, "utf8");
 }
 
 function routeFromFile(relPath, frontMatter) {
@@ -217,7 +241,7 @@ function buildSite() {
       continue;
     }
 
-    const contentHtml = md.render(parsed.content || "");
+    const contentHtml = md.render(loadMarkdownContent(filePath, parsed, frontMatter));
     const pageHtml = renderTemplate(layout, {
       ...commonVars,
       content: contentHtml

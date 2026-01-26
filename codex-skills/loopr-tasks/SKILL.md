@@ -4,7 +4,7 @@ description: Generate task files for features listed in specs/feature-order.yaml
 ---
 
 ## Prerequisite
-- Follow `codex-skills/loopr-common/COMMON.md`.
+- Follow the installed `loopr-common/COMMON.md` (use `$CODEX_HOME/skills/loopr-common/COMMON.md` if set, otherwise `~/.codex/skills/loopr-common/COMMON.md`). Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 - This skill requires `mode` (read `specs/.loopr/init-state.json`; if missing, assume `existing`).
 
 # Loopr Tasks
@@ -17,6 +17,10 @@ This assumes feature-order.yaml follows the canonical format produced by loopr-f
 - `specs/feature-order.yaml`
 - `specs/feature-*.md`
 - `specs/.loopr/init-state.json` (for `mode`)
+- `$CODEX_HOME/skills/loopr-common/task-template.md` (if CODEX_HOME is set)
+- `~/.codex/skills/loopr-common/task-template.md` (fallback; use the first path that exists, otherwise stop and ask to reinstall Loopr skills)
+- `$CODEX_HOME/skills/loopr-common/pbt-guidance.md` (if CODEX_HOME is set)
+- `~/.codex/skills/loopr-common/pbt-guidance.md` (fallback; use the first path that exists, otherwise stop and ask to reinstall Loopr skills)
 
 ## Outputs
 - `specs/feature-<slug>-task-*.md`
@@ -29,52 +33,13 @@ This assumes feature-order.yaml follows the canonical format produced by loopr-f
 3. For each slug, open specs/feature-<slug>.md; if missing, stop and ask to regenerate features.
 4. Derive tasks (0.5–2 days each) in dependency order with zero-padded IDs.
    - If the feature slug is `foundation`, include tasks for repo scaffold, test harness smoke tests, and cross-component contract stubs.
-   - If the feature marks PBT as recommended or optional, include task acceptance criteria for generators, properties, budgets, and seed logging.
+   - Follow the installed `loopr-common/pbt-guidance.md` (see Inputs) for PBT-related task criteria. Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 5. Remove any existing specs/feature-<slug>-task-*.md to avoid stale tasks.
 6. Write new task files to specs/feature-<slug>-task-<id>.md.
 7. Generate specs/task-order.yaml listing tasks in the same feature order, including brief dependency notes.
 
 ## Task file format
-Use the same template as loopr-taskify:
-
-```
-# Task: <feature title> / <task short title>
-
-## Task ID
-<task_id>
-
-## Summary
-
-## Goal
-
-## Scope
-- In scope:
-- Out of scope:
-
-## Acceptance Criteria
-- 
-
-## Implementation Plan
-- 
-
-## Dependencies
-- 
-
-## Risks
-- 
-
-## Test Plan
-- 
-
-## Testing Notes
-- PBT suitability: <Recommended | Optional | Not Suitable>
-- Properties to cover:
-- Generator notes:
-- Seed / replay guidance:
-
-## Notes
-- 
-```
+Use the installed `loopr-common/task-template.md` (see Inputs). Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 
 ## task-order.yaml format
 Keep it machine-readable and ordered by feature, then task:

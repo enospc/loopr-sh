@@ -39,8 +39,8 @@ func TestInitGreenfieldCreatesRepoIDAndInitState(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Init error: %v", err)
 	}
-	if report.RepoID != "abcdef" {
-		t.Fatalf("RepoID = %q, want abcdef", report.RepoID)
+	if report.RepoID != "useand" {
+		t.Fatalf("RepoID = %q, want useand", report.RepoID)
 	}
 	if !report.RepoIDCreated {
 		t.Fatalf("RepoIDCreated = false, want true")
@@ -209,8 +209,8 @@ func TestInitCreatesRepoIDWhenInitStateExists(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Init error: %v", err)
 	}
-	if report.RepoID != "abcdef" {
-		t.Fatalf("RepoID = %q, want abcdef", report.RepoID)
+	if report.RepoID != "useand" {
+		t.Fatalf("RepoID = %q, want useand", report.RepoID)
 	}
 	if !report.RepoIDCreated {
 		t.Fatalf("RepoIDCreated = false, want true")
@@ -226,7 +226,7 @@ func TestInitRejectsInvalidRepoID(t *testing.T) {
 	if err := os.MkdirAll(filepath.Dir(repoIDPath), 0o755); err != nil {
 		t.Fatalf("mkdir loopr dir: %v", err)
 	}
-	if err := os.WriteFile(repoIDPath, []byte("ABCDEF\n"), 0o644); err != nil {
+	if err := os.WriteFile(repoIDPath, []byte("______\n"), 0o644); err != nil {
 		t.Fatalf("write repo-id: %v", err)
 	}
 
@@ -238,7 +238,7 @@ func TestInitRejectsInvalidRepoID(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Init error = nil, want error")
 	}
-	if !strings.Contains(err.Error(), "must be 6 lowercase alphanumeric") {
+	if !strings.Contains(err.Error(), "must be 6 characters from the NanoID alphabet") {
 		t.Fatalf("error = %q, want repo-id format message", err.Error())
 	}
 }

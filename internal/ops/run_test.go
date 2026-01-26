@@ -61,6 +61,28 @@ func TestPlanStepsReturnsExecuteWhenAllOutputsPresent(t *testing.T) {
 	}
 }
 
+func TestRunWorkflowDryRunShowsAllSteps(t *testing.T) {
+	root := t.TempDir()
+	prev, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("getwd error: %v", err)
+	}
+	if err := os.Chdir(root); err != nil {
+		t.Fatalf("chdir error: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(prev)
+	})
+
+	report, err := RunWorkflow(RunOptions{Codex: false})
+	if err != nil {
+		t.Fatalf("RunWorkflow error: %v", err)
+	}
+	if len(report.Steps) != len(defaultRunSteps()) {
+		t.Fatalf("steps = %d, want %d", len(report.Steps), len(defaultRunSteps()))
+	}
+}
+
 func TestPlanStepsRange(t *testing.T) {
 	root := t.TempDir()
 	steps, err := planSteps(root, RunOptions{From: "tasks", To: "tests"})
@@ -69,6 +91,31 @@ func TestPlanStepsRange(t *testing.T) {
 	}
 	if len(steps) != 2 || steps[0].Name != "tasks" || steps[1].Name != "tests" {
 		t.Fatalf("steps = %#v, want tasks->tests", steps)
+	}
+}
+
+func TestRunWorkflowDryRunDoesNotRequireRepoID(t *testing.T) {
+	root := t.TempDir()
+	prev, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("getwd error: %v", err)
+	}
+	if err := os.Chdir(root); err != nil {
+		t.Fatalf("chdir error: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(prev)
+	})
+
+	report, err := RunWorkflow(RunOptions{Codex: false})
+	if err != nil {
+		t.Fatalf("RunWorkflow error: %v", err)
+	}
+	if len(report.Steps) == 0 || report.Steps[0].Name != "prd" {
+		t.Fatalf("steps[0] = %#v, want prd", report.Steps)
+	}
+	if _, err := os.Stat(filepath.Join(root, "specs", ".loopr", "handoff.md")); err == nil {
+		t.Fatalf("handoff.md created during dry run, want none")
 	}
 }
 

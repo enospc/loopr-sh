@@ -4,7 +4,7 @@ description: Generate test files for tasks listed in specs/task-order.yaml and w
 ---
 
 ## Prerequisite
-- Follow `codex-skills/loopr-common/COMMON.md`.
+- Follow the installed `loopr-common/COMMON.md` (use `$CODEX_HOME/skills/loopr-common/COMMON.md` if set, otherwise `~/.codex/skills/loopr-common/COMMON.md`). Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 
 # Loopr Tests
 
@@ -17,6 +17,10 @@ This assumes task-order.yaml follows the canonical format produced by loopr-task
 - `specs/feature-*-task-*.md`
 - `specs/feature-*.md`
 - `specs/spec.md`
+- `$CODEX_HOME/skills/loopr-common/test-templates.md` (if CODEX_HOME is set)
+- `~/.codex/skills/loopr-common/test-templates.md` (fallback; use the first path that exists, otherwise stop and ask to reinstall Loopr skills)
+- `$CODEX_HOME/skills/loopr-common/pbt-guidance.md` (if CODEX_HOME is set)
+- `~/.codex/skills/loopr-common/pbt-guidance.md` (fallback; use the first path that exists, otherwise stop and ask to reinstall Loopr skills)
 
 ## Outputs
 - `specs/feature-<slug>-task-<id>-test-*.md`
@@ -25,84 +29,16 @@ This assumes task-order.yaml follows the canonical format produced by loopr-task
 ## Workflow
 1. Verify specs/task-order.yaml exists; if missing, stop and ask to run loopr-tasks.
 2. Read specs/task-order.yaml and extract the ordered task IDs by feature.
-3. Read specs/spec.md for the testing stack and property-based testing guidance.
-   - If a feature is marked PBT recommended and the framework is missing, stop and ask whether to select a framework or opt out.
-   - If PBT is optional and the framework is missing, proceed with example-based tests and note the gap.
+3. Read specs/spec.md and the installed `loopr-common/pbt-guidance.md` (see Inputs) for testing stack and PBT guidance. Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 4. For each task, open specs/feature-<slug>-task-<id>.md and specs/feature-<slug>.md; if missing, stop and ask to regenerate.
 5. Derive tests covering each acceptance criterion and key edge cases.
-   - If PBT is recommended, include at least one property-based test referencing the feature invariants and generator notes.
-   - If PBT is optional, include a property-based test only if the framework is known; otherwise use example-based tests and note the optional PBT gap.
-   - If PBT is not suitable, use example-based tests only.
+   - Follow the installed `loopr-common/pbt-guidance.md` (see Inputs) for PBT inclusion rules. Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 6. Remove any existing specs/feature-<slug>-task-<id>-test-*.md to avoid stale tests.
 7. Write new test files to specs/feature-<slug>-task-<id>-test-<test_id>.md.
 8. Generate specs/test-order.yaml listing tests in the same task order, including brief notes.
 
 ## Test file format
-Use one of the templates below (match the chosen testing strategy):
-
-```
-# Test: <short title>
-
-## Test ID
-<test_id>
-
-## Type
-<Unit | Integration | E2E | Manual>
-
-## Purpose
-
-## Preconditions
-- 
-
-## Test Data
-- 
-
-## Steps
-1. 
-
-## Expected Results
-- 
-
-## Automation Notes
-- 
-```
-
-### Property-based test template
-```
-# Test: <short title>
-
-## Test ID
-<test_id>
-
-## Type
-Property-based
-
-## Purpose
-
-## Properties
-- 
-
-## Generators
-- 
-
-## Preconditions
-- 
-
-## Test Data
-- 
-
-## Steps
-1. Run the property tests with the configured budget and seed.
-
-## Expected Results
-- All properties hold across generated cases.
-
-## Automation Notes
-- Framework: <library>
-- Budget: <iterations/time>
-- Seed / replay: <how to reproduce a failure>
-- Shrinking: <notes if supported>
-```
+Use the installed `loopr-common/test-templates.md` (see Inputs). Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 
 ## test-order.yaml format
 Keep it machine-readable and ordered by feature, then task, then test:

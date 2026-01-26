@@ -36,7 +36,6 @@ Wrap Codex execution and capture transcripts + reproducibility metadata under th
 ## Requirements
 - Resolve Loopr workspace root:
   - If `--loopr-root <path>` is provided, use it and require `specs/.loopr/repo-id` under that root.
-  - Else if `LOOPR_ROOT` is set, use it and require `specs/.loopr/repo-id` under that root.
   - Otherwise, search upward from the current directory for the nearest `specs/.loopr/repo-id`.
   - If not found, exit non-zero with a hint to run `loopr init`.
 - Create `specs/.loopr/transcripts/<repo-id>/` if missing.
@@ -46,14 +45,13 @@ Wrap Codex execution and capture transcripts + reproducibility metadata under th
 - JSONL metadata must include `start` and `end` events with timestamp and exit code.
 - JSONL `start` event includes reproducibility fields:
   - Required: `loopr_version`, `loopr_commit`, `loopr_date`, `repo_root`, `repo_id`, `cwd`, `cmd`, `skills_embedded_hash`.
-  - Optional when available: `git_commit`, `git_dirty`, `skills_installed_hash`, `codex_model`, `codex_prompt`.
+  - Optional when available: `git_commit`, `git_dirty`, `skills_installed_hash`.
 - If `script` is available, use it to capture the session; otherwise tee stdout/stderr into the log file.
 - Pass arguments after `--` directly to `codex` without modification.
 
 ## Acceptance Criteria
 - Running `loopr run --codex -- <args>` from a nested directory stores transcripts under the nearest workspace.
 - Running `loopr run --codex --loopr-root <path> -- <args>` stores transcripts under the specified workspace.
-- Running `LOOPR_ROOT=<path> loopr run --codex -- <args>` stores transcripts under the specified workspace.
 - Missing `specs/.loopr/repo-id` yields a clear error and non-zero exit.
 - JSONL includes both `start` and `end` events with timestamps and exit code.
 - JSONL `start` event includes the required reproducibility fields and optional fields when available.
@@ -64,8 +62,6 @@ Wrap Codex execution and capture transcripts + reproducibility metadata under th
 
 ## Data / API Impact
 - CLI flag: `--loopr-root` (codex command only).
-- Environment variable: `LOOPR_ROOT` (codex command only), overridden by `--loopr-root`.
-- Environment variables: `LOOPR_CODEX_MODEL`, `LOOPR_CODEX_PROMPT` (optional metadata capture).
 
 ## Dependencies
 - CLI core for command parsing and flag handling.
@@ -75,4 +71,4 @@ Wrap Codex execution and capture transcripts + reproducibility metadata under th
 - Risk: `script` not available → Mitigation: tee fallback.
 
 ## Open Questions
-- Should `--loopr-root` be supported by other commands or a global `LOOPR_ROOT` environment variable?
+- Should `--loopr-root` be supported by other commands?

@@ -14,7 +14,7 @@
   },
   "nav": [
     {"label": "Docs", "href": "/docs/"},
-    {"label": "Codex", "href": "/codex-power-user/"},
+    {"label": "AI Engineers", "href": "/ai-engineers/"},
     {"label": "GitHub", "href": "/go/github/"}
   ],
   "ctas": {

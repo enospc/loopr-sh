@@ -17,6 +17,9 @@ func FindLooprRoot(start string) (string, string, error) {
 			if repoID == "" {
 				return "", "", fmt.Errorf("repo-id is empty at %s", repoIDPath)
 			}
+			if !validRepoID(repoID) {
+				return "", "", fmt.Errorf("repo-id %q at %s must be %d characters from the NanoID alphabet", repoID, repoIDPath, repoIDLength)
+			}
 			return current, repoID, nil
 		}
 		parent := filepath.Dir(current)
@@ -30,9 +33,6 @@ func FindLooprRoot(start string) (string, string, error) {
 
 func ResolveLooprRoot(start string, override string) (string, string, error) {
 	if root := strings.TrimSpace(override); root != "" {
-		return loadRepoID(root)
-	}
-	if root := strings.TrimSpace(os.Getenv("LOOPR_ROOT")); root != "" {
 		return loadRepoID(root)
 	}
 	return FindLooprRoot(start)
@@ -55,6 +55,9 @@ func loadRepoID(root string) (string, string, error) {
 	repoID := strings.TrimSpace(string(data))
 	if repoID == "" {
 		return "", "", fmt.Errorf("repo-id is empty at %s", repoIDPath)
+	}
+	if !validRepoID(repoID) {
+		return "", "", fmt.Errorf("repo-id %q at %s must be %d characters from the NanoID alphabet", repoID, repoIDPath, repoIDLength)
 	}
 	return absRoot, repoID, nil
 }

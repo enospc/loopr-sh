@@ -24,8 +24,6 @@ func TestResolveLooprRootPrefersOverride(t *testing.T) {
 	writeRepoID(t, rootA, "aaaaaa")
 	writeRepoID(t, rootB, "bbbbbb")
 
-	t.Setenv("LOOPR_ROOT", rootA)
-
 	resolvedRoot, repoID, err := ResolveLooprRoot(t.TempDir(), rootB)
 	if err != nil {
 		t.Fatalf("ResolveLooprRoot error: %v", err)
@@ -39,21 +37,16 @@ func TestResolveLooprRootPrefersOverride(t *testing.T) {
 	}
 }
 
-func TestResolveLooprRootUsesEnv(t *testing.T) {
-	rootA := t.TempDir()
-	writeRepoID(t, rootA, "aaaaaa")
-	t.Setenv("LOOPR_ROOT", rootA)
+func TestResolveLooprRootRejectsInvalidOverrideRepoID(t *testing.T) {
+	root := t.TempDir()
+	writeRepoID(t, root, "______")
 
-	resolvedRoot, repoID, err := ResolveLooprRoot(t.TempDir(), "")
-	if err != nil {
-		t.Fatalf("ResolveLooprRoot error: %v", err)
+	_, _, err := ResolveLooprRoot(t.TempDir(), root)
+	if err == nil {
+		t.Fatalf("ResolveLooprRoot error = nil, want error")
 	}
-	absA, _ := filepath.Abs(rootA)
-	if resolvedRoot != absA {
-		t.Fatalf("root = %q, want %q", resolvedRoot, absA)
-	}
-	if repoID != "aaaaaa" {
-		t.Fatalf("repoID = %q, want aaaaaa", repoID)
+	if !strings.Contains(err.Error(), "must be 6 characters from the NanoID alphabet") {
+		t.Fatalf("error = %q, want repo-id format message", err.Error())
 	}
 }
 
@@ -76,6 +69,24 @@ func TestResolveLooprRootSearchesUpwards(t *testing.T) {
 	}
 	if repoID != "cccccc" {
 		t.Fatalf("repoID = %q, want cccccc", repoID)
+	}
+}
+
+func TestResolveLooprRootRejectsInvalidAncestorRepoID(t *testing.T) {
+	root := t.TempDir()
+	writeRepoID(t, root, "______")
+
+	nested := filepath.Join(root, "a", "b")
+	if err := os.MkdirAll(nested, 0o755); err != nil {
+		t.Fatalf("mkdir nested: %v", err)
+	}
+
+	_, _, err := ResolveLooprRoot(nested, "")
+	if err == nil {
+		t.Fatalf("ResolveLooprRoot error = nil, want error")
+	}
+	if !strings.Contains(err.Error(), "must be 6 characters from the NanoID alphabet") {
+		t.Fatalf("error = %q, want repo-id format message", err.Error())
 	}
 }
 

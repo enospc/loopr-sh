@@ -148,6 +148,12 @@ func Install(agent agents.Spec, only []string, force bool) (InstallReport, error
 			target := filepath.Join(skillDir, entry.SubPath)
 			data, err := os.ReadFile(target)
 			if err == nil && skills.HashFile(data) == entry.Hash {
+				info, statErr := os.Stat(target)
+				if statErr == nil && info.Mode().Perm() != entry.Mode.Perm() {
+					if err := os.Chmod(target, entry.Mode.Perm()); err != nil {
+						return InstallReport{}, fmt.Errorf("chmod %s: %w", target, err)
+					}
+				}
 				continue
 			}
 			if err := WriteFileAtomic(target, entry.Data, entry.Mode); err != nil {
@@ -207,6 +213,11 @@ func Doctor(agent agents.Spec, only []string) (DoctorReport, error) {
 				continue
 			}
 			if skills.HashFile(data) != entry.Hash {
+				sr.Drifted = append(sr.Drifted, entry.SubPath)
+				continue
+			}
+			info, statErr := os.Stat(target)
+			if statErr == nil && info.Mode().Perm() != entry.Mode.Perm() {
 				sr.Drifted = append(sr.Drifted, entry.SubPath)
 			}
 		}

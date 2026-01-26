@@ -41,16 +41,17 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
   - Support `--force` to remove without backup and proceed if backup fails.
   - Support `--agent`, `--all`, `--only`, `--verbose`.
 - FR-08: `run` orchestrates the Loopr workflow:
+  - Requires `--codex` (execute) or `--dry-run` (dryrun mode).
   - Determine the step sequence (`prd` → `spec` → `features` → `tasks` → `tests` → `execute`) based on missing artifacts unless `--step` or `--from/--to` is provided.
   - Support `--force` to re-run steps even if outputs exist.
   - Support `--confirm` to request confirmation before each step.
   - Create or update `specs/.loopr/handoff.md` as the minimal context handoff file.
   - When `--codex` is set, run Codex for each step using a minimal prompt that lists allowed inputs/outputs (skip prompt append when Codex args include `--help`/`-h`/`--version` or a Codex subcommand).
   - When `--codex` is set, print per-step progress (start/skip/done) for long-running runs.
+  - When `--dry-run` is set, print the workflow steps without running Codex.
 - FR-09: `run --codex` wraps Codex execution and captures transcripts:
   - Resolve the repo root for transcripts:
     - If `--loopr-root <path>` is provided, use it and require `specs/.loopr/repo-id` under that root.
-    - Else if `LOOPR_ROOT` is set, use it and require `specs/.loopr/repo-id` under that root.
     - Otherwise, search upward for the nearest `specs/.loopr/repo-id` (created by `loopr init`).
   - Create `specs/.loopr/transcripts/<repo-id>/` if missing.
   - Write `session-<timestamp>.log` and `session-<timestamp>.jsonl`.
@@ -62,14 +63,13 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
   - Detect non-greenfield signals unless `--allow-existing` is set.
   - Ensure `specs/.loopr/` exists and write `specs/.loopr/init-state.json`.
   - Write `specs/.loopr/.gitignore` to ignore transcripts and session logs.
-  - Ensure a 6-character lowercase alphanumeric `specs/.loopr/repo-id` (create if missing).
+- Ensure a 6-character NanoID `specs/.loopr/repo-id` using alphabet `useandom26T198340PX75pxJACKVERYMINDBUSHWOLFGQZbfghjklqvwyzrict` (create if missing).
   - Ensure `specs/.loopr/transcripts/<repo-id>/` exists.
   - Ensure `specs/decisions/` and `specs/decisions/template.md` exist with the required headings.
   - Init state includes: `schema_version`, `specs_dir`, `allow_existing`, `loopr_version`, `loopr_commit`, `loopr_date`.
 - FR-12: `run --codex` JSONL metadata must include reproducibility fields in the `start` event:
   - Required: `loopr_version`, `loopr_commit`, `loopr_date`, `repo_root`, `repo_id`, `cwd`, `cmd`, `skills_embedded_hash`.
-  - Optional when available: `git_commit`, `git_dirty`, `skills_installed_hash`, `codex_model`, `codex_prompt`.
-  - `codex_model` and `codex_prompt` are populated from environment variables `LOOPR_CODEX_MODEL` and `LOOPR_CODEX_PROMPT` when set.
+  - Optional when available: `git_commit`, `git_dirty`, `skills_installed_hash`.
 
 ## Foundation / Tooling
 - FD-01: Provide deterministic build entry point: `make build` produces `bin/loopr`.
@@ -83,7 +83,7 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
 
 ## UX / Flow
 - `loopr init` → initializes repo metadata and decision log scaffolding.
-- `loopr run` → prints the planned steps (or runs them when `--codex` is set).
+- `loopr run --dry-run` → prints the workflow steps without running Codex.
 - `loopr run --codex --seed "<prompt>"` → runs the full pipeline via Codex with transcript logging.
 - `loopr run --codex --loopr-root <path>` → targets a specific Loopr workspace.
 - `loopr install` → installs/updates skills, prints summary counts and backup path.
@@ -109,13 +109,12 @@ Define a small, safe Go CLI that embeds Loopr skills and provides commands to in
   - Global: `--agent <name>`, `--all` (where supported)
   - Filters: `--only skill1,skill2`
   - Run: `--from`, `--to`, `--step`, `--seed`, `--force`, `--confirm`, `--codex`, `--loopr-root`, `--` for agent args
+  - Run: `--dry-run` (dryrun mode; no Codex execution)
   - Safety: `--force` on install/uninstall
   - Output: `--verbose`
   - Init: `--root <path>`, `--specs-dir <dir>`, `--allow-existing`
 - Environment variables:
   - `CODEX_HOME` to override the default Codex skills root.
-  - `LOOPR_ROOT` to select a Loopr workspace for `loopr run --codex` (overridden by `--loopr-root`).
-  - `LOOPR_CODEX_MODEL` and `LOOPR_CODEX_PROMPT` to populate optional reproducibility metadata fields.
 
 ## Architecture / Components
 - `cmd/loopr`: CLI entry, command routing and flag parsing.

@@ -47,7 +47,7 @@ func usage() {
 	fmt.Println("")
 	fmt.Println("Commands:")
 	fmt.Println("  init       Initialize Loopr metadata in a repo")
-	fmt.Println("  run        Orchestrate Loopr steps")
+	fmt.Println("  run        Orchestrate Loopr steps (requires --codex or --dry-run)")
 	fmt.Println("  install     Install loopr skills")
 	fmt.Println("  doctor      Validate installed skills")
 	fmt.Println("  list        List skills and status")
@@ -226,12 +226,23 @@ func runRun(args []string) {
 	force := fs.Bool("force", false, "rerun steps even if outputs exist")
 	confirm := fs.Bool("confirm", false, "ask before each step")
 	codex := fs.Bool("codex", false, "run steps with Codex (pass Codex args after --)")
+	dryRun := fs.Bool("dry-run", false, "print workflow steps without running Codex")
 	looprRoot := fs.String("loopr-root", "", "loopr workspace root")
 	if err := fs.Parse(looprArgs); err != nil {
 		os.Exit(2)
 	}
-	if len(agentArgs) > 0 && !*codex {
+	if *dryRun {
+		*codex = false
+		agentArgs = nil
+		*seed = ""
+		*confirm = false
+		*force = false
+	}
+	if len(agentArgs) > 0 && !*codex && !*dryRun {
 		fail(fmt.Errorf("agent args provided but --codex not set"))
+	}
+	if !*codex && !*dryRun {
+		fail(fmt.Errorf("run requires --codex or --dry-run"))
 	}
 
 	opts := ops.RunOptions{

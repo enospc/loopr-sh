@@ -46,7 +46,7 @@ Developers using the Loopr workflow need a consistent way to install and validat
 - Detect and report missing/drifted skills; list extra skills.
 - Backup existing skills before overwrite/removal (unless forced).
 - Support `--only` filters and `--agent` / `--all` targeting (codex supported today).
-- Orchestrate the Loopr workflow with `loopr run`; when `--codex` is set, execute Codex with transcript logging and JSONL metadata.
+- Orchestrate the Loopr workflow with `loopr run --codex` (execute) or `loopr run --dry-run` (dryrun mode).
 - Require `specs/.loopr/repo-id` for transcript logging (created by `loopr init`).
 - Provide deterministic build metadata via ldflags (version/commit/date).
 
@@ -71,6 +71,7 @@ Developers using the Loopr workflow need a consistent way to install and validat
 - `loopr doctor` compares installed skills to embedded skills and highlights drift.
 - `loopr list` summarizes skill status using doctor results.
 - `loopr uninstall` removes skills with optional backup.
+- `loopr run --dry-run` prints the workflow steps without running Codex.
 - `loopr run --codex --seed "<prompt>"` runs the workflow and writes transcripts and metadata.
 
 ## Risks & Mitigations

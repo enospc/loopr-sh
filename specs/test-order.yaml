@@ -71,11 +71,9 @@ features:
       - id: "01"
         title: Transcript capture wrapper
         tests:
-          - id: "01"
-            title: Codex wrapper writes transcript and reproducibility metadata
-          - id: "02"
-            title: Codex wrapper fails without repo-id
-          - id: "03"
-            title: Codex wrapper honors loopr root overrides
-          - id: "04"
-            title: Optional reproducibility fields follow env vars
+      - id: "01"
+        title: Codex wrapper writes transcript and reproducibility metadata
+      - id: "02"
+        title: Codex wrapper fails without repo-id
+      - id: "03"
+        title: Codex wrapper honors --loopr-root override
