@@ -37,11 +37,6 @@ var defaultAllowDirs = map[string]struct{}{
 	"specs":   {},
 }
 
-const (
-	repoIDLength   = 6
-	repoIDAlphabet = "useandom26T198340PX75pxJACKVERYMINDBUSHWOLFGQZbfghjklqvwyzrict"
-)
-
 type InitOptions struct {
 	Root          string
 	SpecsDir      string
@@ -159,7 +154,7 @@ func Init(opts InitOptions) (InitReport, error) {
 			return report, err
 		}
 		if !repoIDExists {
-			repoID, err = generateRepoID(randReader)
+			repoID, err = generateNanoID(randReader, repoIDLength)
 			if err != nil {
 				return report, err
 			}
@@ -208,7 +203,7 @@ func Init(opts InitOptions) (InitReport, error) {
 			return report, err
 		}
 		if !repoIDExists {
-			repoID, err = generateRepoID(randReader)
+			repoID, err = generateNanoID(randReader, repoIDLength)
 			if err != nil {
 				return report, err
 			}
@@ -334,44 +329,6 @@ func readRepoID(path string) (string, bool, error) {
 		return "", true, fmt.Errorf("repo-id %q at %s must be %d characters from the NanoID alphabet", value, path, repoIDLength)
 	}
 	return value, true, nil
-}
-
-func validRepoID(value string) bool {
-	if len(value) != repoIDLength {
-		return false
-	}
-	for i := 0; i < len(value); i++ {
-		if strings.IndexByte(repoIDAlphabet, value[i]) == -1 {
-			return false
-		}
-	}
-	return true
-}
-
-func generateRepoID(reader io.Reader) (string, error) {
-	const mask = byte(63)
-	out := make([]byte, 0, repoIDLength)
-	buf := make([]byte, repoIDLength)
-	for len(out) < repoIDLength {
-		need := repoIDLength - len(out)
-		if need > len(buf) {
-			need = len(buf)
-		}
-		if _, err := io.ReadFull(reader, buf[:need]); err != nil {
-			return "", err
-		}
-		for _, b := range buf[:need] {
-			idx := int(b & mask)
-			if idx >= len(repoIDAlphabet) {
-				continue
-			}
-			out = append(out, repoIDAlphabet[idx])
-			if len(out) == repoIDLength {
-				break
-			}
-		}
-	}
-	return string(out), nil
 }
 
 func formatInitTime(t time.Time) string {

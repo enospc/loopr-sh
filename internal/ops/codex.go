@@ -2,6 +2,7 @@ package ops
 
 import (
 	"bytes"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -42,14 +43,15 @@ func RunCodex(args []string, opts CodexOptions) (int, *CodexSession, error) {
 		return 1, nil, err
 	}
 
-	timestamp := time.Now().UTC().Format("20060102-150405")
 	transcriptsDir := filepath.Join(root, "specs", ".loopr", "transcripts", repoID)
 	if err := EnsureDir(transcriptsDir, 0o755); err != nil {
 		return 1, nil, err
 	}
 
-	logPath := filepath.Join(transcriptsDir, fmt.Sprintf("session-%s.log", timestamp))
-	metaPath := filepath.Join(transcriptsDir, fmt.Sprintf("session-%s.jsonl", timestamp))
+	logPath, metaPath, err := newSessionPaths(transcriptsDir, time.Now().UTC(), randReader())
+	if err != nil {
+		return 1, nil, err
+	}
 
 	session := &CodexSession{
 		RepoRoot: root,
@@ -102,6 +104,33 @@ func RunCodex(args []string, opts CodexOptions) (int, *CodexSession, error) {
 		"exit_code": code,
 	})
 	return code, session, err
+}
+
+func newSessionPaths(dir string, now time.Time, reader io.Reader) (string, string, error) {
+	timestamp := now.UTC().Format("20060102-150405")
+	for i := 0; i < 10; i++ {
+		suffix, err := generateNanoID(reader, sessionIDLength)
+		if err != nil {
+			return "", "", err
+		}
+		base := fmt.Sprintf("session-%s-%s", timestamp, suffix)
+		logPath := filepath.Join(dir, base+".log")
+		metaPath := filepath.Join(dir, base+".jsonl")
+		if exists(logPath) || exists(metaPath) {
+			continue
+		}
+		return logPath, metaPath, nil
+	}
+	return "", "", fmt.Errorf("unable to allocate unique session paths")
+}
+
+func randReader() io.Reader {
+	return rand.Reader
+}
+
+func exists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
 }
 
 func runCodexWithLogging(logPath string, args []string) (int, error) {
