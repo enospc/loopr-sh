@@ -4,9 +4,9 @@ Loopr is a workflow installer for greenfield-first projects (existing repos requ
 Loopr skills into your coding agent (Codex) so the agent can run the full
 PRD → Spec → Features → Tasks → Tests → Implementation pipeline.
 
-This tool is intentionally small and safe: it only installs skills and validates
-that they match the embedded source. All planning and coding happens through your
-agent (Codex) after the skills are installed.
+This tool is intentionally small and safe: it installs skills, initializes Loopr metadata,
+orchestrates Codex runs, and validates installed skills against the embedded source. All planning
+and coding happens through your agent (Codex) after the skills are installed.
 
 ## Requirements
 
@@ -59,7 +59,7 @@ loopr run       # orchestrate workflow (requires --codex or --dry-run)
 loopr version   # show version info
 ```
 
-Tip: `loopr run --help` shows Loopr-specific flags. If you include `--codex`, help/version flags are forwarded to Codex (for example, `loopr run --codex --help` prints Codex help). To pass other Codex flags, place them after `--` (for example, `loopr run --codex -- --model o3`).
+Tip: `loopr run --help` shows Loopr-specific flags. If you include `--codex`, help/version flags are forwarded to Codex (for example, `loopr run --codex --help` prints Codex help). To pass other Codex flags, place them after `--` (for example, `loopr run --codex -- --model o3`). If you pass a Codex subcommand after `--` (for example, `exec`, `review`, `login`), Loopr skips the workflow prompt and runs Codex directly while still logging transcripts.
 
 ## Monorepo usage (run --codex)
 
@@ -71,7 +71,7 @@ Resolution order:
 1. `--loopr-root <path>` (explicit flag)
 2. Nearest ancestor with `specs/.loopr/repo-id`
 
-Note: Only `loopr run --codex` resolves a Loopr workspace. `loopr run --dry-run` and other commands are repo-agnostic and only use `CODEX_HOME` to locate the skills directory.
+Note: Only `loopr run --codex` resolves a Loopr workspace. `loopr run --dry-run` is repo-agnostic and does not require `specs/.loopr`; skill install/doctor/list/uninstall use `CODEX_HOME` to locate the skills directory.
 
 Examples:
 
