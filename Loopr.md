@@ -358,32 +358,100 @@ Model capabilities will change quickly. Treat model upgrades as migrations.
 
 # Appendix A. Spec Template
 
-- Title:
-- Goal:
-- Non-goals:
-- Users:
-- Inputs:
-- Outputs:
-- Constraints (latency, cost, privacy):
-- Success metrics:
-- Edge cases:
-- Risks:
-- Test plan:
+Canonical template: `codex-skills/loopr-specify/SKILL.md`.
+
+```
+# Spec: <title>
+
+## Summary
+
+## Goals
+- 
+
+## Non-goals
+- 
+
+## Users & Use Cases
+- 
+
+## Functional Requirements
+- FR-01:
+- FR-02:
+
+## Foundation / Tooling
+- FD-01:
+- FD-02:
+
+## Testing Strategy
+- Stack: <language + test framework>
+- Property-based testing: <recommended | optional | not suitable> + <library or TBD>
+- Invariants / properties: <list key properties that must hold>
+- Determinism: <seed policy, time/iteration budget, replay notes>
+
+## Non-functional Requirements
+- NFR-01:
+- NFR-02:
+
+## UX / Flow
+- 
+
+## Data Model
+- 
+
+## API / Interfaces
+- 
+
+## Architecture / Components
+- 
+
+## Error Handling
+- 
+
+## Security & Privacy
+- 
+
+## Observability
+- Logs:
+- Metrics:
+- Alerts:
+
+## Rollout / Migration
+- 
+
+## Risks & Mitigations
+- 
+
+## Open Questions
+- 
+
+## Acceptance Criteria
+- 
+```
 
 # Appendix B. Agent Handoff Template
 
-- Task:
-- Context:
-- Assumptions:
-- Constraints:
-- Artifacts produced:
+Canonical template: `specs/.loopr/handoff.md` (created by `loopr run`).
+
+```
+# Loopr Handoff
+
+Initialized: <timestamp>
+
+## Entry (append per step)
+- Step:
+- Decisions:
 - Open questions:
-- Next steps:
+- Tests run:
+- Artifacts produced:
+- Seed / replay (if PBT):
+- Notes:
+```
 
 # Appendix C. Review Checklist
 
 - Does the change meet the spec?
 - Are tests added or updated?
+- Are property-based tests (if any) deterministic and reproducible (seed logged)?
 - Are failure modes understood?
 - Are costs and performance acceptable?
 - Are security and privacy covered?
@@ -404,4 +472,8 @@ Model capabilities will change quickly. Treat model upgrades as migrations.
 - **Prompt asset:** A versioned, testable instruction set for a model.
 - **Provenance:** The origin and lineage of code, data, or artifacts.
 - **Determinism:** The ability to reproduce the same result from the same inputs.
-
+- **Property-based testing:** Testing that checks invariants across generated inputs.
+- **Invariant:** A property that must hold for all valid inputs.
+- **Seed / Replay:** A value used to reproduce randomized test failures.
+- **Loopr workspace:** The repo root containing `specs/.loopr/`.
+- **Transcript:** A local log/JSONL record of an agent run.
