@@ -57,6 +57,12 @@ description: Frequently asked questions about Loopr.
   </details>
 
   <details>
+    <summary>How does Loopr handle property-based testing?</summary>
+    <p>Loopr treats PBT as an explicit, optional strategy. It requires the chosen library and invariants to be recorded in <code>specs/spec.md</code>, and feature/task docs carry the properties, generators, and seed/replay guidance.</p>
+    <p>Tests only emit PBT templates when a framework is named; otherwise they fall back to example-based tests and note the gap. Execution logs seeds and minimal failing cases to keep runs reproducible.</p>
+  </details>
+
+  <details>
     <summary>Where do the artifacts live?</summary>
     <p>All artifacts live under <code>specs/</code> in your repo.</p>
   </details>

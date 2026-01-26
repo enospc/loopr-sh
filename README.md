@@ -59,6 +59,8 @@ loopr run       # orchestrate workflow (use --codex to run Codex)
 loopr version   # show version info
 ```
 
+Tip: `loopr run --help` shows Loopr-specific flags. If you include `--codex`, help/version flags are forwarded to Codex (for example, `loopr run --codex --help` prints Codex help). To pass other Codex flags, place them after `--` (for example, `loopr run --codex -- --model o3`).
+
 ## Monorepo usage (run --codex)
 
 `loopr run --codex` needs a Loopr workspace root (the directory that contains `specs/.loopr/repo-id`).
@@ -98,6 +100,18 @@ Supporting/targeted skills:
 - `loopr-doctor`: validate order YAMLs and referenced files.
 
 Note: `loopr init` (CLI) initializes `specs/.loopr/` and `specs/decisions/`; `loopr doctor` (CLI) validates installed skill drift; `loopr-doctor` (skill) validates `specs/*-order.yaml` and referenced artifacts.
+
+### Property-based testing guidance
+
+Loopr’s test-generation skills now support property-based testing (PBT) when it is suitable. The intent is to make PBT explicit and deterministic, not assumed:
+
+- **specs/spec.md** includes a **Testing Strategy** section (language/test stack, PBT library, invariants, determinism/seed policy).
+- **feature docs** include **Invariants / Properties** and **PBT Suitability** (Recommended/Optional/Not Suitable).
+- **task docs** include **Testing Notes** (properties, generator notes, seed/replay guidance).
+- **test specs** emit property-based test templates when PBT is recommended and the framework is known; otherwise they fall back to example-based tests and note the gap.
+- **execution skills** require deterministic PBT runs and record seeds/minimal failing cases when applicable.
+
+This keeps the workflow reproducible and avoids “mystery generators” or flaky tests.
 
 ## End-to-end walkthrough (seed prompt → working code)
 

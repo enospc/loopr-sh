@@ -26,6 +26,16 @@ description: Core Loopr CLI commands and Codex skills.
     flags, place them after <code>--</code>.
   </p>
 
+  <h2>Property-based testing guidance</h2>
+  <p>Loopr supports property-based testing (PBT) when it is suitable, but it never guesses the framework. The workflow makes PBT explicit and reproducible:</p>
+  <ul>
+    <li><strong>specs/spec.md</strong> includes a Testing Strategy (stack, PBT library, invariants, determinism/seed policy).</li>
+    <li><strong>feature docs</strong> include Invariants/Properties and PBT Suitability (Recommended/Optional/Not Suitable).</li>
+    <li><strong>task docs</strong> include Testing Notes (properties, generators, seed/replay guidance).</li>
+    <li><strong>test specs</strong> emit PBT templates only when a framework is named; otherwise they fall back to example-based tests and note the gap.</li>
+    <li><strong>execution</strong> logs seeds and minimal failing cases for deterministic reproduction.</li>
+  </ul>
+
   <h2>Codex skills (installed by Loopr)</h2>
   <p>Run these inside Codex after installing:</p>
   <ul>
