@@ -14,7 +14,7 @@ Complete one task end-to-end, ensuring all associated tests pass before marking 
 
 ## Workflow
 1. Read the task file and identify acceptance criteria and dependencies.
-2. Locate associated tests; if missing, invoke $loopr-testify.
+2. Locate associated tests; if missing, stop and ask to run $loopr-testify.
 3. Implement the smallest change that satisfies each acceptance criterion.
 4. Add or update tests per the test files.
 5. Run tests; iterate until all task tests pass.
