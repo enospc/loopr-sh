@@ -11,13 +11,13 @@ description: Frequently asked questions about Loopr.
 
 <section class="doc-body">
   <details>
-    <summary>Is Loopr only for greenfield repos?</summary>
-    <p>Yes by default. Loopr is designed for clean repos. Use <code>--allow-existing</code> only when you understand the risks and have strong tests.</p>
+    <summary>Can I use Loopr in an existing repo?</summary>
+    <p>Yes. Initialize Loopr metadata with <code>loopr init</code>, then run the workflow against your existing codebase and verify outputs with tests.</p>
   </details>
 
   <details>
-    <summary>What does Loopr install?</summary>
-    <p>The CLI installs Codex skills that drive the PRD -> Spec -> Features -> Tasks -> Tests -> Execute pipeline.</p>
+    <summary>What does Loopr set up?</summary>
+    <p>Loopr initializes <code>loopr/</code> (repo id, config, transcripts) and drives the PRD -> Spec -> Features -> Tasks -> Tests -> Execute pipeline via Codex prompts.</p>
   </details>
 
   <details>
@@ -47,12 +47,13 @@ description: Frequently asked questions about Loopr.
 
   <details>
     <summary>Can I run only part of the workflow?</summary>
-    <p>Yes. You can run a single task with <code>loopr-run-task</code> or generate tests for one task with <code>loopr-testify</code>.</p>
+    <p>Yes. Use <code>loopr run --step &lt;name&gt;</code> to run a single step or <code>--from</code>/<code>--to</code> for a range.</p>
   </details>
 
   <details>
     <summary>How do I see Codex help or pass Codex flags?</summary>
     <p><code>loopr run</code> requires <code>--codex</code> (execute) or <code>--dry-run</code> (dryrun mode).</p>
+    <p><code>--codex</code> and <code>--dry-run</code> are mutually exclusive.</p>
     <p>Use <code>loopr run --help</code> for Loopr run flags. If you include <code>--codex</code>, help/version flags are forwarded to Codex (for example, <code>loopr run --codex --help</code>).</p>
     <p>For other Codex flags, place them after <code>--</code>, like <code>loopr run --codex -- --model o3</code>.</p>
   </details>
@@ -65,7 +66,7 @@ description: Frequently asked questions about Loopr.
 
   <details>
     <summary>Where do the artifacts live?</summary>
-    <p>All artifacts live under <code>specs/</code> in your repo.</p>
+    <p>Specs live under <code>specs/</code>. Operational state (repo id, transcripts, status) lives under <code>loopr/</code>.</p>
   </details>
 
   <details>

@@ -1,22 +1,11 @@
-# Go build artifacts
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-*.test
-*.out
-*.prof
-*.cover
+# Rust build artifacts
+/target/
+*.rs.bk
 
 # Build output directories
 bin/
 build/
 dist/
-
-# Go workspace files
-go.work
-go.work.sum
 
 # Coverage reports
 coverage.out

@@ -3,8 +3,8 @@
     "name": "Loopr",
     "domain": "loopr.sh",
     "baseUrl": "https://loopr.sh",
-    "tagline": "Workflow installer for greenfield-first projects",
-    "description": "Loopr installs a disciplined PRD -> Spec -> Features -> Tasks -> Tests -> Implementation workflow so teams can ship AI-first software safely."
+    "tagline": "Workflow harness for AI-driven software",
+    "description": "Loopr orchestrates a disciplined PRD -> Spec -> Features -> Tasks -> Tests -> Implementation workflow so teams can ship AI-first software safely."
   },
   "links": {
     "github": "https://github.com/enospc/loopr-sh"

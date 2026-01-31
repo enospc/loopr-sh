@@ -8,7 +8,7 @@ description: Build. Verify. Iterate. A disciplined workflow for AI-first softwar
     <p class="eyebrow">Build. Verify. Iterate.</p>
     <h1>A disciplined workflow for AI-first software delivery.</h1>
     <h2>Own outcomes.<br />Not output.</h2>
-    <p class="lead">Loopr installs a PRD -> Spec -> Features -> Tasks -> Tests -> Implementation workflow so AI code ships with intent, verification, and reversible decisions.</p>
+    <p class="lead">Loopr orchestrates a PRD -> Spec -> Features -> Tasks -> Tests -> Implementation workflow so AI code ships with intent, verification, and reversible decisions.</p>
     <div class="hero-cta">
       <a class="btn primary" data-cta="primary" href="/go/install/">Install Loopr</a>
       <a class="btn ghost" data-cta="secondary" href="/docs/">View Docs</a>
@@ -63,7 +63,7 @@ description: Build. Verify. Iterate. A disciplined workflow for AI-first softwar
     <h2>Short loops, fast reality</h2>
   </div>
   <ol class="step-list">
-    <li class="step-item"><span>01</span><div><strong>Install Loopr</strong><br />Initialize the workflow metadata in a clean repo.</div></li>
+    <li class="step-item"><span>01</span><div><strong>Initialize Loopr</strong><br />Set up workflow metadata in your repo.</div></li>
     <li class="step-item"><span>02</span><div><strong>Interview the product</strong><br />Capture intent and constraints through a PRD interview.</div></li>
     <li class="step-item"><span>03</span><div><strong>Compile the spec</strong><br />Translate intent into testable requirements and non-goals.</div></li>
     <li class="step-item"><span>04</span><div><strong>Execute with tests</strong><br />Run tasks in order, stop on failures, and log decisions.</div></li>

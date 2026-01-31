@@ -1,77 +1,113 @@
 # Loopr CLI
 
-Loopr is a workflow installer for greenfield-first projects (existing repos require explicit `--allow-existing`). The `loopr` binary plants the
-Loopr skills into your coding agent (Codex) so the agent can run the full
-PRD → Spec → Features → Tasks → Tests → Implementation pipeline.
+Loopr is a workflow harness for repositories. It orchestrates Codex with structured prompts, captures transcripts, and
+keeps the PRD → Spec → Features → Tasks → Tests → Execute pipeline grounded in your repo.
 
-This tool is intentionally small and safe: it installs skills, initializes Loopr metadata,
-orchestrates Codex runs, and validates installed skills against the embedded source. All planning
-and coding happens through your agent (Codex) after the skills are installed.
+Loopr is intentionally small and safe: it initializes repo metadata, drives a deterministic prompt sequence, logs decisions and outputs, and
+validates specs order artifacts. You own intent, verification, and outcomes; Loopr keeps the loop tight.
 
 ## Requirements
 
 - Linux host (desktop, VM, Docker, or bare metal)
 - Codex CLI available on your PATH
-- If building from source: Go 1.25+
+- `just` available on your PATH
+- If building from source: Rust (edition 2024)
 
 ## Build
 
 From this directory:
 
 ```
-make build
+just build
 ```
 
 Binary will be at `bin/loopr`.
 
-Note: `make build` checks for Go and exits with a helpful message if it isn't installed.
+## Quick start
 
-## Install the skills
-
-```
-./bin/loopr install
-```
-
-This installs the Loopr skills into your Codex skills directory:
-- `$CODEX_HOME/skills` if `CODEX_HOME` is set
-- `~/.codex/skills` otherwise
-
-By default, Loopr backs up any modified skills before overwriting them.
-
-## Validate the install
+1) Initialize the repo:
 
 ```
-./bin/loopr doctor
+./bin/loopr init
 ```
 
-This compares installed skills against the embedded source and reports drift.
-
-To validate Loopr order artifacts in a repo (feature/task/test YAML + referenced files):
+2) Run the workflow:
 
 ```
-./bin/loopr doctor --specs
+./bin/loopr run --codex --seed-prompt "<seed prompt>"
 ```
+
+3) (Optional) run your own checks (tests, lint) once specs are written.
+
+## AGENTS.md (recommended)
+
+Keep agent instructions in `AGENTS.md` at the repo root. Treat it as a contract: goals, guardrails, and expectations
+for Codex sessions. Loopr prompts assume this file is authoritative for how the agent should behave.
 
 ## Command summary
 
 ```
-loopr install   # plant skills
-loopr init      # initialize Loopr metadata in a repo
-loopr doctor    # validate installed skills
-loopr doctor --specs # validate specs order files + references
-loopr list      # list skills and status
-loopr uninstall # remove skills (backed up by default)
-loopr run       # orchestrate workflow (requires --codex or --dry-run)
-loopr loop      # run the execute loop with safety gates
-loopr monitor   # watch loop status
-loopr version   # show version info
+loopr init            # initialize Loopr metadata in a repo
+loopr run             # orchestrate workflow (requires --codex or --dry-run)
+loopr loop            # run the execute loop with safety gates
+loopr version         # show version info
 ```
 
-Tip: `loopr run --help` shows Loopr-specific flags. If you include `--codex`, help/version flags are forwarded to Codex (for example, `loopr run --codex --help` prints Codex help). To pass other Codex flags, place them after `--` (for example, `loopr run --codex -- --model o3`). If you pass a Codex subcommand after `--` (for example, `exec`, `review`, `login`), Loopr skips the workflow prompt and runs Codex directly while still logging transcripts.
+Tip: `loopr run --help` shows Loopr-specific flags. If you include `--codex`, help/version flags are forwarded to Codex
+(for example, `loopr run --codex --help`). To pass other Codex flags, place them after `--`
+(for example, `loopr run --codex -- --model o3`). To open Codex without the Loopr prompt, add `--no-prompt`.
+Note: `--codex` and `--dry-run` are mutually exclusive.
+
+## Workflow steps and prompts
+
+`loopr run` executes these steps in order. Use `--step <name>` for a single step, or `--from <name> --to <name>` for a range.
+Step names are the CLI selectors; prompt names appear in transcripts and handoffs.
+Loopr does not infer or skip steps based on repo contents.
+
+| Step name | Prompt name     | Outputs |
+| --- | --- | --- |
+| `prd` | `loopr-prd` | `specs/prd.md` |
+| `spec` | `loopr-specify` | `specs/spec.md` |
+| `features` | `loopr-features` | `specs/feature-order.yaml`, `specs/feature-*.md` |
+| `tasks` | `loopr-tasks` | `specs/task-order.yaml`, `specs/feature-*-task-*.md` |
+| `tests` | `loopr-tests` | `specs/test-order.yaml`, `specs/feature-*-task-*-test-*.md` |
+| `execute` | `loopr-execute` | `specs/implementation-progress.md` |
+
+Notes:
+- `--seed-prompt` is required when the `prd` step runs and `specs/prd.md` does not exist.
+- Each prompt appends a completion note to `loopr/state/handoff.md` (decisions, open questions, tests).
+
+## Repo layout
+
+Loopr keeps durable artifacts under `specs/` and operational state under `loopr/`:
+
+```
+loopr/
+  repo-id
+  config
+  .gitignore
+  state/
+    handoff.md
+    transcripts/<repo-id>/session-*.log
+    transcripts/<repo-id>/session-*.jsonl
+    status.json
+specs/
+  prd.md
+  spec.md
+  feature-order.yaml
+  task-order.yaml
+  test-order.yaml
+  feature-*.md
+  feature-*-task-*.md
+  feature-*-task-*-test-*.md
+  implementation-progress.md
+```
+
+`loopr/.gitignore` ignores `loopr/state/` by default so runtime state stays local.
 
 ## Loop mode (MVP)
 
-`loopr loop` runs repeated `loopr-execute` iterations with safety gates (rate limiting, exit signals, circuit breaker).
+`loopr loop` runs repeated execute iterations with safety gates (exit signals and missing-status limits).
 
 Examples:
 ```
@@ -80,220 +116,46 @@ loopr loop --max-iterations 10
 loopr loop --loopr-root /repo/apps/service-a -- --model o3
 ```
 
-The loop relies on the `---LOOPR_STATUS---` block emitted by `loopr-execute` (and `loopr-run-task` if you use it manually).
-If the status block is missing, Loopr cannot confirm completion and may open the circuit breaker based on no-progress signals.
+The loop relies on the `---LOOPR_STATUS---` block emitted by the `loopr-execute` step.
+If the status block is missing, Loopr cannot confirm completion and will stop after `MAX_MISSING_STATUS` misses.
 
-Config is read from `.loopr/config`:
+Config is read from `loopr/config`:
 ```
-MAX_CALLS_PER_HOUR=100
 CODEX_TIMEOUT_MINUTES=15
 MAX_ITERATIONS=50
-MAX_CONSECUTIVE_DONE_SIGNALS=2
-MAX_NO_PROGRESS=3
-MAX_SAME_ERROR=5
-MAX_CONSECUTIVE_TEST_LOOPS=3
 MAX_MISSING_STATUS=2
 ```
 
-Loop status is written to `.loopr/status.json` and `.loopr/loop.log`.
-
-### Monitor
-
-Use `loopr monitor` to watch status updates:
-```
-loopr monitor
-loopr monitor --interval 2
-loopr monitor --once
-```
+Loop status is written to `loopr/state/status.json`.
 
 ## Monorepo usage (run --codex)
 
 `loopr run` requires `--codex` (run Codex) or `--dry-run` (dryrun mode).
-`loopr run --codex` needs a Loopr workspace root (the directory that contains `.loopr/repo-id`).
+`loopr run --codex` needs a Loopr workspace root (the directory that contains `loopr/repo-id`).
 In a monorepo, you can pick the workspace explicitly or let Loopr find the nearest one.
 
 Resolution order:
 1. `--loopr-root <path>` (explicit flag)
-2. Nearest ancestor with `.loopr/repo-id`
+2. Nearest ancestor with `loopr/repo-id`
 
-Note: Only `loopr run --codex` resolves a Loopr workspace. `loopr run --dry-run` is repo-agnostic and does not require `.loopr`; skill install/doctor/list/uninstall use `CODEX_HOME` to locate the skills directory.
+Note: Only `loopr run --codex` resolves a Loopr workspace. `loopr run --dry-run` is repo-agnostic and does not require `loopr/`.
 
-Examples:
+Example:
 
 ```
 loopr run --codex --step execute --loopr-root /repo/apps/service-a -- --help
 ```
 
-## Codex skills installed
+## Property-based testing guidance
 
-Loopr installs the following skills into your Codex skills directory. You invoke these inside Codex (they are not CLI subcommands):
-
-Primary workflow:
-- `loopr-prd`: MCQ interview -> `specs/prd.md`.
-- `loopr-specify`: PRD -> `specs/spec.md`.
-- `loopr-features`: Spec -> `specs/feature-*.md` + `specs/feature-order.yaml`.
-- `loopr-tasks`: Features -> `specs/feature-*-task-*.md` + `specs/task-order.yaml`.
-- `loopr-tests`: Tasks -> `specs/feature-*-task-*-test-*.md` + `specs/test-order.yaml`.
-- `loopr-execute`: implement tasks in order and record progress.
-
-Supporting/targeted skills:
-- `loopr-help`: explain the Loopr workflow and decision tree.
-- `loopr-run-task`: implement a single task end-to-end.
-- `loopr-taskify`: split one feature into tasks (updates `specs/task-order.yaml`).
-- `loopr-testify`: split one task into tests (updates `specs/test-order.yaml`).
-- `loopr-doctor`: validate order YAMLs and referenced files (uses `loopr doctor --specs`).
-
-Note: `loopr init` (CLI) initializes `.loopr/` and `specs/decisions/`; `loopr doctor` (CLI) validates installed skill drift; `loopr-doctor` (skill) validates `specs/*-order.yaml` and referenced artifacts via `loopr doctor --specs`.
-
-### Property-based testing guidance
-
-Loopr’s test-generation skills now support property-based testing (PBT) when it is suitable. The intent is to make PBT explicit and deterministic, not assumed:
+Loopr’s test-generation steps support property-based testing (PBT) when it is suitable. The intent is to make PBT explicit and deterministic:
 
 - **specs/spec.md** includes a **Testing Strategy** section (language/test stack, PBT library, invariants, determinism/seed policy).
 - **feature docs** include **Invariants / Properties** and **PBT Suitability** (Recommended/Optional/Not Suitable).
 - **task docs** include **Testing Notes** (properties, generator notes, seed/replay guidance).
-- **test specs** emit property-based test templates when PBT is recommended and the framework is known; otherwise they fall back to example-based tests and note the gap.
-- **execution skills** require deterministic PBT runs and record seeds/minimal failing cases when applicable.
-
-This keeps the workflow reproducible and avoids “mystery generators” or flaky tests.
-
-## End-to-end walkthrough (seed prompt → working code)
-
-This is a complete greenfield example for developers.
-
-### Seed prompt
-
-"Build a monorepo with two apps: (1) a local TODO CLI that stores tasks in SQLite and exports to CSV, and (2) a small website that documents the CLI and provides usage examples."
-
-### 0) Create a clean monorepo
-
-Start in a new empty repo with no application code:
-
-```
-mkdir todo && cd todo
-mkdir -p cli website
-```
-
-### 1) Install Loopr skills
-
-```
-/path/to/loopr install
-/path/to/loopr doctor
-```
-
-For transcript logging in a monorepo, run the workflow through Loopr and point it at the target workspace:
-
-```
-/path/to/loopr run --codex --seed-prompt "<seed prompt>" --loopr-root ./cli -- <codex args>
-```
-
-
-### 2) Run the workflow in Codex
-
-Open Codex in the subproject you are working on and run the skills in order. Each step
-creates concrete artifacts under `specs/` and the later steps implement code.
-
-Use `loopr run --codex --seed-prompt "<seed prompt>" --loopr-root ./cli` (or `./website`) to run the workflow and capture transcripts into that
-workspace’s `.loopr/transcripts/<repo-id>/`.
-
-Tip: If you want a guided walkthrough, run `loopr-help`.
-
-1. **Initialize Loopr metadata**
-   - Command: `loopr init`
-   - If the repo already has code: `loopr init --allow-existing`
-   - Interaction: Autonomous (no questions expected)
-   - Output: `.loopr/` with repo id, init-state (schema + build metadata), transcript path, and a `.gitignore` for transcripts
-
-2. **Create a PRD**
-   - Prompt: "Run loopr-prd with seed prompt: <seed prompt above>"
-   - Interaction: **User input required** (MCQ interview; answer each question)
-   - Output: `specs/prd.md`
-
-3. **Expand PRD → Spec**
-   - Prompt: "Run loopr-specify"
-   - Interaction: **User input required if prompted** (clarifying questions when PRD lacks detail)
-   - Output: `specs/spec.md` (includes foundation requirements)
-
-4. **Split Spec → Features**
-   - Prompt: "Run loopr-features"
-   - Interaction: Autonomous
-   - Output: `specs/feature-*.md` + `specs/feature-order.yaml` (foundation first in greenfield mode)
-
-5. **Generate Tasks**
-   - Prompt: "Run loopr-tasks"
-   - Interaction: Autonomous
-   - Output: `specs/feature-*-task-*.md` + `specs/task-order.yaml`
-
-6. **Generate Tests**
-   - Prompt: "Run loopr-tests"
-   - Interaction: Autonomous
-   - Output: `specs/feature-*-task-*-test-*.md` + `specs/test-order.yaml`
-
-7. **Implement**
-   - Prompt: "Run loopr-execute"
-   - Interaction: Mostly autonomous; **user input required** if the agent needs missing context (e.g., test command choice or failure resolution)
-   - Output: working code, tests, and `specs/implementation-progress.md`
-
-### Adding a new feature in an existing Loopr repo
-
-If the repo is already Loopr-initialized (has `.loopr/repo-id`), prefer the targeted skills so you do not regenerate unrelated artifacts.
-
-1. **Update intent (optional)**
-   - If requirements changed: update `specs/prd.md` and/or `specs/spec.md`, then re-run "loopr-specify" and "loopr-features" as needed.
-2. **Add the feature**
-   - Prompt: "Run loopr-features" (full regen), **or** add `specs/feature-<slug>.md` and append it to `specs/feature-order.yaml`.
-3. **Create tasks**
-   - Prompt: "Run loopr-taskify for feature <slug>" (preferred), **or** "Run loopr-tasks" to regenerate all tasks.
-4. **Create tests**
-   - Prompt: "Run loopr-testify for task <id> in feature <slug>" (preferred), **or** "Run loopr-tests".
-5. **Preflight**
-   - Prompt: "Run loopr-doctor" (validates order YAMLs + referenced files via `loopr doctor --specs`).
-6. **Implement**
-   - Prompt: "Run loopr-run-task on specs/feature-<slug>-task-<id>.md" for each new task (or "Run loopr-execute" to run the full order).
-
-### 3) Verify the build
-
-The foundation tasks define the build/test entry points. In most cases this will be
-something like:
-
-```
-make test
-make build
-```
-
-If the foundation chose a different runner (e.g., `go test ./...`, `npm test`),
-follow the commands defined in the foundation task files.
-
-### 4) Run the CLI (example)
-
-Once tasks are complete, you should have a working binary with commands like:
-
-```
-./bin/todo add "buy milk"
-./bin/todo list
-./bin/todo done 1
-./bin/todo export --csv ./todos.csv
-```
-
-(Exact command names may vary depending on what the spec/tasks defined.)
-
-### 4) Document the CLI in the website app
-
-Repeat the workflow in `website` with a seed prompt focused on documentation and examples
-for the CLI. Use `loopr run --codex --seed-prompt "<seed prompt>" --loopr-root ./website` so transcripts and `specs/` artifacts
-live under the website workspace.
-
-## Updating or re-installing skills
-
-Re-run install anytime you want to refresh skills:
-
-```
-/path/to/loopr install
-```
-
-If you have local edits, Loopr will back them up automatically before overwriting.
+- **test specs** emit PBT templates only when a framework is named; otherwise they fall back to example-based tests and note the gap.
+- **execution steps** require deterministic PBT runs and record seeds/minimal failing cases when applicable.
 
 ## Notes
 
-- Loopr defaults to **greenfield**: it assumes a blank repo unless you explicitly run `loopr init --allow-existing`.
-- The CLI installs skills, initializes Loopr metadata, and orchestrates Codex runs; planning and coding happen through Codex.
+- The CLI initializes Loopr metadata and orchestrates Codex runs; planning and coding happen through Codex.

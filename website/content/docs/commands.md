@@ -1,30 +1,26 @@
 ---
 title: Commands
-description: Core Loopr CLI commands and Codex skills.
+description: Core Loopr CLI commands and workflow prompts.
 ---
 
 <section class="doc-hero">
   <p class="eyebrow">Commands</p>
-  <h1>CLI + Codex skills</h1>
-  <p class="lead">Treat prompts like code and keep interfaces stable. The CLI installs the skills that enforce that discipline.</p>
+  <h1>CLI commands</h1>
+  <p class="lead">Treat prompts like code and keep interfaces stable. Loopr orchestrates Codex with structured prompts and logs transcripts.</p>
 </section>
 
 <section class="doc-body">
   <h2>CLI commands</h2>
   <ul>
-    <li><code>loopr init</code> - initialize repo metadata in <code>.loopr/</code> and write init-state + transcript ignore.</li>
-    <li><code>loopr install</code> - installs Loopr skills into your Codex skills directory.</li>
-    <li><code>loopr doctor</code> - validates installed skills against the embedded source.</li>
-    <li><code>loopr list</code> - lists skills and status.</li>
-    <li><code>loopr uninstall</code> - removes skills (backs up by default).</li>
+    <li><code>loopr init</code> - initialize repo metadata in <code>loopr/</code> and runtime state in <code>loopr/state/</code>.</li>
     <li><code>loopr run --codex</code> - runs the workflow via Codex with transcript logging for the chosen workspace.</li>
     <li><code>loopr run --dry-run</code> - prints the workflow steps without running Codex.</li>
-    <li><code>loopr loop</code> - runs the execute loop with safety gates (rate limiting, exit signals, circuit breaker).</li>
-    <li><code>loopr monitor</code> - watches loop status updates.</li>
+    <li><code>loopr loop</code> - runs the execute loop with safety gates (exit signals and missing-status limits).</li>
     <li><code>loopr version</code> - prints version info.</li>
   </ul>
   <p>
     Tip: use <code>loopr run --help</code> to see Loopr run flags. <code>loopr run</code> requires <code>--codex</code> or <code>--dry-run</code>.
+    These flags are mutually exclusive.
     If you include <code>--codex</code>, help/version flags
     are forwarded to Codex (for example, <code>loopr run --codex --help</code> shows Codex help). To pass other Codex
     flags, place them after <code>--</code>.
@@ -40,8 +36,8 @@ description: Core Loopr CLI commands and Codex skills.
     <li><strong>execution</strong> logs seeds and minimal failing cases for deterministic reproduction.</li>
   </ul>
 
-  <h2>Codex skills (installed by Loopr)</h2>
-  <p>Run these inside Codex after installing:</p>
+  <h2>Workflow prompts (used by <code>loopr run</code>)</h2>
+  <p>Loopr drives Codex through these prompt names:</p>
   <ul>
     <li><code>loopr-prd</code> - interview and write <code>specs/prd.md</code>.</li>
     <li><code>loopr-specify</code> - expand PRD into <code>specs/spec.md</code>.</li>
@@ -49,14 +45,6 @@ description: Core Loopr CLI commands and Codex skills.
     <li><code>loopr-tasks</code> - generate task files for each feature.</li>
     <li><code>loopr-tests</code> - generate test files for each task.</li>
     <li><code>loopr-execute</code> - implement tasks in order.</li>
-  </ul>
-
-  <h3>Supporting skills</h3>
-  <ul>
-    <li><code>loopr-help</code> - guided workflow overview.</li>
-    <li><code>loopr-run-task</code> - implement a single task.</li>
-    <li><code>loopr-taskify</code> / <code>loopr-testify</code> - split a single feature/task into tasks/tests.</li>
-    <li><code>loopr-doctor</code> - validates <code>specs/*-order.yaml</code> and referenced artifacts.</li>
   </ul>
 
   <div class="callout">

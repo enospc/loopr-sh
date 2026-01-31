@@ -413,7 +413,7 @@ Use this as a lightweight execution plan alongside the PRD or spec.
 
 # Appendix B. Spec Template
 
-Canonical template: `codex-skills/loopr-specify/SKILL.md`.
+Canonical template: use the Appendix B template below as the versioned source of truth.
 
 ```
 # Spec: <title>
@@ -485,7 +485,7 @@ Canonical template: `codex-skills/loopr-specify/SKILL.md`.
 
 # Appendix C. Agent Handoff Template
 
-Canonical template: `.loopr/handoff.md` (created by `loopr run --codex`).
+Canonical template: `loopr/state/handoff.md` (created by `loopr run --codex`).
 
 ```
 # Loopr Handoff
@@ -530,5 +530,5 @@ Initialized: <timestamp>
 - **Property-based testing:** Testing that checks invariants across generated inputs.
 - **Invariant:** A property that must hold for all valid inputs.
 - **Seed / Replay:** A value used to reproduce randomized test failures.
-- **Loopr workspace:** The repo root containing `.loopr/`.
+- **Loopr workspace:** The repo root containing `loopr/`.
 - **Transcript:** A local log/JSONL record of an agent run.

@@ -6,14 +6,14 @@ description: Loopr documentation grounded in verification, intent, and short loo
 <section class="doc-hero">
   <p class="eyebrow">Documentation</p>
   <h1>Loopr Docs</h1>
-  <p class="lead">Install Loopr, run the workflow end-to-end, and keep AI output aligned with intent and verification.</p>
+  <p class="lead">Build Loopr, run the workflow end-to-end, and keep AI output aligned with intent and verification.</p>
 </section>
 
 <section class="section">
   <div class="docs-grid">
     <div class="docs-card">
       <h3><a href="/docs/install/">Install</a></h3>
-      <p>Build Loopr from source, install skills, and validate your setup.</p>
+      <p>Build Loopr from source and initialize your workspace.</p>
     </div>
     <div class="docs-card">
       <h3><a href="/docs/quickstart/">Quickstart</a></h3>
@@ -21,7 +21,7 @@ description: Loopr documentation grounded in verification, intent, and short loo
     </div>
     <div class="docs-card">
       <h3><a href="/docs/commands/">Commands</a></h3>
-      <p>Understand the CLI verbs and the Codex skills Loopr installs.</p>
+      <p>Understand the CLI verbs and workflow prompts Loopr runs.</p>
     </div>
     <div class="docs-card">
       <h3><a href="/docs/workflow/">Workflow</a></h3>
@@ -29,7 +29,7 @@ description: Loopr documentation grounded in verification, intent, and short loo
     </div>
     <div class="docs-card">
       <h3><a href="/docs/faq/">FAQ</a></h3>
-      <p>Common questions about greenfield requirements and safety.</p>
+      <p>Common questions about workflow, safety, and usage.</p>
     </div>
   </div>
 </section>
