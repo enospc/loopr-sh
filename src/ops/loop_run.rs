@@ -132,7 +132,7 @@ pub fn run_loop(opts: LoopOptions) -> LooprResult<LoopReport> {
             });
         }
 
-        let prompt = build_loop_prompt(&step, &handoff_path, next_iteration);
+        let prompt = build_loop_prompt(&step, &handoff_path, &root, next_iteration);
         let mut args = vec!["--cd".to_string(), root.display().to_string()];
         args.extend(opts.codex_args.clone());
         args.push(prompt);
@@ -408,6 +408,7 @@ fn run_loop_per_task(
         let prompt = build_per_task_prompt(
             &step,
             &handoff_path,
+            &root,
             next_iteration,
             selection.key(),
             item_type,
@@ -1208,6 +1209,7 @@ fn detect_pbt(test: &TestSpec, root: &Path) -> LooprResult<bool> {
 fn build_per_task_prompt(
     step: &RunStep,
     handoff_path: &Path,
+    root: &Path,
     iteration: i64,
     item_key: &str,
     item_type: &str,
@@ -1219,11 +1221,17 @@ fn build_per_task_prompt(
         format!("Loopr loop iteration: {}", iteration),
         format!("Item: {} ({})", item_key, item_type),
         format!("Phase: {}", phase),
-        String::new(),
-        format!("Prompt: {}", step.skill),
-        String::new(),
-        "Allowed inputs:".to_string(),
+        format!("Loopr root: {}", root.display()),
     ];
+    let docs_index = root.join("loopr").join("state").join("docs-index.txt");
+    if docs_index.exists() {
+        lines.push(format!("Docs index: {}", docs_index.display()));
+    }
+    lines.push(format!("Handoff: {}", handoff_path.display()));
+    lines.push(String::new());
+    lines.push(format!("Prompt: {}", step.skill));
+    lines.push(String::new());
+    lines.push("Allowed inputs:".to_string());
     for input in inputs {
         lines.push(format!("- {}", input));
     }
@@ -1287,9 +1295,14 @@ fn build_per_task_prompt(
     lines.join("\n")
 }
 
-fn build_loop_prompt(step: &RunStep, handoff_path: &Path, iteration: i64) -> String {
+fn build_loop_prompt(
+    step: &RunStep,
+    handoff_path: &Path,
+    root: &Path,
+    iteration: i64,
+) -> String {
     let mut lines = vec![format!("Loopr loop iteration: {}", iteration)];
-    lines.extend(build_prompt_lines(step, "", handoff_path));
+    lines.extend(build_prompt_lines(step, "", handoff_path, root));
     lines.push(
         "- Only set EXIT_SIGNAL: true when all tasks are complete and tests are green.".to_string(),
     );

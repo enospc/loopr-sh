@@ -131,7 +131,8 @@ pub fn run_workflow(opts: RunOptions) -> LooprResult<RunReport> {
         let mut args = vec!["--cd".to_string(), root.display().to_string()];
         args.extend(opts.codex_args.clone());
         if append_prompt {
-            let prompt = build_prompt(&step, &opts.seed, handoff_path.as_ref().unwrap());
+            let prompt =
+                build_prompt(&step, &opts.seed, handoff_path.as_ref().unwrap(), &root);
             args.push(prompt);
         }
 
@@ -325,17 +326,29 @@ pub fn find_step(steps: &[RunStep], name: &str) -> Option<RunStep> {
     steps.get(idx as usize).cloned()
 }
 
-pub fn build_prompt(step: &RunStep, seed: &str, handoff_path: &Path) -> String {
+pub fn build_prompt(step: &RunStep, seed: &str, handoff_path: &Path, root: &Path) -> String {
     let mut lines = Vec::new();
     lines.push(format!("Loopr step: {}", step.name));
-    lines.extend(build_prompt_lines(step, seed, handoff_path));
+    lines.extend(build_prompt_lines(step, seed, handoff_path, root));
     lines.push(String::new());
     lines.push(format!("Run the prompt: {}", step.skill));
     lines.join("\n")
 }
 
-pub fn build_prompt_lines(step: &RunStep, seed: &str, handoff_path: &Path) -> Vec<String> {
+pub fn build_prompt_lines(
+    step: &RunStep,
+    seed: &str,
+    handoff_path: &Path,
+    root: &Path,
+) -> Vec<String> {
     let mut lines = Vec::new();
+    lines.push(format!("Loopr root: {}", root.display()));
+    let docs_index = root.join("loopr").join("state").join("docs-index.txt");
+    if docs_index.exists() {
+        lines.push(format!("Docs index: {}", docs_index.display()));
+    }
+    lines.push(format!("Handoff: {}", handoff_path.display()));
+    lines.push(String::new());
     lines.push(format!("Prompt: {}", step.skill));
     lines.push(String::new());
     lines.push("Allowed inputs:".to_string());

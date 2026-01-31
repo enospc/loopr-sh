@@ -204,6 +204,7 @@ fn test_init_greenfield_creates_repo_id() {
     let report = init(InitOptions {
         root: root.clone(),
         rand: Some(Box::new(FixedRandom::new(vec![0, 1, 2, 3, 4, 5]))),
+        no_agents: true,
     })
     .unwrap();
 
@@ -226,11 +227,81 @@ fn test_init_reuses_repo_id_when_present() {
     let report = init(InitOptions {
         root: root.clone(),
         rand: None,
+        no_agents: true,
     })
     .unwrap();
 
     assert_eq!(report.repo_id, "abc123");
     assert!(!report.repo_id_created);
+}
+
+#[test]
+fn test_init_creates_agents_and_docs_index() {
+    let root = temp_dir("init-agents");
+    let report = init(InitOptions {
+        root: root.clone(),
+        rand: None,
+        no_agents: false,
+    })
+    .unwrap();
+
+    assert!(!report.repo_id.is_empty());
+    let agents_path = root.join("AGENTS.md");
+    assert!(agents_path.exists());
+    let agents_body = fs::read_to_string(&agents_path).unwrap();
+    assert!(agents_body.contains("[loopr: injected"));
+
+    let docs_index = root.join("loopr").join("state").join("docs-index.txt");
+    assert!(docs_index.exists());
+}
+
+#[test]
+fn test_init_injects_agents_when_present() {
+    let root = temp_dir("init-agents-existing");
+    let agents_path = root.join("AGENTS.md");
+    fs::write(&agents_path, "# AGENTS\n\nCustom instructions.\n").unwrap();
+
+    init(InitOptions {
+        root: root.clone(),
+        rand: None,
+        no_agents: false,
+    })
+    .unwrap();
+
+    let agents_body = fs::read_to_string(&agents_path).unwrap();
+    assert!(agents_body.contains("Custom instructions."));
+    assert!(agents_body.contains("[loopr: injected"));
+
+    // Running init again should not duplicate the injected section.
+    init(InitOptions {
+        root: root.clone(),
+        rand: None,
+        no_agents: false,
+    })
+    .unwrap();
+    let agents_body_again = fs::read_to_string(&agents_path).unwrap();
+    let marker_count = agents_body_again.matches("[loopr: injected").count();
+    assert_eq!(marker_count, 1);
+}
+
+#[test]
+fn test_init_no_agents_skips_injection() {
+    let root = temp_dir("init-no-agents");
+    let agents_path = root.join("AGENTS.md");
+    fs::write(&agents_path, "# AGENTS\n\nCustom instructions.\n").unwrap();
+
+    init(InitOptions {
+        root: root.clone(),
+        rand: None,
+        no_agents: true,
+    })
+    .unwrap();
+
+    let agents_body = fs::read_to_string(&agents_path).unwrap();
+    assert!(!agents_body.contains("[loopr: injected"));
+
+    let docs_index = root.join("loopr").join("state").join("docs-index.txt");
+    assert!(docs_index.exists());
 }
 
 #[test]

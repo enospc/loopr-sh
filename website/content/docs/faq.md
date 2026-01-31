@@ -17,7 +17,7 @@ description: Frequently asked questions about Loopr.
 
   <details>
     <summary>What does Loopr set up?</summary>
-    <p>Loopr initializes <code>loopr/</code> (repo id, config, transcripts) and drives the PRD -> Spec -> Features -> Tasks -> Tests -> Execute pipeline via Codex prompts.</p>
+    <p>Loopr initializes <code>loopr/</code> (repo id, config, transcripts) and drives the PRD -> Spec -> Features -> Tasks -> Tests -> Execute pipeline via Codex prompts. By default, <code>loopr init</code> also creates or injects <code>AGENTS.md</code> and writes <code>loopr/state/docs-index.txt</code>.</p>
   </details>
 
   <details>

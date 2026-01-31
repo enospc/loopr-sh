@@ -170,6 +170,8 @@ This creates:
 - `loopr/repo-id`
 - `loopr/state/` for handoffs, transcripts, and status
 - `loopr/.gitignore` to keep runtime state local
+ - `loopr/state/docs-index.txt` (compressed docs index)
+ - `AGENTS.md` (created or injected by default)
 
 ### 2) Save your seed prompt
 
@@ -280,6 +282,8 @@ Other useful runs:
 
 Keep agent instructions in `AGENTS.md` at the repo root. Treat it as a contract: goals, guardrails, and expectations
 for Codex sessions. Loopr prompts assume this file is authoritative for how the agent should behave.
+By default, `loopr init` creates `AGENTS.md` if missing or appends a Loopr-marked section if it already exists.
+Use `loopr init --no-agents` to skip this behavior.
 
 ## Command summary
 

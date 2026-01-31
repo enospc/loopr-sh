@@ -10,6 +10,11 @@ use crate::{LooprError, LooprResult};
 struct InitArgs {
     #[arg(long, default_value = ".")]
     root: String,
+    #[arg(
+        long = "no-agents",
+        help = "Skip creating or injecting AGENTS.md during init."
+    )]
+    no_agents: bool,
 }
 
 #[derive(Parser, Debug)]
@@ -132,6 +137,7 @@ pub fn run_init(args: Vec<String>) -> i32 {
             root.into()
         },
         rand: None,
+        no_agents: parsed.no_agents,
     }) {
         Ok(report) => report,
         Err(err) => return fail(&err.to_string()),
