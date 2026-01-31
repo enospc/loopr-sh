@@ -26,6 +26,13 @@ pub struct CodexSession {
 
 pub struct CodexOptions {
     pub loopr_root: Option<PathBuf>,
+    pub mode: CodexMode,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CodexMode {
+    Interactive,
+    Exec,
 }
 
 pub struct CodexRun {
@@ -64,13 +71,14 @@ fn run_codex_internal(
 
     let (log_path, meta_path) = new_session_paths(&transcripts_dir, OffsetDateTime::now_utc())?;
 
+    let full_args = build_codex_args(args, opts.mode);
     let session = CodexSession {
         repo_root: root.clone(),
         repo_id: repo_id.clone(),
         log_path: log_path.clone(),
         meta_path: meta_path.clone(),
         command: std::iter::once("codex".to_string())
-            .chain(args.iter().cloned())
+            .chain(full_args.iter().cloned())
             .collect(),
         started: OffsetDateTime::now_utc(),
     };
@@ -91,6 +99,13 @@ fn run_codex_internal(
     start_meta.insert("loopr_date".to_string(), json!(version::DATE));
     start_meta.insert("repo_root".to_string(), json!(root.display().to_string()));
     start_meta.insert("repo_id".to_string(), json!(repo_id));
+    start_meta.insert(
+        "codex_mode".to_string(),
+        json!(match opts.mode {
+            CodexMode::Interactive => "interactive",
+            CodexMode::Exec => "exec",
+        }),
+    );
 
     let (commit, dirty) = git_info(&root);
     if !commit.is_empty() {
@@ -102,7 +117,7 @@ fn run_codex_internal(
 
     write_meta(&meta_path, &serde_json::Value::Object(start_meta))?;
 
-    let outcome = run_codex_with_logging_timeout(&log_path, args, timeout)?;
+    let outcome = run_codex_with_logging_timeout(&log_path, &full_args, timeout, opts.mode)?;
     let end = OffsetDateTime::now_utc();
     let end_payload = json!({
         "event": "end",
@@ -117,6 +132,15 @@ fn run_codex_internal(
         timed_out: outcome.timed_out,
         error_message: outcome.error_message,
     })
+}
+
+fn build_codex_args(args: &[String], mode: CodexMode) -> Vec<String> {
+    let mut full_args = Vec::with_capacity(args.len() + 1);
+    if matches!(mode, CodexMode::Exec) {
+        full_args.push("exec".to_string());
+    }
+    full_args.extend_from_slice(args);
+    full_args
 }
 
 fn new_session_paths(dir: &Path, now: OffsetDateTime) -> LooprResult<(PathBuf, PathBuf)> {
@@ -170,7 +194,11 @@ fn run_codex_with_logging_timeout(
     log_path: &Path,
     args: &[String],
     timeout: Option<Duration>,
+    mode: CodexMode,
 ) -> LooprResult<RunOutcome> {
+    if matches!(mode, CodexMode::Interactive) {
+        return run_codex_interactive(log_path, args, timeout);
+    }
     let file = File::create(log_path)
         .map_err(|err| LooprError::new(format!("create {}: {}", log_path.display(), err)))?;
     let file = Arc::new(Mutex::new(file));
@@ -264,6 +292,73 @@ fn run_codex_with_logging_timeout(
         exit_code,
         timed_out,
         error_message,
+    })
+}
+
+fn run_codex_interactive(
+    log_path: &Path,
+    args: &[String],
+    timeout: Option<Duration>,
+) -> LooprResult<RunOutcome> {
+    let mut file = File::create(log_path)
+        .map_err(|err| LooprError::new(format!("create {}: {}", log_path.display(), err)))?;
+    file.write_all(b"[loopr] interactive codex session, output not captured\n")
+        .map_err(|err| LooprError::new(format!("write {}: {}", log_path.display(), err)))?;
+
+    let mut cmd = Command::new("codex");
+    cmd.args(args)
+        .stdin(Stdio::inherit())
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit());
+    cmd.envs(std::env::vars());
+
+    let mut child = match cmd.spawn() {
+        Ok(child) => child,
+        Err(err) => {
+            return Ok(RunOutcome {
+                exit_code: 1,
+                timed_out: false,
+                error_message: Some(format!("failed to start codex: {}", err)),
+            });
+        }
+    };
+
+    let start = Instant::now();
+    let mut timed_out = false;
+    let mut status: Option<ExitStatus> = None;
+
+    loop {
+        match child.try_wait() {
+            Ok(Some(exit_status)) => {
+                status = Some(exit_status);
+                break;
+            }
+            Ok(None) => {}
+            Err(err) => {
+                return Ok(RunOutcome {
+                    exit_code: 1,
+                    timed_out: false,
+                    error_message: Some(format!("wait for codex: {}", err)),
+                });
+            }
+        }
+
+        if let Some(limit) = timeout
+            && start.elapsed() >= limit
+        {
+            timed_out = true;
+            let _ = child.kill();
+            let _ = child.wait();
+            break;
+        }
+        std::thread::sleep(Duration::from_millis(200));
+    }
+
+    let exit_code = status.and_then(|value| value.code()).unwrap_or(1);
+    Ok(RunOutcome {
+        exit_code,
+        timed_out,
+        error_message: None,
     })
 }
 
@@ -405,7 +500,8 @@ fn format_rfc3339(time: OffsetDateTime) -> LooprResult<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::ops::codex::{CodexMode, build_codex_args, new_session_paths};
+    use std::path::PathBuf;
     use time::macros::datetime;
 
     fn temp_dir(name: &str) -> PathBuf {
@@ -433,5 +529,24 @@ mod tests {
             log_base.trim_end_matches(".log"),
             meta_base.trim_end_matches(".jsonl")
         );
+    }
+
+    #[test]
+    fn test_build_codex_args_exec_prefixes_subcommand() {
+        let args = vec![
+            "--cd".to_string(),
+            "/repo".to_string(),
+            "prompt".to_string(),
+        ];
+        let full = build_codex_args(&args, CodexMode::Exec);
+        assert_eq!(full[0], "exec");
+        assert_eq!(&full[1..], args.as_slice());
+    }
+
+    #[test]
+    fn test_build_codex_args_interactive_passthrough() {
+        let args = vec!["--cd".to_string(), "/repo".to_string()];
+        let full = build_codex_args(&args, CodexMode::Interactive);
+        assert_eq!(full, args);
     }
 }

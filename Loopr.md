@@ -10,6 +10,8 @@
 
 This is a guide for AI software engineers (human's as of today ;) ) in the era of AI coding agents. The center of gravity has shifted from writing every line of source code to defining intent, verifying outcomes, and building systems that evolve safely. The Loopr AI engineer respects models but does not defer to them. They set clear goals, curate context, and build feedback loops that turn uncertainty into reliable software. A 500-line patch from an agent is not progress until you can explain it and test it.
 
+This guide distinguishes automatic programming from vibe coding. Automatic programming means humans set the vision, steer continuously, and understand the system they are building while the model supplies velocity. Vibe coding means accepting unsteered output without deep understanding. The former is the goal, the latter is a useful but risky exploration mode.
+
 If you use Codex or any frontier model, the principles below apply. Models will change. The responsibilities will not. When output is cheap, judgment is expensive.
 
 ## How To Read This
@@ -83,6 +85,7 @@ If you use Codex or any frontier model, the principles below apply. Models will 
 ## 1. Own Outcomes, Not Output
 
 AI agents can produce more code than any team. Your job is to ensure that code is correct, maintainable, and aligned with the product. Outcomes are what users experience; output is just text. Do not confuse the two. Your name is on the incident, not the prompt.
+If you are steering the work, the output is yours, and so are the consequences.
 
 - Set measurable goals before asking an agent to write code.
 - Define success conditions that can be tested.
@@ -116,6 +119,9 @@ Automation can create entropy faster than humans can fix it. Every generated cha
 ---
 
 # Part 2. Intent, Specs, and Contracts
+
+> **Vision Is Not Automatic**  
+> Models can execute and explore, but vision, product direction, and tradeoffs remain human. If you cannot explain why a system exists and what it optimizes, you are not done.
 
 ## 5. Specs That Compile
 
@@ -193,6 +199,8 @@ In AI-assisted development, tests are the ground truth. If you trust only one ar
 - Add tests before or alongside code.
 - Prefer high-signal tests that fail for real issues.
 - Keep tests fast enough to run on every change.
+
+Vibe-coded prototypes are fine for exploration, but redesign and verify them before shipping.
 
 ## 14. Property-Based Testing and Fuzzing
 
