@@ -12,7 +12,7 @@ description: Build and install Loopr from source.
 <section class="doc-body">
   <h2>Requirements</h2>
   <ul>
-    <li>Linux host (desktop, VM, Docker, or bare metal)</li>
+    <li>Unix-like host (Linux or macOS; Windows via WSL or Git Bash if using <code>just</code>)</li>
     <li>Codex CLI on your PATH</li>
     <li><code>just</code> on your PATH</li>
     <li>Rust (edition 2024) to build the Loopr CLI</li>

@@ -8,7 +8,7 @@ validates specs order artifacts. You own intent, verification, and outcomes; Loo
 
 ## Requirements
 
-- Linux host (desktop, VM, Docker, or bare metal)
+- Unix-like host (Linux or macOS; Windows via WSL or Git Bash if using `just`)
 - Codex CLI available on your PATH
 - `just` available on your PATH
 - If building from source: Rust (edition 2024)
