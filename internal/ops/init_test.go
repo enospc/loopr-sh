@@ -102,7 +102,7 @@ func TestInitGreenfieldCreatesRepoIDAndInitState(t *testing.T) {
 		t.Fatalf("transcripts dir missing: %v", err)
 	}
 
-	gitignorePath := filepath.Join(report.SpecsDir, ".loopr", ".gitignore")
+	gitignorePath := filepath.Join(report.LooprDir, ".gitignore")
 	gitignoreBody, err := os.ReadFile(gitignorePath)
 	if err != nil {
 		t.Fatalf("read .gitignore: %v", err)
@@ -133,7 +133,7 @@ func TestInitRejectsNonGreenfieldWithoutAllowExisting(t *testing.T) {
 	if len(ngErr.Signals) == 0 || ngErr.Signals[0] != "go.mod" {
 		t.Fatalf("signals = %#v, want go.mod", ngErr.Signals)
 	}
-	if _, err := os.Stat(filepath.Join(root, "specs", ".loopr", "init-state.json")); err == nil {
+	if _, err := os.Stat(filepath.Join(root, ".loopr", "init-state.json")); err == nil {
 		t.Fatalf("init-state created, want none")
 	}
 }
@@ -163,7 +163,7 @@ func TestInitAllowExistingCreatesExistingMode(t *testing.T) {
 
 func TestInitReusesRepoIDWhenPresent(t *testing.T) {
 	root := t.TempDir()
-	repoIDPath := filepath.Join(root, "specs", ".loopr", "repo-id")
+	repoIDPath := filepath.Join(root, ".loopr", "repo-id")
 	if err := os.MkdirAll(filepath.Dir(repoIDPath), 0o755); err != nil {
 		t.Fatalf("mkdir loopr dir: %v", err)
 	}
@@ -192,7 +192,7 @@ func TestInitReusesRepoIDWhenPresent(t *testing.T) {
 
 func TestInitCreatesRepoIDWhenInitStateExists(t *testing.T) {
 	root := t.TempDir()
-	initStatePath := filepath.Join(root, "specs", ".loopr", "init-state.json")
+	initStatePath := filepath.Join(root, ".loopr", "init-state.json")
 	if err := os.MkdirAll(filepath.Dir(initStatePath), 0o755); err != nil {
 		t.Fatalf("mkdir loopr dir: %v", err)
 	}
@@ -222,7 +222,7 @@ func TestInitCreatesRepoIDWhenInitStateExists(t *testing.T) {
 
 func TestInitRejectsInvalidRepoID(t *testing.T) {
 	root := t.TempDir()
-	repoIDPath := filepath.Join(root, "specs", ".loopr", "repo-id")
+	repoIDPath := filepath.Join(root, ".loopr", "repo-id")
 	if err := os.MkdirAll(filepath.Dir(repoIDPath), 0o755); err != nil {
 		t.Fatalf("mkdir loopr dir: %v", err)
 	}

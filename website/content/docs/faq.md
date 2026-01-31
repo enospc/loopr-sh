@@ -70,6 +70,6 @@ description: Frequently asked questions about Loopr.
 
   <details>
     <summary>Does Loopr work in monorepos?</summary>
-    <p>Yes. Use <code>loopr run --codex --loopr-root &lt;path&gt;</code> to point at the workspace you want to manage (add <code>--seed</code> when bootstrapping a new repo).</p>
+    <p>Yes. Use <code>loopr run --codex --loopr-root &lt;path&gt;</code> to point at the workspace you want to manage (add <code>--seed-prompt</code> when bootstrapping a new repo).</p>
   </details>
 </section>

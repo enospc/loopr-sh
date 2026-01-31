@@ -13,7 +13,7 @@ Transform specs/prd.md into a detailed, implementable spec at specs/spec.md.
 
 ## Inputs
 - `specs/prd.md`
-- `specs/.loopr/init-state.json` (optional; for mode)
+- `.loopr/init-state.json` (optional; for mode)
 
 ## Outputs
 - `specs/spec.md`

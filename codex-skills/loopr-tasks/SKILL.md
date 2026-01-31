@@ -5,7 +5,7 @@ description: Generate task files for features listed in specs/feature-order.yaml
 
 ## Prerequisite
 - Follow the installed `loopr-common/COMMON.md` (use `$CODEX_HOME/skills/loopr-common/COMMON.md` if set, otherwise `~/.codex/skills/loopr-common/COMMON.md`). Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
-- This skill requires `mode` (read `specs/.loopr/init-state.json`; if missing, assume `existing`).
+- This skill requires `mode` (read `.loopr/init-state.json`; if missing, assume `existing`).
 
 # Loopr Tasks
 
@@ -16,7 +16,7 @@ This assumes feature-order.yaml follows the canonical format produced by loopr-f
 ## Inputs
 - `specs/feature-order.yaml`
 - `specs/feature-*.md`
-- `specs/.loopr/init-state.json` (for `mode`)
+- `.loopr/init-state.json` (for `mode`)
 - `$CODEX_HOME/skills/loopr-common/task-template.md` (if CODEX_HOME is set)
 - `~/.codex/skills/loopr-common/task-template.md` (fallback; use the first path that exists, otherwise stop and ask to reinstall Loopr skills)
 - `$CODEX_HOME/skills/loopr-common/pbt-guidance.md` (if CODEX_HOME is set)

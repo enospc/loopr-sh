@@ -32,6 +32,8 @@ This assumes task-order.yaml follows the canonical format produced by loopr-task
 3. Read specs/spec.md and the installed `loopr-common/pbt-guidance.md` (see Inputs) for testing stack and PBT guidance. Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 4. For each task, open specs/feature-<slug>-task-<id>.md and specs/feature-<slug>.md; if missing, stop and ask to regenerate.
 5. Derive tests covering each acceptance criterion and key edge cases.
+   - Include at least one **Unit** test per task unless the task file explicitly marks unit tests as not suitable (with rationale).
+   - If unit tests are not suitable, update the task file to mark `Unit tests required: No` with a brief rationale.
    - Follow the installed `loopr-common/pbt-guidance.md` (see Inputs) for PBT inclusion rules. Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
 6. Remove any existing specs/feature-<slug>-task-<id>-test-*.md to avoid stale tests.
 7. Write new test files to specs/feature-<slug>-task-<id>-test-<test_id>.md.
@@ -60,6 +62,8 @@ features:
 - Write tests to specs/feature-<slug>-task-<id>-test-<test_id>.md.
 - Write specs/test-order.yaml.
 - Preserve task order from specs/task-order.yaml.
+- Include at least one **Unit** test per task unless the task explicitly marks unit tests as not suitable.
+- If unit tests are not suitable, update the task file with the rationale.
 - Do not invent a testing framework; if missing, stop and ask.
 
 ## Version

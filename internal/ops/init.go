@@ -33,6 +33,7 @@ var defaultAllowDirs = map[string]struct{}{
 	".git":    {},
 	".github": {},
 	".vscode": {},
+	".loopr":  {},
 	"docs":    {},
 	"specs":   {},
 }
@@ -99,7 +100,7 @@ func Init(opts InitOptions) (InitReport, error) {
 	}
 
 	looprSpecs := filepath.Join(absRoot, specsDir)
-	looprDir := filepath.Join(looprSpecs, ".loopr")
+	looprDir := filepath.Join(absRoot, ".loopr")
 	initStatePath := filepath.Join(looprDir, "init-state.json")
 	repoIDPath := filepath.Join(looprDir, "repo-id")
 	decisionsDir := filepath.Join(looprSpecs, "decisions")

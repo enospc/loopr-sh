@@ -14,5 +14,5 @@
 - If required context is missing, stop and ask for it.
 
 ## Mode Handling
-- If a skill requires `mode`, read `specs/.loopr/init-state.json`.
+- If a skill requires `mode`, read `.loopr/init-state.json`.
 - If `init-state.json` is missing, assume `mode=existing`.

@@ -12,7 +12,6 @@ and coding happens through your agent (Codex) after the skills are installed.
 
 - Linux host (desktop, VM, Docker, or bare metal)
 - Codex CLI available on your PATH
-- Optional for skill preflight scripts: Python 3 and `pyyaml` (`loopr-doctor`)
 - If building from source: Go 1.25+
 
 ## Build
@@ -47,31 +46,77 @@ By default, Loopr backs up any modified skills before overwriting them.
 
 This compares installed skills against the embedded source and reports drift.
 
+To validate Loopr order artifacts in a repo (feature/task/test YAML + referenced files):
+
+```
+./bin/loopr doctor --specs
+```
+
 ## Command summary
 
 ```
 loopr install   # plant skills
 loopr init      # initialize Loopr metadata in a repo
 loopr doctor    # validate installed skills
+loopr doctor --specs # validate specs order files + references
 loopr list      # list skills and status
 loopr uninstall # remove skills (backed up by default)
 loopr run       # orchestrate workflow (requires --codex or --dry-run)
+loopr loop      # run the execute loop with safety gates
+loopr monitor   # watch loop status
 loopr version   # show version info
 ```
 
 Tip: `loopr run --help` shows Loopr-specific flags. If you include `--codex`, help/version flags are forwarded to Codex (for example, `loopr run --codex --help` prints Codex help). To pass other Codex flags, place them after `--` (for example, `loopr run --codex -- --model o3`). If you pass a Codex subcommand after `--` (for example, `exec`, `review`, `login`), Loopr skips the workflow prompt and runs Codex directly while still logging transcripts.
 
+## Loop mode (MVP)
+
+`loopr loop` runs repeated `loopr-execute` iterations with safety gates (rate limiting, exit signals, circuit breaker).
+
+Examples:
+```
+loopr loop
+loopr loop --max-iterations 10
+loopr loop --loopr-root /repo/apps/service-a -- --model o3
+```
+
+The loop relies on the `---LOOPR_STATUS---` block emitted by `loopr-execute` (and `loopr-run-task` if you use it manually).
+If the status block is missing, Loopr cannot confirm completion and may open the circuit breaker based on no-progress signals.
+
+Config is read from `.loopr/config`:
+```
+MAX_CALLS_PER_HOUR=100
+CODEX_TIMEOUT_MINUTES=15
+MAX_ITERATIONS=50
+MAX_CONSECUTIVE_DONE_SIGNALS=2
+MAX_NO_PROGRESS=3
+MAX_SAME_ERROR=5
+MAX_CONSECUTIVE_TEST_LOOPS=3
+MAX_MISSING_STATUS=2
+```
+
+Loop status is written to `.loopr/status.json` and `.loopr/loop.log`.
+
+### Monitor
+
+Use `loopr monitor` to watch status updates:
+```
+loopr monitor
+loopr monitor --interval 2
+loopr monitor --once
+```
+
 ## Monorepo usage (run --codex)
 
 `loopr run` requires `--codex` (run Codex) or `--dry-run` (dryrun mode).
-`loopr run --codex` needs a Loopr workspace root (the directory that contains `specs/.loopr/repo-id`).
+`loopr run --codex` needs a Loopr workspace root (the directory that contains `.loopr/repo-id`).
 In a monorepo, you can pick the workspace explicitly or let Loopr find the nearest one.
 
 Resolution order:
 1. `--loopr-root <path>` (explicit flag)
-2. Nearest ancestor with `specs/.loopr/repo-id`
+2. Nearest ancestor with `.loopr/repo-id`
 
-Note: Only `loopr run --codex` resolves a Loopr workspace. `loopr run --dry-run` is repo-agnostic and does not require `specs/.loopr`; skill install/doctor/list/uninstall use `CODEX_HOME` to locate the skills directory.
+Note: Only `loopr run --codex` resolves a Loopr workspace. `loopr run --dry-run` is repo-agnostic and does not require `.loopr`; skill install/doctor/list/uninstall use `CODEX_HOME` to locate the skills directory.
 
 Examples:
 
@@ -96,9 +141,9 @@ Supporting/targeted skills:
 - `loopr-run-task`: implement a single task end-to-end.
 - `loopr-taskify`: split one feature into tasks (updates `specs/task-order.yaml`).
 - `loopr-testify`: split one task into tests (updates `specs/test-order.yaml`).
-- `loopr-doctor`: validate order YAMLs and referenced files.
+- `loopr-doctor`: validate order YAMLs and referenced files (uses `loopr doctor --specs`).
 
-Note: `loopr init` (CLI) initializes `specs/.loopr/` and `specs/decisions/`; `loopr doctor` (CLI) validates installed skill drift; `loopr-doctor` (skill) validates `specs/*-order.yaml` and referenced artifacts.
+Note: `loopr init` (CLI) initializes `.loopr/` and `specs/decisions/`; `loopr doctor` (CLI) validates installed skill drift; `loopr-doctor` (skill) validates `specs/*-order.yaml` and referenced artifacts via `loopr doctor --specs`.
 
 ### Property-based testing guidance
 
@@ -139,7 +184,7 @@ mkdir -p cli website
 For transcript logging in a monorepo, run the workflow through Loopr and point it at the target workspace:
 
 ```
-/path/to/loopr run --codex --seed "<seed prompt>" --loopr-root ./cli -- <codex args>
+/path/to/loopr run --codex --seed-prompt "<seed prompt>" --loopr-root ./cli -- <codex args>
 ```
 
 
@@ -148,8 +193,8 @@ For transcript logging in a monorepo, run the workflow through Loopr and point i
 Open Codex in the subproject you are working on and run the skills in order. Each step
 creates concrete artifacts under `specs/` and the later steps implement code.
 
-Use `loopr run --codex --seed "<seed prompt>" --loopr-root ./cli` (or `./website`) to run the workflow and capture transcripts into that
-workspace’s `specs/.loopr/transcripts/<repo-id>/`.
+Use `loopr run --codex --seed-prompt "<seed prompt>" --loopr-root ./cli` (or `./website`) to run the workflow and capture transcripts into that
+workspace’s `.loopr/transcripts/<repo-id>/`.
 
 Tip: If you want a guided walkthrough, run `loopr-help`.
 
@@ -157,7 +202,7 @@ Tip: If you want a guided walkthrough, run `loopr-help`.
    - Command: `loopr init`
    - If the repo already has code: `loopr init --allow-existing`
    - Interaction: Autonomous (no questions expected)
-   - Output: `specs/.loopr/` with repo id, init-state (schema + build metadata), transcript path, and a `.gitignore` for transcripts
+   - Output: `.loopr/` with repo id, init-state (schema + build metadata), transcript path, and a `.gitignore` for transcripts
 
 2. **Create a PRD**
    - Prompt: "Run loopr-prd with seed prompt: <seed prompt above>"
@@ -191,7 +236,7 @@ Tip: If you want a guided walkthrough, run `loopr-help`.
 
 ### Adding a new feature in an existing Loopr repo
 
-If the repo is already Loopr-initialized (has `specs/.loopr/repo-id`), prefer the targeted skills so you do not regenerate unrelated artifacts.
+If the repo is already Loopr-initialized (has `.loopr/repo-id`), prefer the targeted skills so you do not regenerate unrelated artifacts.
 
 1. **Update intent (optional)**
    - If requirements changed: update `specs/prd.md` and/or `specs/spec.md`, then re-run "loopr-specify" and "loopr-features" as needed.
@@ -202,7 +247,7 @@ If the repo is already Loopr-initialized (has `specs/.loopr/repo-id`), prefer th
 4. **Create tests**
    - Prompt: "Run loopr-testify for task <id> in feature <slug>" (preferred), **or** "Run loopr-tests".
 5. **Preflight**
-   - Prompt: "Run loopr-doctor" (validates order YAMLs + referenced files).
+   - Prompt: "Run loopr-doctor" (validates order YAMLs + referenced files via `loopr doctor --specs`).
 6. **Implement**
    - Prompt: "Run loopr-run-task on specs/feature-<slug>-task-<id>.md" for each new task (or "Run loopr-execute" to run the full order).
 
@@ -235,7 +280,7 @@ Once tasks are complete, you should have a working binary with commands like:
 ### 4) Document the CLI in the website app
 
 Repeat the workflow in `website` with a seed prompt focused on documentation and examples
-for the CLI. Use `loopr run --codex --seed "<seed prompt>" --loopr-root ./website` so transcripts and `specs/` artifacts
+for the CLI. Use `loopr run --codex --seed-prompt "<seed prompt>" --loopr-root ./website` so transcripts and `specs/` artifacts
 live under the website workspace.
 
 ## Updating or re-installing skills

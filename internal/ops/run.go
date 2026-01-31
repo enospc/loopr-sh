@@ -127,7 +127,7 @@ func RunWorkflow(opts RunOptions) (RunReport, error) {
 			continue
 		}
 		if appendPrompt && step.RequiresSeed && strings.TrimSpace(opts.Seed) == "" {
-			return report, fmt.Errorf("seed prompt required for %s (use --seed)", step.Name)
+			return report, fmt.Errorf("seed prompt required for %s (use --seed-prompt)", step.Name)
 		}
 		if opts.Confirm {
 			ok, err := confirmStep(step.Name)
@@ -238,38 +238,38 @@ func defaultRunSteps() []RunStep {
 		{
 			Name:         "prd",
 			Skill:        "loopr-prd",
-			Inputs:       []string{"specs/.loopr/handoff.md"},
+			Inputs:       []string{".loopr/handoff.md"},
 			Outputs:      []string{"specs/prd.md"},
 			RequiresSeed: true,
 		},
 		{
 			Name:    "spec",
 			Skill:   "loopr-specify",
-			Inputs:  []string{"specs/.loopr/handoff.md", "specs/prd.md"},
+			Inputs:  []string{".loopr/handoff.md", "specs/prd.md"},
 			Outputs: []string{"specs/spec.md"},
 		},
 		{
 			Name:    "features",
 			Skill:   "loopr-features",
-			Inputs:  []string{"specs/.loopr/handoff.md", "specs/spec.md", "specs/.loopr/init-state.json"},
+			Inputs:  []string{".loopr/handoff.md", "specs/spec.md", ".loopr/init-state.json"},
 			Outputs: []string{"specs/feature-order.yaml", "specs/feature-*.md"},
 		},
 		{
 			Name:    "tasks",
 			Skill:   "loopr-tasks",
-			Inputs:  []string{"specs/.loopr/handoff.md", "specs/feature-order.yaml", "specs/feature-*.md", "specs/.loopr/init-state.json"},
+			Inputs:  []string{".loopr/handoff.md", "specs/feature-order.yaml", "specs/feature-*.md", ".loopr/init-state.json"},
 			Outputs: []string{"specs/task-order.yaml", "specs/feature-*-task-*.md"},
 		},
 		{
 			Name:    "tests",
 			Skill:   "loopr-tests",
-			Inputs:  []string{"specs/.loopr/handoff.md", "specs/task-order.yaml", "specs/feature-*-task-*.md"},
+			Inputs:  []string{".loopr/handoff.md", "specs/task-order.yaml", "specs/feature-*-task-*.md"},
 			Outputs: []string{"specs/test-order.yaml", "specs/feature-*-task-*-test-*.md"},
 		},
 		{
 			Name:      "execute",
 			Skill:     "loopr-execute",
-			Inputs:    []string{"specs/.loopr/handoff.md", "specs/task-order.yaml", "specs/test-order.yaml", "specs/feature-*-task-*.md", "specs/feature-*-task-*-test-*.md"},
+			Inputs:    []string{".loopr/handoff.md", "specs/task-order.yaml", "specs/test-order.yaml", "specs/feature-*-task-*.md", "specs/feature-*-task-*-test-*.md"},
 			Outputs:   []string{"specs/implementation-progress.md"},
 			AlwaysRun: true,
 		},
@@ -370,7 +370,7 @@ func buildPrompt(step RunStep, seed, handoffPath string) string {
 }
 
 func ensureHandoff(root string) (string, error) {
-	path := filepath.Join(root, "specs", ".loopr", "handoff.md")
+	path := filepath.Join(root, ".loopr", "handoff.md")
 	if fileExists(path) {
 		return path, nil
 	}

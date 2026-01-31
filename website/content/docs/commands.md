@@ -12,13 +12,15 @@ description: Core Loopr CLI commands and Codex skills.
 <section class="doc-body">
   <h2>CLI commands</h2>
   <ul>
-    <li><code>loopr init</code> - initialize repo metadata in <code>specs/.loopr/</code> and write init-state + transcript ignore.</li>
+    <li><code>loopr init</code> - initialize repo metadata in <code>.loopr/</code> and write init-state + transcript ignore.</li>
     <li><code>loopr install</code> - installs Loopr skills into your Codex skills directory.</li>
     <li><code>loopr doctor</code> - validates installed skills against the embedded source.</li>
     <li><code>loopr list</code> - lists skills and status.</li>
     <li><code>loopr uninstall</code> - removes skills (backs up by default).</li>
     <li><code>loopr run --codex</code> - runs the workflow via Codex with transcript logging for the chosen workspace.</li>
     <li><code>loopr run --dry-run</code> - prints the workflow steps without running Codex.</li>
+    <li><code>loopr loop</code> - runs the execute loop with safety gates (rate limiting, exit signals, circuit breaker).</li>
+    <li><code>loopr monitor</code> - watches loop status updates.</li>
     <li><code>loopr version</code> - prints version info.</li>
   </ul>
   <p>

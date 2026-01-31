@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	repoIDLength   = 6
-	repoIDAlphabet = "useandom26T198340PX75pxJACKVERYMINDBUSHWOLFGQZbfghjklqvwyzrict"
+	repoIDLength    = 6
+	repoIDAlphabet  = "useandom26T198340PX75pxJACKVERYMINDBUSHWOLFGQZbfghjklqvwyzrict"
 	sessionIDLength = 6
 )
 

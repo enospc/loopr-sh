@@ -10,7 +10,7 @@ import (
 func FindLooprRoot(start string) (string, string, error) {
 	current := start
 	for {
-		repoIDPath := filepath.Join(current, "specs", ".loopr", "repo-id")
+		repoIDPath := filepath.Join(current, ".loopr", "repo-id")
 		data, err := os.ReadFile(repoIDPath)
 		if err == nil {
 			repoID := strings.TrimSpace(string(data))
@@ -28,7 +28,7 @@ func FindLooprRoot(start string) (string, string, error) {
 		}
 		current = parent
 	}
-	return "", "", fmt.Errorf("unable to locate specs/.loopr/repo-id (run loopr init)")
+	return "", "", fmt.Errorf("unable to locate .loopr/repo-id (run loopr init)")
 }
 
 func ResolveLooprRoot(start string, override string) (string, string, error) {
@@ -47,10 +47,10 @@ func loadRepoID(root string) (string, string, error) {
 		}
 		absRoot = abs
 	}
-	repoIDPath := filepath.Join(absRoot, "specs", ".loopr", "repo-id")
+	repoIDPath := filepath.Join(absRoot, ".loopr", "repo-id")
 	data, err := os.ReadFile(repoIDPath)
 	if err != nil {
-		return "", "", fmt.Errorf("unable to locate specs/.loopr/repo-id under %s (run loopr init)", absRoot)
+		return "", "", fmt.Errorf("unable to locate .loopr/repo-id under %s (run loopr init)", absRoot)
 	}
 	repoID := strings.TrimSpace(string(data))
 	if repoID == "" {

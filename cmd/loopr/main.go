@@ -5,7 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
+	"time"
 
 	"loopr/internal/agents"
 	"loopr/internal/ops"
@@ -23,6 +25,10 @@ func main() {
 		runInit(os.Args[2:])
 	case "run":
 		runRun(os.Args[2:])
+	case "loop":
+		runLoop(os.Args[2:])
+	case "monitor":
+		runMonitor(os.Args[2:])
 	case "install":
 		runInstall(os.Args[2:])
 	case "doctor":
@@ -48,8 +54,10 @@ func usage() {
 	fmt.Println("Commands:")
 	fmt.Println("  init       Initialize Loopr metadata in a repo")
 	fmt.Println("  run        Orchestrate Loopr steps (requires --codex or --dry-run)")
+	fmt.Println("  loop       Run the Loopr execute loop with safety gates")
+	fmt.Println("  monitor    Watch Loopr loop status")
 	fmt.Println("  install     Install loopr skills")
-	fmt.Println("  doctor      Validate installed skills")
+	fmt.Println("  doctor      Validate installed skills (use --specs for spec/order validation)")
 	fmt.Println("  list        List skills and status")
 	fmt.Println("  uninstall   Remove loopr skills")
 	fmt.Println("  version     Show version info")
@@ -131,8 +139,25 @@ func runDoctor(args []string) {
 	all := fs.Bool("all", false, "operate on all supported agents")
 	only := fs.String("only", "", "comma-separated list of skills to check")
 	verbose := fs.Bool("verbose", false, "show file-level drift details")
+	specs := fs.Bool("specs", false, "validate Loopr specs/order files instead of installed skills")
+	specsDir := fs.String("specs-dir", "specs", "specs directory for --specs")
+	enforceUnitTests := fs.Bool("enforce-unit-tests", false, "treat missing unit tests as errors for --specs")
 	if err := fs.Parse(args); err != nil {
 		os.Exit(2)
+	}
+
+	if *specs {
+		report, err := ops.DoctorSpecs(ops.SpecsDoctorOptions{
+			SpecsDir:         *specsDir,
+			EnforceUnitTests: *enforceUnitTests,
+		})
+		if err != nil {
+			fail(err)
+		}
+		if !printSpecsDoctorReport(report) {
+			os.Exit(1)
+		}
+		return
 	}
 
 	agentSpecs, err := resolveAgents(*agent, *all)
@@ -222,7 +247,7 @@ func runRun(args []string) {
 	from := fs.String("from", "", "start step (prd|spec|features|tasks|tests|execute)")
 	to := fs.String("to", "", "end step (prd|spec|features|tasks|tests|execute)")
 	step := fs.String("step", "", "single step to run (overrides --from/--to)")
-	seed := fs.String("seed", "", "seed prompt for PRD (required if prd is missing)")
+	seedPrompt := fs.String("seed-prompt", "", "seed prompt for PRD (required if prd is missing)")
 	force := fs.Bool("force", false, "rerun steps even if outputs exist")
 	confirm := fs.Bool("confirm", false, "ask before each step")
 	codex := fs.Bool("codex", false, "run steps with Codex (pass Codex args after --)")
@@ -234,7 +259,7 @@ func runRun(args []string) {
 	if *dryRun {
 		*codex = false
 		agentArgs = nil
-		*seed = ""
+		*seedPrompt = ""
 		*confirm = false
 		*force = false
 	}
@@ -250,7 +275,7 @@ func runRun(args []string) {
 		From:      *from,
 		To:        *to,
 		Step:      *step,
-		Seed:      *seed,
+		Seed:      *seedPrompt,
 		Force:     *force,
 		Confirm:   *confirm,
 		Codex:     *codex,
@@ -281,6 +306,59 @@ func runRun(args []string) {
 	if report.LastSession != nil {
 		fmt.Printf("Transcript: %s\n", report.LastSession.LogPath)
 		fmt.Printf("Metadata:   %s\n", report.LastSession.MetaPath)
+	}
+}
+
+func runLoop(args []string) {
+	looprArgs, agentArgs := splitOnDoubleDash(args)
+	fs := flag.NewFlagSet("loop", flag.ContinueOnError)
+	fs.SetOutput(os.Stderr)
+	looprRoot := fs.String("loopr-root", "", "loopr workspace root")
+	maxIterations := fs.Int("max-iterations", 0, "max loop iterations (overrides config)")
+	if err := fs.Parse(looprArgs); err != nil {
+		os.Exit(2)
+	}
+	opts := ops.LoopOptions{
+		LooprRoot:     *looprRoot,
+		MaxIterations: *maxIterations,
+		CodexArgs:     agentArgs,
+		Progress: func(event ops.LoopEvent) {
+			if event.Details != "" {
+				fmt.Printf("Loop %d %s: %s\n", event.Iteration, event.Status, event.Details)
+				return
+			}
+			fmt.Printf("Loop %d %s\n", event.Iteration, event.Status)
+		},
+	}
+	report, err := ops.RunLoop(opts)
+	if err != nil {
+		fail(err)
+	}
+	if report.ExitReason != "" {
+		fmt.Printf("Exit reason: %s\n", report.ExitReason)
+	}
+	if report.LastSession != nil {
+		fmt.Printf("Transcript: %s\n", report.LastSession.LogPath)
+		fmt.Printf("Metadata:   %s\n", report.LastSession.MetaPath)
+	}
+}
+
+func runMonitor(args []string) {
+	fs := flag.NewFlagSet("monitor", flag.ContinueOnError)
+	fs.SetOutput(os.Stderr)
+	looprRoot := fs.String("loopr-root", "", "loopr workspace root")
+	interval := fs.Int("interval", 5, "poll interval in seconds")
+	once := fs.Bool("once", false, "print once and exit")
+	if err := fs.Parse(args); err != nil {
+		os.Exit(2)
+	}
+	opts := ops.MonitorOptions{
+		LooprRoot: *looprRoot,
+		Interval:  time.Duration(*interval) * time.Second,
+		Once:      *once,
+	}
+	if err := ops.RunMonitor(opts); err != nil {
+		fail(err)
 	}
 }
 
@@ -409,6 +487,48 @@ func printDoctorReport(report ops.DoctorReport, verbose bool) bool {
 		}
 	}
 	return ok
+}
+
+func printSpecsDoctorReport(report ops.SpecsDoctorReport) bool {
+	if len(report.Warnings) > 0 {
+		fmt.Fprintln(os.Stderr, "WARNINGS:")
+		for _, warning := range report.Warnings {
+			fmt.Fprintf(os.Stderr, "- %s\n", warning)
+		}
+	}
+	if len(report.Errors) > 0 {
+		fmt.Fprintln(os.Stderr, "VALIDATION_FAILED")
+		for _, failure := range report.Errors {
+			fmt.Fprintf(os.Stderr, "- %s\n", failure)
+		}
+		return false
+	}
+	fmt.Println("VALIDATION_OK")
+	fmt.Printf("Features: %v\n", report.FeatureSlugs)
+	if len(report.Tasks) > 0 {
+		ordered := append([]string{}, report.FeatureSlugs...)
+		extra := make([]string, 0, len(report.Tasks))
+		seen := map[string]struct{}{}
+		for _, slug := range report.FeatureSlugs {
+			seen[slug] = struct{}{}
+		}
+		for slug := range report.Tasks {
+			if _, ok := seen[slug]; !ok {
+				extra = append(extra, slug)
+			}
+		}
+		sort.Strings(extra)
+		ordered = append(ordered, extra...)
+		fmt.Println("Tasks:")
+		for _, slug := range ordered {
+			tasks, ok := report.Tasks[slug]
+			if !ok {
+				continue
+			}
+			fmt.Printf("  %s: %v\n", slug, tasks)
+		}
+	}
+	return true
 }
 
 func printList(label string, items []string) {

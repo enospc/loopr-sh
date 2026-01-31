@@ -114,7 +114,7 @@ func TestRunWorkflowDryRunDoesNotRequireRepoID(t *testing.T) {
 	if len(report.Steps) == 0 || report.Steps[0].Name != "prd" {
 		t.Fatalf("steps[0] = %#v, want prd", report.Steps)
 	}
-	if _, err := os.Stat(filepath.Join(root, "specs", ".loopr", "handoff.md")); err == nil {
+	if _, err := os.Stat(filepath.Join(root, ".loopr", "handoff.md")); err == nil {
 		t.Fatalf("handoff.md created during dry run, want none")
 	}
 }

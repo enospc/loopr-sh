@@ -32,11 +32,11 @@ make build</code></pre>
   <h2>Initialize metadata</h2>
   <p>From your repo root, initialize Loopr metadata and decision logs:</p>
   <pre><code>./bin/loopr init</code></pre>
-  <p>This also writes <code>specs/.loopr/.gitignore</code> to keep transcripts local.</p>
+  <p>This also writes <code>.loopr/.gitignore</code> to keep transcripts local.</p>
 
   <h2>Run the workflow</h2>
   <p>Run the workflow through Codex and log transcripts to the workspace you want to manage.</p>
-  <pre><code>./bin/loopr run --codex --seed "&lt;seed prompt&gt;" --loopr-root ./website</code></pre>
+  <pre><code>./bin/loopr run --codex --seed-prompt "&lt;seed prompt&gt;" --loopr-root ./website</code></pre>
   <p>To use dryrun mode (show workflow steps without running Codex), use <code>./bin/loopr run --dry-run</code>.</p>
   <p>To pass Codex flags, add them after <code>--</code> (or use <code>--help</code>/<code>--version</code> with <code>--codex</code> to see Codex output).</p>
 

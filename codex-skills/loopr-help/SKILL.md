@@ -20,7 +20,7 @@ Provide a thorough, step-by-step guide for using the Loopr workflow, including t
 Important: This skill must not invoke or trigger any other skills. It should only explain what to run and when, without executing anything.
 
 ## Greenfield Preflight
-Before starting the workflow in a new repo, confirm it is truly greenfield. If `specs/.loopr/repo-id` exists, treat the repo as Loopr-managed and proceed:
+Before starting the workflow in a new repo, confirm it is truly greenfield. If `.loopr/repo-id` exists, treat the repo as Loopr-managed and proceed:
 - Allowed: `.git/`, `.github/`, `.vscode/`, `docs/`, `specs/`, `README.md`, `LICENSE`, `.gitignore` (or similarly empty scaffolding).
 - Not allowed: app code or build tooling (examples: `package.json`, `go.mod`, `Cargo.toml`, `pyproject.toml`, `pom.xml`, `build.gradle`, `src/`, `app/`, `backend/`, `frontend/`).
 If disallowed signals exist, stop and ask for confirmation.
@@ -49,7 +49,7 @@ If disallowed signals exist, stop and ask for confirmation.
 7. **loopr-execute**
 
 ## Skill Map (What Each Does)
-- **loopr init (CLI)**: Creates repo-id and transcript location under `specs/.loopr/` (idempotent).
+- **loopr init (CLI)**: Creates repo-id and transcript location under `.loopr/` (idempotent).
 - **loopr-prd**: MCQ interview → `specs/prd.md`.
 - **loopr-specify**: Expands PRD → `specs/spec.md` with requirement IDs.
 - **loopr-features**: Splits spec → `specs/feature-*.md` + `specs/feature-order.yaml` (includes `foundation` for greenfield).
@@ -67,7 +67,7 @@ If disallowed signals exist, stop and ask for confirmation.
 
 **Step-by-step guide:**
 1) Run `loopr init`
-- Creates `specs/.loopr/repo-id` and session log path under `specs/.loopr/transcripts/<repo-id>/`.
+- Creates `.loopr/repo-id` and session log path under `.loopr/transcripts/<repo-id>/`.
 
 2) Run **loopr-prd**
 - Answer MCQ interview to clarify surfaces, users, goals, timeline.

@@ -9,25 +9,25 @@ description: Validate Loopr order YAML files and referenced feature/task/test ar
 # Loopr Doctor
 
 ## Overview
-Validate the Loopr order artifacts (`feature-order.yaml`, `task-order.yaml`, `test-order.yaml`) and their referenced feature/task/test files. Enforce greenfield invariants like `foundation` being first only when `specs/.loopr/init-state.json` indicates `mode=greenfield`, and catch broken references before implementation.
+Validate the Loopr order artifacts (`feature-order.yaml`, `task-order.yaml`, `test-order.yaml`) and their referenced feature/task/test files. Enforce greenfield invariants like `foundation` being first only when `.loopr/init-state.json` indicates `mode=greenfield`, and catch broken references before implementation.
 
 ## Inputs
 - `specs/feature-order.yaml`
 - `specs/task-order.yaml`
 - `specs/test-order.yaml`
 - Referenced `specs/feature-*.md`, `specs/feature-*-task-*.md`, `specs/feature-*-task-*-test-*.md`
-- `specs/.loopr/init-state.json` (optional; for `mode`)
+- `.loopr/init-state.json` (optional; for `mode`)
 
 ## Outputs
 - Validation report on stdout/stderr
 
 ## Workflow
 1. Ensure `specs/` exists.
-2. Run the doctor script:
-   - If `CODEX_HOME` is set: `python3 $CODEX_HOME/skills/loopr-doctor/scripts/loopr-doctor --specs-dir specs`
-   - Otherwise: `python3 ~/.codex/skills/loopr-doctor/scripts/loopr-doctor --specs-dir specs`
+2. Run the doctor command:
+   - `loopr doctor --specs --specs-dir specs`
+   - Optional: add `--enforce-unit-tests` to treat missing task-scoped unit tests as errors (default: warnings only).
 3. If validation fails, fix the reported issues and re-run until it passes.
-4. If `python3` or PyYAML is missing, stop and ask to install prerequisites or proceed without validation.
+4. If `loopr` is missing, stop and ask to install Loopr before running validation.
 
 ## Checks performed
 - Required files exist: `specs/feature-order.yaml`, `specs/task-order.yaml`, `specs/test-order.yaml`
@@ -36,8 +36,5 @@ Validate the Loopr order artifacts (`feature-order.yaml`, `task-order.yaml`, `te
 - Order files reference existing feature/task/test markdown files
 - Duplicate IDs or unknown references are flagged
 - Missing tests are reported as warnings
+- Missing task-scoped unit tests are reported as warnings (errors if `--enforce-unit-tests` is set), unless the task file explicitly marks unit tests as not suitable.
 - Advisory checks (warnings): feature files include `Invariants / Properties` and `PBT Suitability` sections; spec includes `Testing Strategy`
-
-## Resources
-### scripts/loopr-doctor
-Python validator for Loopr order files.

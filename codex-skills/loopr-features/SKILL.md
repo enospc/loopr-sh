@@ -5,7 +5,7 @@ description: Split specs/spec.md into feature documents at specs/feature-<slug>.
 
 ## Prerequisite
 - Follow the installed `loopr-common/COMMON.md` (use `$CODEX_HOME/skills/loopr-common/COMMON.md` if set, otherwise `~/.codex/skills/loopr-common/COMMON.md`). Use the first path that exists; if neither exists, stop and ask to reinstall Loopr skills.
-- This skill requires `mode` (read `specs/.loopr/init-state.json`; if missing, assume `existing`).
+- This skill requires `mode` (read `.loopr/init-state.json`; if missing, assume `existing`).
 
 # Loopr Features
 
@@ -14,7 +14,7 @@ Split specs/spec.md into independent, implementable features, generate a pragmat
 
 ## Inputs
 - `specs/spec.md`
-- `specs/.loopr/init-state.json` (for `mode`)
+- `.loopr/init-state.json` (for `mode`)
 
 ## Outputs
 - `specs/feature-*.md`

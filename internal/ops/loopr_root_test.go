@@ -9,7 +9,7 @@ import (
 
 func writeRepoID(t *testing.T, root, repoID string) {
 	t.Helper()
-	path := filepath.Join(root, "specs", ".loopr")
+	path := filepath.Join(root, ".loopr")
 	if err := os.MkdirAll(path, 0o755); err != nil {
 		t.Fatalf("mkdir loopr dir: %v", err)
 	}
@@ -95,7 +95,7 @@ func TestResolveLooprRootMissing(t *testing.T) {
 	if err == nil {
 		t.Fatalf("ResolveLooprRoot error = nil, want error")
 	}
-	if !strings.Contains(err.Error(), "specs/.loopr/repo-id") {
+	if !strings.Contains(err.Error(), ".loopr/repo-id") {
 		t.Fatalf("error = %q, want missing repo-id message", err.Error())
 	}
 	if !strings.Contains(err.Error(), "loopr init") {

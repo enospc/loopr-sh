@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -231,6 +232,80 @@ func TestRunDryRunRejectsInvalidStep(t *testing.T) {
 	}
 }
 
+func TestRunDoctorSpecs(t *testing.T) {
+	root := t.TempDir()
+	specsDir := filepath.Join(root, "specs")
+
+	writeFile(t, filepath.Join(root, ".loopr", "init-state.json"), `{"mode":"existing"}`+"\n")
+	writeFile(t, filepath.Join(specsDir, "spec.md"), "# Spec\n\n## Testing Strategy\n- Stack: go test\n")
+	writeFile(t, filepath.Join(specsDir, "feature-order.yaml"), strings.TrimSpace(`
+version: 1
+features:
+  - slug: alpha
+    title: Alpha
+    depends_on: []
+`)+"\n")
+	writeFile(t, filepath.Join(specsDir, "task-order.yaml"), strings.TrimSpace(`
+version: 1
+features:
+  - slug: alpha
+    title: Alpha
+    depends_on: []
+    tasks:
+      - id: "01"
+        title: Task one
+`)+"\n")
+	writeFile(t, filepath.Join(specsDir, "test-order.yaml"), strings.TrimSpace(`
+version: 1
+features:
+  - slug: alpha
+    tasks:
+      - id: "01"
+        title: Task one
+        tests:
+          - id: "01"
+            title: Test one
+`)+"\n")
+	writeFile(t, filepath.Join(specsDir, "feature-alpha.md"), strings.TrimSpace(`
+# Feature: Alpha
+
+## Invariants / Properties
+- 
+
+## PBT Suitability
+- Optional
+`)+"\n")
+	writeFile(t, filepath.Join(specsDir, "feature-alpha-task-01.md"), strings.TrimSpace(`
+# Task: Alpha / Task one
+
+## Task ID
+01
+
+## Testing Notes
+Unit tests required: Yes
+`)+"\n")
+	writeFile(t, filepath.Join(specsDir, "feature-alpha-task-01-test-01.md"), strings.TrimSpace(`
+# Test: Test one
+
+## Test ID
+01
+
+## Type
+Unit
+
+## Purpose
+- 
+`)+"\n")
+
+	output, code := runLooprHelper(t, "doctor", "--specs", "--specs-dir", specsDir)
+	if code != 0 {
+		t.Fatalf("expected exit 0, got %d: %s", code, output)
+	}
+	if !strings.Contains(output, "VALIDATION_OK") {
+		t.Fatalf("output missing VALIDATION_OK: %s", output)
+	}
+}
+
 func runLooprHelper(t *testing.T, args ...string) (string, int) {
 	t.Helper()
 	cmdArgs := append([]string{"-test.run=TestHelperProcess", "--"}, args...)
@@ -245,6 +320,16 @@ func runLooprHelper(t *testing.T, args ...string) (string, int) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	return string(out), exitErr.ExitCode()
+}
+
+func writeFile(t *testing.T, path, content string) {
+	t.Helper()
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("mkdir %s: %v", path, err)
+	}
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("write %s: %v", path, err)
+	}
 }
 
 func TestHelperProcess(t *testing.T) {

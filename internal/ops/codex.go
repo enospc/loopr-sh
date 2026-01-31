@@ -2,6 +2,7 @@ package ops
 
 import (
 	"bytes"
+	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
@@ -34,6 +35,14 @@ type CodexOptions struct {
 }
 
 func RunCodex(args []string, opts CodexOptions) (int, *CodexSession, error) {
+	return runCodexInternal(args, opts, 0)
+}
+
+func RunCodexWithTimeout(args []string, opts CodexOptions, timeout time.Duration) (int, *CodexSession, error) {
+	return runCodexInternal(args, opts, timeout)
+}
+
+func runCodexInternal(args []string, opts CodexOptions, timeout time.Duration) (int, *CodexSession, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return 1, nil, err
@@ -43,7 +52,7 @@ func RunCodex(args []string, opts CodexOptions) (int, *CodexSession, error) {
 		return 1, nil, err
 	}
 
-	transcriptsDir := filepath.Join(root, "specs", ".loopr", "transcripts", repoID)
+	transcriptsDir := filepath.Join(root, ".loopr", "transcripts", repoID)
 	if err := EnsureDir(transcriptsDir, 0o755); err != nil {
 		return 1, nil, err
 	}
@@ -96,7 +105,7 @@ func RunCodex(args []string, opts CodexOptions) (int, *CodexSession, error) {
 		return 1, session, err
 	}
 
-	code, err := runCodexWithLogging(logPath, args)
+	code, err := runCodexWithLoggingTimeout(logPath, args, timeout)
 	end := time.Now().UTC()
 	_ = writeMeta(metaPath, map[string]any{
 		"event":     "end",
@@ -134,9 +143,19 @@ func exists(path string) bool {
 }
 
 func runCodexWithLogging(logPath string, args []string) (int, error) {
+	return runCodexWithLoggingTimeout(logPath, args, 0)
+}
+
+func runCodexWithLoggingTimeout(logPath string, args []string, timeout time.Duration) (int, error) {
+	ctx := context.Background()
+	if timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, timeout)
+		defer cancel()
+	}
 	if scriptPath, err := exec.LookPath("script"); err == nil {
 		cmdString := shellJoin(append([]string{"codex"}, args...))
-		cmd := exec.Command(scriptPath, "-q", "-f", "-c", cmdString, logPath)
+		cmd := exec.CommandContext(ctx, scriptPath, "-q", "-f", "-c", cmdString, logPath)
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -153,7 +172,7 @@ func runCodexWithLogging(logPath string, args []string) (int, error) {
 	stdout := io.MultiWriter(os.Stdout, file)
 	stderr := io.MultiWriter(os.Stderr, file)
 
-	cmd := exec.Command("codex", args...)
+	cmd := exec.CommandContext(ctx, "codex", args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
