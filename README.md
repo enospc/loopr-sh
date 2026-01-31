@@ -13,6 +13,52 @@ validates specs order artifacts. You own intent, verification, and outcomes; Loo
 - `just` available on your PATH
 - If building from source: Rust (edition 2024)
 
+## Install tooling
+
+Just:
+
+```
+# macOS (Homebrew)
+brew install just
+
+# Debian/Ubuntu
+sudo apt install just
+
+# Fedora
+sudo dnf install just
+
+# Arch
+sudo pacman -S just
+
+# Omarchy (Arch-based, yay)
+yay -S just
+
+# Alpine
+sudo apk add just
+
+# Windows (Scoop)
+scoop install just
+
+# Windows (Chocolatey)
+choco install just
+
+# Rust (cargo)
+cargo install just
+```
+
+Rust (rustup recommended):
+
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Codex CLI:
+
+```
+# Install per OpenAI docs, then verify:
+codex --help
+```
+
 ## Build
 
 From this directory:
