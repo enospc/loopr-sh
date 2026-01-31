@@ -9,6 +9,8 @@ use loopr::ops::loop_status::parse_loopr_status;
 use loopr::ops::loopr_root::resolve_loopr_root;
 use loopr::ops::nanoid::{RandomSource, generate_nanoid, repo_id_alphabet, repo_id_length};
 use loopr::ops::run::{RunOptions, plan_steps, run_workflow};
+use loopr::ops::work_plan::{load_task_order, load_test_order};
+use loopr::ops::work_status::{WorkItemState, WorkItemType, ensure_item, load_work_status};
 use loopr::{LooprError, LooprResult};
 
 struct FixedRandom {
@@ -93,13 +95,14 @@ fn test_load_loop_config_overrides() {
     let path = dir.join("config");
     fs::write(
         &path,
-        "CODEX_TIMEOUT_MINUTES=10\nMAX_ITERATIONS=5\nMAX_MISSING_STATUS=4\n",
+        "CODEX_TIMEOUT_MINUTES=10\nMAX_ITERATIONS=5\nMAX_MISSING_STATUS=4\nTEST_COMMAND=just test --all\n",
     )
     .unwrap();
     let cfg = load_loop_config(&path).unwrap();
     assert_eq!(cfg.codex_timeout_minutes, 10);
     assert_eq!(cfg.max_iterations, 5);
     assert_eq!(cfg.max_missing_status, 4);
+    assert_eq!(cfg.test_command, "just test --all");
 }
 
 #[test]
@@ -273,6 +276,47 @@ fn test_generate_nanoid_deterministic() {
         .to_string()
         .repeat(repo_id_length());
     assert_eq!(id, expected);
+}
+
+#[test]
+fn test_load_task_order_parses_yaml() {
+    let dir = temp_dir("task-order");
+    let path = dir.join("task-order.yaml");
+    fs::write(
+        &path,
+        "version: 1\ntasks:\n  - id: 1\n    key: foundation\n    title: \"Foundation\"\n    file: specs/feature-001-task-001.md\n    depends_on: []\n",
+    )
+    .unwrap();
+    let order = load_task_order(&path).unwrap();
+    assert_eq!(order.version, 1);
+    assert_eq!(order.tasks.len(), 1);
+    assert_eq!(order.tasks[0].key, "foundation");
+}
+
+#[test]
+fn test_load_test_order_parses_yaml() {
+    let dir = temp_dir("test-order");
+    let path = dir.join("test-order.yaml");
+    fs::write(
+        &path,
+        "version: 1\ntests:\n  - id: 1\n    key: foundation-test\n    title: \"Test: Foundation\"\n    task_id: 1\n    file: specs/feature-001-task-001-test-001.md\n    depends_on: []\n    kind: pbt\n",
+    )
+    .unwrap();
+    let order = load_test_order(&path).unwrap();
+    assert_eq!(order.version, 1);
+    assert_eq!(order.tests.len(), 1);
+    assert_eq!(order.tests[0].kind.as_deref(), Some("pbt"));
+}
+
+#[test]
+fn test_work_status_ensure_item() {
+    let dir = temp_dir("work-status");
+    let path = dir.join("work-status.json");
+    let now = "2026-01-31T00:00:00Z";
+    let mut status = load_work_status(&path, now).unwrap();
+    ensure_item(&mut status, "task-one", WorkItemType::Task, now);
+    let item = status.items.get("task-one").unwrap();
+    assert_eq!(item.state, WorkItemState::NotStarted);
 }
 
 fn write_repo_id(root: &Path, repo_id: &str) {

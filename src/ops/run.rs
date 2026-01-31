@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use time::OffsetDateTime;
 use time::format_description::well_known::Rfc3339;
 
-use crate::ops::codex::{CodexOptions, CodexRun, CodexSession, run_codex};
+use crate::ops::codex::{CodexMode, CodexOptions, CodexRun, CodexSession, run_codex};
 use crate::ops::fs::write_file_atomic;
 use crate::ops::loopr_root::resolve_loopr_root;
 use crate::{LooprError, LooprResult};
@@ -18,6 +18,7 @@ pub struct RunStep {
     pub outputs: Vec<String>,
     pub requires_seed: bool,
     pub always_run: bool,
+    pub allow_repo_read: bool,
 }
 
 pub struct RunOptions {
@@ -69,6 +70,7 @@ pub fn run_workflow(opts: RunOptions) -> LooprResult<RunReport> {
             &args,
             &CodexOptions {
                 loopr_root: Some(root.clone()),
+                mode: CodexMode::Interactive,
             },
         )?;
         let err = codex_error(&run);
@@ -137,6 +139,7 @@ pub fn run_workflow(opts: RunOptions) -> LooprResult<RunReport> {
             &args,
             &CodexOptions {
                 loopr_root: Some(root.clone()),
+                mode: CodexMode::Exec,
             },
         )?;
         let err = codex_error(&run);
@@ -200,6 +203,7 @@ pub fn default_run_steps() -> Vec<RunStep> {
             outputs: vec!["specs/prd.md".to_string()],
             requires_seed: true,
             always_run: false,
+            allow_repo_read: false,
         },
         RunStep {
             name: "spec".to_string(),
@@ -211,6 +215,7 @@ pub fn default_run_steps() -> Vec<RunStep> {
             outputs: vec!["specs/spec.md".to_string()],
             requires_seed: false,
             always_run: false,
+            allow_repo_read: false,
         },
         RunStep {
             name: "features".to_string(),
@@ -225,6 +230,7 @@ pub fn default_run_steps() -> Vec<RunStep> {
             ],
             requires_seed: false,
             always_run: false,
+            allow_repo_read: false,
         },
         RunStep {
             name: "tasks".to_string(),
@@ -240,6 +246,7 @@ pub fn default_run_steps() -> Vec<RunStep> {
             ],
             requires_seed: false,
             always_run: false,
+            allow_repo_read: false,
         },
         RunStep {
             name: "tests".to_string(),
@@ -255,6 +262,7 @@ pub fn default_run_steps() -> Vec<RunStep> {
             ],
             requires_seed: false,
             always_run: false,
+            allow_repo_read: false,
         },
         RunStep {
             name: "execute".to_string(),
@@ -269,6 +277,7 @@ pub fn default_run_steps() -> Vec<RunStep> {
             outputs: vec!["specs/implementation-progress.md".to_string()],
             requires_seed: false,
             always_run: true,
+            allow_repo_read: true,
         },
     ]
 }
@@ -337,6 +346,9 @@ pub fn build_prompt_lines(step: &RunStep, seed: &str, handoff_path: &Path) -> Ve
             lines.push(format!("- {}", input));
         }
     }
+    if step.allow_repo_read {
+        lines.push("- Repo files as needed (read-only).".to_string());
+    }
     lines.push(String::new());
     lines.push("Required outputs:".to_string());
     for output in &step.outputs {
@@ -351,8 +363,15 @@ pub fn build_prompt_lines(step: &RunStep, seed: &str, handoff_path: &Path) -> Ve
 
     lines.push(String::new());
     lines.push("Rules:".to_string());
-    lines.push("- Read only the allowed inputs.".to_string());
-    lines.push("- Do not scan the repo.".to_string());
+    if step.allow_repo_read {
+        lines.push(
+            "- Read the allowed inputs and any repo files needed for implementation.".to_string(),
+        );
+        lines.push("- Avoid broad scans; open only what you need.".to_string());
+    } else {
+        lines.push("- Read only the allowed inputs.".to_string());
+        lines.push("- Do not scan the repo.".to_string());
+    }
     lines.push(
         "- If required inputs are missing, stop and ask to run the appropriate step.".to_string(),
     );

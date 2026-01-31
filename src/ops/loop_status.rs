@@ -11,6 +11,9 @@ pub struct LooprStatus {
     pub status: String,
     pub exit_signal: bool,
     pub summary: String,
+    pub item_key: String,
+    pub item_type: String,
+    pub phase: String,
 }
 
 pub fn parse_loopr_status_from_log(path: &Path) -> LooprResult<(LooprStatus, bool)> {
@@ -48,6 +51,9 @@ pub fn parse_loopr_status(log: &str) -> (LooprStatus, bool) {
             "STATUS" => status.status = value.to_uppercase(),
             "EXIT_SIGNAL" => status.exit_signal = parse_bool(value),
             "SUMMARY" => status.summary = value.to_string(),
+            "ITEM_KEY" => status.item_key = value.to_string(),
+            "ITEM_TYPE" => status.item_type = value.to_lowercase(),
+            "PHASE" => status.phase = value.to_lowercase(),
             _ => {}
         }
     }

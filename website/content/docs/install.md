@@ -31,6 +31,14 @@ just build</code></pre>
   <h2>Run the workflow</h2>
   <p>Run the workflow through Codex and log transcripts to the workspace you want to manage.</p>
   <pre><code>./bin/loopr run --codex --seed-prompt "&lt;seed prompt&gt;" --loopr-root ./website</code></pre>
+  <p><code>--seed-prompt</code> accepts inline text or <code>@path</code> to read from a file.</p>
   <p>To use dryrun mode (show workflow steps without running Codex), use <code>./bin/loopr run --dry-run</code>.</p>
   <p>To pass Codex flags, add them after <code>--</code> (or use <code>--help</code>/<code>--version</code> with <code>--codex</code> to see Codex output).</p>
+
+  <h2>Execute the loop</h2>
+  <p>Run the execute loop to begin implementation.</p>
+  <pre><code>./bin/loopr loop --loopr-root ./website</code></pre>
+  <p>Use <code>--per-task</code> for tests-first execution (one Codex session per task/test item).</p>
+  <pre><code>./bin/loopr loop --per-task --loopr-root ./website</code></pre>
+  <p>Per-task mode runs tests via <code>TEST_COMMAND</code> in <code>loopr/config</code> (default: <code>just test</code>).</p>
 </section>

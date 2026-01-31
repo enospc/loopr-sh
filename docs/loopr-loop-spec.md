@@ -14,7 +14,7 @@ verification-first, determinism, observability, and failure containment.
 - Deep Codex session continuity (future extension).
 
 ## Loop Command
-`loopr loop [--loopr-root <path>] [--max-iterations <n>] [--] <codex args>`
+`loopr loop [--loopr-root <path>] [--max-iterations <n>] [--per-task] [--] <codex args>`
 
 Behavior:
 1. Resolve Loopr root.
@@ -23,6 +23,16 @@ Behavior:
 4. Parse status from the transcript.
 5. Update `loopr/state/status.json`.
 6. Exit on completion, error, or missing status.
+
+### Per-task mode (`--per-task`)
+Runs one Codex session per task/test item instead of a single execute session.
+
+Behavior:
+- Parse `specs/task-order.yaml` + `specs/test-order.yaml`.
+- Run tests **before** implementation for each task.
+- For PBT (`kind: pbt` or PBT keywords in the test spec), tests must **fail first**.
+- After implementation, run tests and require pass.
+- Track progress in `loopr/state/work-status.json`.
 
 ## Status Block (Required)
 Codex output must include:
@@ -34,6 +44,13 @@ SUMMARY: <short summary>
 ---END_LOOPR_STATUS---
 ```
 
+Per-task mode extends the status block with:
+```
+ITEM_KEY: <task/test key>
+ITEM_TYPE: task | test
+PHASE: tests | implement
+```
+
 ## Config File
 Location: `loopr/config`
 Format: `KEY=VALUE` (blank lines and `#` comments ignored)
@@ -43,11 +60,13 @@ Defaults:
 CODEX_TIMEOUT_MINUTES=15
 MAX_ITERATIONS=50
 MAX_MISSING_STATUS=2
+TEST_COMMAND=just test
 ```
 
 ## State Files
 All under `loopr/state/`:
 - `status.json` (public, current loop status)
+- `work-status.json` (per-task status when using `--per-task`)
 
 ## Exit Logic (MVP)
 - **Complete**: `EXIT_SIGNAL=true` or `STATUS=COMPLETE`.

@@ -22,7 +22,7 @@ description: Frequently asked questions about Loopr.
 
   <details>
     <summary>How do I know the output is correct?</summary>
-    <p>You don’t unless you can verify it. Loopr treats tests as the primary oracle and stops on failures.</p>
+    <p>You don’t unless you can verify it. Loopr treats tests as the primary oracle and stops on failures. In per-task mode (<code>loopr loop --per-task</code>), tests are executed before implementation.</p>
   </details>
 
   <details>
@@ -42,7 +42,7 @@ description: Frequently asked questions about Loopr.
 
   <details>
     <summary>What if tests fail during execution?</summary>
-    <p>Loopr stops on failures. Fix the issue or adjust the plan before proceeding.</p>
+    <p>Loopr stops on failures. Fix the issue or adjust the plan before proceeding. In per-task mode, Loopr records progress and failures in <code>loopr/state/work-status.json</code>.</p>
   </details>
 
   <details>
@@ -55,22 +55,22 @@ description: Frequently asked questions about Loopr.
     <p><code>loopr run</code> requires <code>--codex</code> (execute) or <code>--dry-run</code> (dryrun mode).</p>
     <p><code>--codex</code> and <code>--dry-run</code> are mutually exclusive.</p>
     <p>Use <code>loopr run --help</code> for Loopr run flags. If you include <code>--codex</code>, help/version flags are forwarded to Codex (for example, <code>loopr run --codex --help</code>).</p>
-    <p>For other Codex flags, place them after <code>--</code>, like <code>loopr run --codex -- --model o3</code>.</p>
+    <p>For other Codex flags, place them after <code>--</code>, like <code>loopr run --codex -- --model &lt;model name&gt;</code>.</p>
   </details>
 
   <details>
     <summary>How does Loopr handle property-based testing?</summary>
-    <p>Loopr treats PBT as an explicit, optional strategy. It requires the chosen library and invariants to be recorded in <code>specs/spec.md</code>, and feature/task docs carry the properties, generators, and seed/replay guidance.</p>
-    <p>Tests only emit PBT templates when a framework is named; otherwise they fall back to example-based tests and note the gap. Execution logs seeds and minimal failing cases to keep runs reproducible.</p>
+    <p>Loopr treats PBT as an explicit, optional strategy. In per-task mode, PBT tests must fail on the first run before implementation begins.</p>
+    <p>PBT is detected via <code>kind: pbt</code> in <code>specs/test-order.yaml</code> with a keyword fallback in the test spec (property-based, PBT, proptest, quickcheck, fast-check).</p>
   </details>
 
   <details>
     <summary>Where do the artifacts live?</summary>
-    <p>Specs live under <code>specs/</code>. Operational state (repo id, transcripts, status) lives under <code>loopr/</code>.</p>
+    <p>Specs live under <code>specs/</code>. Operational state (repo id, transcripts, status) lives under <code>loopr/</code>. Per-task progress is recorded in <code>loopr/state/work-status.json</code>.</p>
   </details>
 
   <details>
     <summary>Does Loopr work in monorepos?</summary>
-    <p>Yes. Use <code>loopr run --codex --loopr-root &lt;path&gt;</code> to point at the workspace you want to manage (add <code>--seed-prompt</code> when bootstrapping a new repo).</p>
+    <p>Yes. Use <code>loopr run --codex --loopr-root &lt;path&gt;</code> to point at the workspace you want to manage (add <code>--seed-prompt</code> when bootstrapping a new repo; <code>@path</code> reads from a file).</p>
   </details>
 </section>

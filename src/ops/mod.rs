@@ -7,3 +7,5 @@ pub mod loop_status;
 pub mod loopr_root;
 pub mod nanoid;
 pub mod run;
+pub mod work_plan;
+pub mod work_status;

@@ -3,11 +3,12 @@ use std::path::Path;
 
 use crate::{LooprError, LooprResult};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LoopConfig {
     pub codex_timeout_minutes: i64,
     pub max_iterations: i64,
     pub max_missing_status: i64,
+    pub test_command: String,
 }
 
 pub fn default_loop_config() -> LoopConfig {
@@ -15,6 +16,7 @@ pub fn default_loop_config() -> LoopConfig {
         codex_timeout_minutes: 15,
         max_iterations: 50,
         max_missing_status: 2,
+        test_command: "just test".to_string(),
     }
 }
 
@@ -81,6 +83,10 @@ fn apply_loop_config_value(
         "MAX_ITERATIONS" => set_loop_config_int(&mut cfg.max_iterations, key, val, line_no, false),
         "MAX_MISSING_STATUS" => {
             set_loop_config_int(&mut cfg.max_missing_status, key, val, line_no, true)
+        }
+        "TEST_COMMAND" => {
+            cfg.test_command = val.to_string();
+            Ok(())
         }
         _ => Ok(()),
     }

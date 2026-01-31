@@ -3,6 +3,7 @@ use std::path::PathBuf;
 
 use crate::ops;
 use crate::version;
+use crate::{LooprError, LooprResult};
 
 #[derive(Parser, Debug)]
 #[command(disable_help_flag = true)]
@@ -12,35 +13,98 @@ struct InitArgs {
 }
 
 #[derive(Parser, Debug)]
-#[command(disable_help_flag = false, disable_version_flag = true)]
+#[command(
+    disable_help_flag = false,
+    disable_version_flag = true,
+    about = "Orchestrate the Loopr workflow steps (PRD -> Spec -> Features -> Tasks -> Tests -> Execute). Requires --codex or --dry-run. Use --from/--to to run a contiguous range, or --step for a single step. When --codex is set, the prompt and handoff rules are enforced; when --dry-run is set, no Codex session is started.",
+    after_help = "Examples:\n  loopr run --codex --seed-prompt @seed.txt\n  loopr run --codex --from spec --to tests\n  loopr run --dry-run\n  loopr run --codex -- --model <model name>\n",
+    help_template = "{about}\n\nUsage: {usage}\n\nOptions:\n{options}\n\n{after-help}"
+)]
 struct RunArgs {
-    #[arg(long)]
+    #[arg(
+        long,
+        help = "Start at this step (e.g., prd, spec, features, tasks, tests, execute).",
+        long_help = "Start at this step (e.g., prd, spec, features, tasks, tests, execute). Runs through --to or the end if --to is omitted. Ignored if --step is set."
+    )]
     from: Option<String>,
-    #[arg(long)]
+    #[arg(
+        long,
+        help = "End at this step (inclusive).",
+        long_help = "End at this step (inclusive). Used with --from; ignored if --step is set."
+    )]
     to: Option<String>,
-    #[arg(long)]
+    #[arg(
+        long,
+        help = "Run only this step (overrides --from/--to).",
+        long_help = "Run only this step (overrides --from/--to). Useful for re-running a single stage."
+    )]
     step: Option<String>,
-    #[arg(long = "seed-prompt")]
+    #[arg(
+        long = "seed-prompt",
+        help = "Seed prompt text or @path to read from a file.",
+        long_help = "Seed prompt text or @path to read from a file. Required when running the prd step if specs/prd.md is missing."
+    )]
     seed_prompt: Option<String>,
-    #[arg(long)]
+    #[arg(
+        long,
+        help = "Ask for confirmation before each step.",
+        long_help = "Ask for confirmation before each step when running with --codex."
+    )]
     confirm: bool,
-    #[arg(long = "no-prompt")]
+    #[arg(
+        long = "no-prompt",
+        help = "Open Codex without a Loopr prompt (interactive mode).",
+        long_help = "Open Codex without a Loopr prompt (interactive mode). Skips step planning and handoff enforcement."
+    )]
     no_prompt: bool,
-    #[arg(long)]
+    #[arg(
+        long,
+        help = "Run with Codex (required unless --dry-run).",
+        long_help = "Run with Codex (required unless --dry-run). All prompts are executed with Loopr's safety rules."
+    )]
     codex: bool,
-    #[arg(long = "dry-run")]
+    #[arg(
+        long = "dry-run",
+        help = "Print planned steps without running Codex.",
+        long_help = "Print planned steps without running Codex or reading prompts. Useful to preview which steps will run."
+    )]
     dry_run: bool,
-    #[arg(long = "loopr-root")]
+    #[arg(
+        long = "loopr-root",
+        help = "Override Loopr root (defaults to nearest loopr/repo-id).",
+        long_help = "Override Loopr root (defaults to nearest loopr/repo-id). Use this when running from a different working directory."
+    )]
     loopr_root: Option<String>,
 }
 
 #[derive(Parser, Debug)]
-#[command(disable_help_flag = false, disable_version_flag = true)]
+#[command(
+    disable_help_flag = false,
+    disable_version_flag = true,
+    about = "Run repeated Loopr execute iterations with safety gates (exit signals, missing-status limits, and optional per-task mode). Default mode runs a single execute prompt per iteration. Use --per-task to run one Codex session per test/task item with tests-first enforcement, using specs/task-order.yaml and specs/test-order.yaml.",
+    after_help = "Examples:\n  loopr loop\n  loopr loop --max-iterations 5\n  loopr loop --per-task\n  loopr loop --loopr-root /repo/app -- --model <model name>\n",
+    help_template = "{about}\n\nUsage: {usage}\n\nOptions:\n{options}\n\n{after-help}"
+)]
 struct LoopArgs {
-    #[arg(long = "loopr-root")]
+    #[arg(
+        long = "loopr-root",
+        help = "Override Loopr root (defaults to nearest loopr/repo-id).",
+        long_help = "Override Loopr root (defaults to nearest loopr/repo-id). Use this when running from a different working directory."
+    )]
     loopr_root: Option<String>,
-    #[arg(long = "max-iterations", default_value_t = 0)]
+    #[arg(
+        long = "max-iterations",
+        default_value_t = 0,
+        help = "Stop after N iterations (0 = no limit).",
+        long_help = "Stop after N iterations (0 = no limit). In --per-task mode, each item run counts as one iteration."
+    )]
     max_iterations: i64,
+    #[arg(
+        long = "per-task",
+        help = "Run one Codex session per test/task item.",
+        long_help = "Run one Codex session per test/task item. Tests are written and executed first; implementation runs only after tests are written. PBT tests must fail on the first run. Progress tracked in loopr/state/work-status.json and tests run via TEST_COMMAND (default: `just test`)."
+    )]
+    per_task: bool,
 }
 
 pub fn usage() {
@@ -112,6 +176,12 @@ pub fn run_run(args: Vec<String>) -> i32 {
     }
     if !codex && !parsed.dry_run {
         return fail("run requires --codex or --dry-run");
+    }
+    if codex && !no_prompt {
+        match resolve_seed_prompt(seed_prompt) {
+            Ok(value) => seed_prompt = value,
+            Err(err) => return fail(&err.to_string()),
+        }
     }
 
     let loopr_root = parsed
@@ -187,6 +257,7 @@ pub fn run_loop(args: Vec<String>) -> i32 {
     let opts = ops::loop_run::LoopOptions {
         loopr_root,
         max_iterations: parsed.max_iterations,
+        per_task: parsed.per_task,
         codex_args: agent_args,
         progress: Some(Box::new(|event| {
             if !event.details.is_empty() {
@@ -245,6 +316,20 @@ fn fail(message: &str) -> i32 {
     1
 }
 
+fn resolve_seed_prompt(raw: String) -> LooprResult<String> {
+    let value = raw.trim();
+    if !value.starts_with('@') {
+        return Ok(raw);
+    }
+    let path = value.trim_start_matches('@').trim();
+    if path.is_empty() {
+        return Err(LooprError::new("seed prompt file path is empty"));
+    }
+    let content = std::fs::read_to_string(path)
+        .map_err(|err| LooprError::new(format!("read seed prompt file {}: {}", path, err)))?;
+    Ok(content)
+}
+
 pub fn split_on_double_dash(args: &[String]) -> (Vec<String>, Vec<String>) {
     for (idx, arg) in args.iter().enumerate() {
         if arg == "--" {
@@ -286,4 +371,40 @@ pub fn is_codex_help_flag(arg: &str) -> bool {
     matches!(arg, "-h" | "-help" | "--help" | "-V" | "--version")
         || arg.starts_with("--help=")
         || arg.starts_with("--version=")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::resolve_seed_prompt;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    fn temp_seed_path(name: &str) -> std::path::PathBuf {
+        let mut dir = std::env::temp_dir();
+        let nanos = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        dir.push(format!("loopr-seed-{}-{}.txt", name, nanos));
+        dir
+    }
+
+    #[test]
+    fn resolve_seed_prompt_literal() {
+        let value = resolve_seed_prompt("hello world".to_string()).unwrap();
+        assert_eq!(value, "hello world");
+    }
+
+    #[test]
+    fn resolve_seed_prompt_file() {
+        let path = temp_seed_path("file");
+        std::fs::write(&path, "seed from file\n").unwrap();
+        let value = resolve_seed_prompt(format!("@{}", path.display())).unwrap();
+        assert_eq!(value, "seed from file\n");
+    }
+
+    #[test]
+    fn resolve_seed_prompt_empty_path() {
+        let err = resolve_seed_prompt("@".to_string()).unwrap_err();
+        assert!(err.to_string().contains("seed prompt file path is empty"));
+    }
 }
