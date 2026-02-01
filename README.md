@@ -9,8 +9,8 @@ validates specs order artifacts. You own intent, verification, and outcomes; Loo
 ## Requirements
 
 - Unix-like host (Linux or macOS; Windows via WSL or Git Bash if using `just`)
-- Codex CLI available on your PATH
-- `just` available on your PATH
+- Codex CLI available on your PATH (required for `loopr run --codex` and `loopr loop`; not needed for `--dry-run`)
+- `just` available on your PATH (required for the default `TEST_COMMAND=just test`; change `loopr/config` if you use a different test command)
 - If building from source: Rust (edition 2024)
 
 ## Install tooling
@@ -85,29 +85,6 @@ Binary will be at `bin/loopr`.
 
 3) (Optional) run your own checks (tests, lint) once specs are written.
 
-## End-to-end workflow (example)
-
-Use this seed prompt to drive a full PRD -> Spec -> Features -> Tasks -> Tests -> Execute flow that validates an end-to-end system:
-
-```
-Build a specific web app: "OpsRunbook" — a personal runbook + incident notes manager.
-
-Stack
-- Frontend: Vite + TypeScript (SPA)
-- Backend: Rust (axum) JSON API
-- DB: SQLite3 (sqlx) with migrations
-
-Goal
-- Validate end-to-end delivery: schema/migrations -> REST API -> frontend UI -> persistence.
-- Keep scope small but production-shaped (project structure, configs, error handling, a few tests).
-```
-
-Run:
-
-```
-./bin/loopr run --codex --seed-prompt "<paste seed prompt>"
-./bin/loopr run --codex --seed-prompt @seed-prompt.txt
-```
 
 ## Working example seed prompt (SSE + realtime)
 
@@ -125,8 +102,9 @@ Scope
 - Allow filtering by user, CPU%, memory%, and command.
 
 Stack
-- Frontend + Backend: Next.js (App Router) with Server Actions + SSE route
-- DB: SQLite (Prisma migrations)
+- Frontend: Flutter web (use provider for state management)
+- Backend: Rust (axum) JSON API + SSE for live feed
+- DB: SQLite3 (sqlx) with migrations
 - Data collection: read from /proc (no external agents)
 - Testing: API route tests + frontend component tests
 
@@ -139,17 +117,12 @@ Core features
 - UI controls: pause/resume stream, and small CPU/mem sparklines.
 
 Requirements
-- Schema + migrations for snapshots and process entries.
-- Input validation with zod; structured error envelope.
-- Include API contract examples in the spec.
-- Seed data generator for demo mode if /proc unavailable.
 - Must run locally with no external services beyond SQLite.
 
 Non-Goals
 - Multi-host monitoring, auth, or WebSocket streaming (SSE only).
 
 Success criteria
-- Migrations apply cleanly.
 - Snapshot capture works and is streamed via SSE.
 - UI updates in real time and filters apply live.
 - UI demo flow: start stream -> watch table update -> filter -> view top offenders.
@@ -170,8 +143,8 @@ This creates:
 - `loopr/repo-id`
 - `loopr/state/` for handoffs, transcripts, and status
 - `loopr/.gitignore` to keep runtime state local
- - `loopr/state/docs-index.txt` (compressed docs index)
- - `AGENTS.md` (created or injected by default)
+- `loopr/state/docs-index.txt` (pipe-formatted docs index)
+- `AGENTS.md` (created or injected by default)
 
 ### 2) Save your seed prompt
 
@@ -222,6 +195,7 @@ Tip: you can also run a contiguous range:
 ```
 ./bin/loopr run --codex --from spec --to tests
 ```
+Use `--confirm` to require approval before each step when running with Codex.
 
 ### 6) Execute the work
 
@@ -318,7 +292,7 @@ Loopr does not infer or skip steps based on repo contents.
 | `execute` | `loopr-execute` | `specs/implementation-progress.md` |
 
 Notes:
-- `--seed-prompt` is required when the `prd` step runs and `specs/prd.md` does not exist.
+- `--seed-prompt` is required whenever the `prd` step runs.
 - `--seed-prompt` accepts inline text or `@path` to read from a file.
 - Each prompt appends a completion note to `loopr/state/handoff.md` (decisions, open questions, tests).
 
