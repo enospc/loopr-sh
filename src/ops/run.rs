@@ -6,6 +6,7 @@ use time::OffsetDateTime;
 use time::format_description::well_known::Rfc3339;
 
 use crate::ops::codex::{CodexMode, CodexOptions, CodexRun, CodexSession, run_codex};
+use crate::ops::docs_index::write_docs_index;
 use crate::ops::fs::write_file_atomic;
 use crate::ops::loopr_root::resolve_loopr_root;
 use crate::{LooprError, LooprResult};
@@ -62,6 +63,10 @@ pub fn run_workflow(opts: RunOptions) -> LooprResult<RunReport> {
     };
 
     let append_prompt = !opts.no_prompt;
+
+    if opts.codex {
+        write_docs_index(&root)?;
+    }
 
     if opts.codex && !append_prompt {
         let mut args = vec!["--cd".to_string(), root.display().to_string()];
@@ -354,8 +359,12 @@ pub fn build_prompt_lines(
     lines.push("Allowed inputs:".to_string());
 
     let mut seen = HashSet::new();
-    for input in &step.inputs {
-        if seen.insert(input) {
+    let mut allowed_inputs = Vec::new();
+    allowed_inputs.extend(step.inputs.iter().cloned());
+    allowed_inputs.push("AGENTS.md".to_string());
+    allowed_inputs.push("loopr/state/docs-index.txt".to_string());
+    for input in allowed_inputs {
+        if seen.insert(input.clone()) {
             lines.push(format!("- {}", input));
         }
     }

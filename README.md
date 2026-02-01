@@ -245,6 +245,7 @@ Per-task mode details:
 Status files:
 - `loopr/state/status.json` (overall loop status)
 - `loopr/state/work-status.json` (per-task mode)
+ - `loopr/state/docs-index.txt` (compressed docs map; regenerated on run/loop or via `loopr index`)
 
 Transcripts:
 ```
@@ -283,7 +284,8 @@ Other useful runs:
 Keep agent instructions in `AGENTS.md` at the repo root. Treat it as a contract: goals, guardrails, and expectations
 for Codex sessions. Loopr prompts assume this file is authoritative for how the agent should behave.
 By default, `loopr init` creates `AGENTS.md` if missing or appends a Loopr-marked section if it already exists.
-Use `loopr init --no-agents` to skip this behavior.
+Use `loopr init --no-agents` to skip this behavior. The docs index is regenerated at the start of `loopr run`
+and `loopr loop`, or manually via `loopr index`.
 
 ## Command summary
 
@@ -291,6 +293,7 @@ Use `loopr init --no-agents` to skip this behavior.
 loopr init            # initialize Loopr metadata in a repo
 loopr run             # orchestrate workflow (requires --codex or --dry-run)
 loopr loop            # run the execute loop with safety gates
+loopr index           # refresh the Loopr docs index (loopr/state/docs-index.txt)
 loopr version         # show version info
 ```
 

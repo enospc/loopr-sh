@@ -122,3 +122,16 @@ fn test_run_dry_run_rejects_invalid_step() {
     assert_ne!(code, 0);
     assert!(output.contains("unknown step: nope"));
 }
+
+#[test]
+fn test_index_command_writes_docs_index() {
+    let root = temp_dir("index-cmd");
+    let root_str = root.to_string_lossy();
+    let (_output, code) = run_loopr(&["init", "--no-agents", "--root", &root_str]);
+    assert_eq!(code, 0);
+
+    let (output, code) = run_loopr(&["index", "--loopr-root", &root_str]);
+    assert_eq!(code, 0);
+    assert!(output.contains("Docs index:"));
+    assert!(root.join("loopr").join("state").join("docs-index.txt").exists());
+}

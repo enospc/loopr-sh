@@ -10,6 +10,7 @@ use time::format_description::well_known::Rfc3339;
 use crate::ops::codex::{
     CodexMode, CodexOptions, CodexRun, CodexSession, run_codex, run_codex_with_timeout,
 };
+use crate::ops::docs_index::write_docs_index;
 use crate::ops::fs::{ensure_dir, write_file_atomic};
 use crate::ops::loop_config::{LoopConfig, load_loop_config};
 use crate::ops::loop_status::{
@@ -70,6 +71,7 @@ struct LoopStatusPayload {
 pub fn run_loop(opts: LoopOptions) -> LooprResult<LoopReport> {
     let cwd = std::env::current_dir()?;
     let (root, _) = resolve_loopr_root(&cwd, opts.loopr_root.as_deref())?;
+    write_docs_index(&root)?;
     let handoff_path = ensure_handoff(&root)?;
     let step = find_step(&default_run_steps(), "execute")
         .ok_or_else(|| LooprError::new("execute step not found"))?;
@@ -872,6 +874,13 @@ fn dedupe_inputs(inputs: Vec<String>) -> Vec<String> {
     out
 }
 
+fn add_context_inputs(inputs: &[String]) -> Vec<String> {
+    let mut out = inputs.to_vec();
+    out.push("AGENTS.md".to_string());
+    out.push("loopr/state/docs-index.txt".to_string());
+    dedupe_inputs(out)
+}
+
 fn select_next_item(
     tasks: &[TaskSpec],
     tests: &[TestSpec],
@@ -1232,7 +1241,8 @@ fn build_per_task_prompt(
     lines.push(format!("Prompt: {}", step.skill));
     lines.push(String::new());
     lines.push("Allowed inputs:".to_string());
-    for input in inputs {
+    let allowed_inputs = add_context_inputs(inputs);
+    for input in allowed_inputs {
         lines.push(format!("- {}", input));
     }
     if step.allow_repo_read {

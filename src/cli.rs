@@ -112,12 +112,30 @@ struct LoopArgs {
     per_task: bool,
 }
 
+#[derive(Parser, Debug)]
+#[command(
+    disable_help_flag = false,
+    disable_version_flag = true,
+    about = "Generate or refresh the Loopr docs index (loopr/state/docs-index.txt).",
+    after_help = "Example:\n  loopr index\n  loopr index --loopr-root /repo/app\n",
+    help_template = "{about}\n\nUsage: {usage}\n\nOptions:\n{options}\n\n{after-help}"
+)]
+struct IndexArgs {
+    #[arg(
+        long = "loopr-root",
+        help = "Override Loopr root (defaults to nearest loopr/repo-id).",
+        long_help = "Override Loopr root (defaults to nearest loopr/repo-id). Use this when running from a different working directory."
+    )]
+    loopr_root: Option<String>,
+}
+
 pub fn usage() {
     println!("loopr <command> [options]\n");
     println!("Commands:");
     println!("  init       Initialize Loopr metadata in a repo");
     println!("  run        Orchestrate Loopr steps (requires --codex or --dry-run)");
     println!("  loop       Run the Loopr execute loop with safety gates");
+    println!("  index      Refresh the Loopr docs index (loopr/state/docs-index.txt)");
     println!("  version     Show version info");
 }
 
@@ -289,6 +307,38 @@ pub fn run_loop(args: Vec<String>) -> i32 {
         println!("Transcript: {}", session.log_path.display());
         println!("Metadata:   {}", session.meta_path.display());
     }
+    0
+}
+
+pub fn run_index(args: Vec<String>) -> i32 {
+    let mut argv = vec!["index".to_string()];
+    argv.extend(args);
+    let parsed = match IndexArgs::try_parse_from(argv) {
+        Ok(value) => value,
+        Err(err) => return handle_clap_error(err),
+    };
+
+    let loopr_root = parsed
+        .loopr_root
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(PathBuf::from);
+
+    let cwd = match std::env::current_dir() {
+        Ok(value) => value,
+        Err(err) => return fail(&format!("current dir: {}", err)),
+    };
+    let (root, _) = match ops::loopr_root::resolve_loopr_root(&cwd, loopr_root.as_deref()) {
+        Ok(value) => value,
+        Err(err) => return fail(&err.to_string()),
+    };
+
+    let index_path = match ops::docs_index::write_docs_index(&root) {
+        Ok(value) => value,
+        Err(err) => return fail(&err.to_string()),
+    };
+    println!("Docs index: {}", index_path.display());
     0
 }
 

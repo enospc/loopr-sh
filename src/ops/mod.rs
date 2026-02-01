@@ -1,4 +1,5 @@
 pub mod codex;
+pub mod docs_index;
 pub mod fs;
 pub mod init;
 pub mod loop_config;

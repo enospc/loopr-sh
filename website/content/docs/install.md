@@ -27,7 +27,7 @@ just build</code></pre>
   <p>From your repo root, initialize Loopr metadata and decision logs:</p>
   <pre><code>./bin/loopr init</code></pre>
   <p>This also writes <code>loopr/.gitignore</code> to keep <code>loopr/state/</code> local.</p>
-  <p>By default it creates or injects <code>AGENTS.md</code> and writes <code>loopr/state/docs-index.txt</code>. Use <code>--no-agents</code> to skip AGENTS changes.</p>
+  <p>By default it creates or injects <code>AGENTS.md</code> and writes <code>loopr/state/docs-index.txt</code>. Use <code>--no-agents</code> to skip AGENTS changes. The docs index refreshes at the start of <code>loopr run</code>/<code>loopr loop</code> or via <code>loopr index</code>.</p>
 
   <h2>Run the workflow</h2>
   <p>Run the workflow through Codex and log transcripts to the workspace you want to manage.</p>

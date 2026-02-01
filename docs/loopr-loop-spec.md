@@ -19,6 +19,7 @@ verification-first, determinism, observability, and failure containment.
 Behavior:
 1. Resolve Loopr root.
 2. Load `loopr/config` (env overrides optional).
+3. Refresh `loopr/state/docs-index.txt`.
 3. Invoke Codex with a Loopr prompt that requires the status block.
 4. Parse status from the transcript.
 5. Update `loopr/state/status.json`.
@@ -67,6 +68,11 @@ TEST_COMMAND=just test
 All under `loopr/state/`:
 - `status.json` (public, current loop status)
 - `work-status.json` (per-task status when using `--per-task`)
+- `docs-index.txt` (compressed docs index used in prompts)
+
+## Docs Index Command
+`loopr index` regenerates `loopr/state/docs-index.txt` on demand. The index is also refreshed at the start of
+`loopr run` and `loopr loop`.
 
 ## Exit Logic (MVP)
 - **Complete**: `EXIT_SIGNAL=true` or `STATUS=COMPLETE`.

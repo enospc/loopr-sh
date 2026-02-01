@@ -11,6 +11,7 @@ fn main() {
         "init" => loopr::cli::run_init(args[2..].to_vec()),
         "run" => loopr::cli::run_run(args[2..].to_vec()),
         "loop" => loopr::cli::run_loop(args[2..].to_vec()),
+        "index" => loopr::cli::run_index(args[2..].to_vec()),
         "version" => loopr::cli::run_version(),
         "-h" | "--help" | "help" => {
             loopr::cli::usage();
