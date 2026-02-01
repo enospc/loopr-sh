@@ -9,7 +9,10 @@ pub fn write_docs_index(root: &Path) -> LooprResult<PathBuf> {
     let index_path = state_dir.join("docs-index.txt");
     let entries = collect_docs_entries(root)?;
     let mut body = String::new();
+    body.push_str("[Loopr Docs Index]|root: .\n");
+    body.push_str("|IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning\n");
     for entry in entries {
+        body.push('|');
         body.push_str(&entry);
         body.push('\n');
     }
@@ -34,10 +37,25 @@ fn collect_docs_entries(root: &Path) -> LooprResult<Vec<String>> {
     files.sort();
     files.dedup();
 
-    let mut entries = Vec::new();
+    let mut grouped: std::collections::BTreeMap<String, Vec<String>> =
+        std::collections::BTreeMap::new();
     for file in files {
-        let (size, summary) = summarize_file(root, &file)?;
-        entries.push(format!("{}\t{}\t{}", file, size, summary));
+        let path = Path::new(&file);
+        let dir = path.parent().and_then(|p| p.to_str()).unwrap_or(".");
+        let name = path
+            .file_name()
+            .and_then(|s| s.to_str())
+            .unwrap_or(&file)
+            .to_string();
+        let dir = if dir.is_empty() { "." } else { dir };
+        grouped.entry(dir.to_string()).or_default().push(name);
+    }
+
+    let mut entries = Vec::new();
+    for (dir, mut names) in grouped {
+        names.sort();
+        names.dedup();
+        entries.push(format!("{}:{{{}}}", dir, names.join(",")));
     }
     Ok(entries)
 }
@@ -92,41 +110,4 @@ fn is_order_yaml(path: &Path) -> bool {
     name.ends_with("-order.yaml")
 }
 
-fn summarize_file(root: &Path, rel: &str) -> LooprResult<(u64, String)> {
-    let path = root.join(rel);
-    let metadata = std::fs::metadata(&path)
-        .map_err(|err| LooprError::new(format!("metadata {}: {}", path.display(), err)))?;
-    let size = metadata.len();
-    let max_size = 256 * 1024;
-    if size > max_size {
-        return Ok((size, "skipped (too large)".to_string()));
-    }
-    let content = match std::fs::read_to_string(&path) {
-        Ok(value) => value,
-        Err(_) => return Ok((size, "unreadable".to_string())),
-    };
-    for line in content.lines() {
-        let trimmed = line.trim();
-        if trimmed.is_empty() {
-            continue;
-        }
-        if let Some(stripped) = trimmed.strip_prefix('#') {
-            let heading = stripped.trim_start_matches('#').trim();
-            if !heading.is_empty() {
-                return Ok((size, truncate_summary(heading)));
-            }
-        }
-        return Ok((size, truncate_summary(trimmed)));
-    }
-    Ok((size, "empty".to_string()))
-}
-
-fn truncate_summary(value: &str) -> String {
-    const LIMIT: usize = 120;
-    if value.len() <= LIMIT {
-        return value.to_string();
-    }
-    let mut out = value[..LIMIT].to_string();
-    out.push_str("...");
-    out
-}
+// placeholder removed; summaries are intentionally omitted for pipe index.

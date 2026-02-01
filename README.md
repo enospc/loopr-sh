@@ -245,7 +245,7 @@ Per-task mode details:
 Status files:
 - `loopr/state/status.json` (overall loop status)
 - `loopr/state/work-status.json` (per-task mode)
- - `loopr/state/docs-index.txt` (compressed docs map; regenerated on run/loop or via `loopr index`)
+ - `loopr/state/docs-index.txt` (pipe-formatted docs map; regenerated on run/loop or via `loopr index`)
 
 Transcripts:
 ```

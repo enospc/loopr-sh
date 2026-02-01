@@ -16,7 +16,7 @@ description: Run the Loopr workflow end-to-end.
   <h2>2) Initialize Loopr metadata</h2>
   <p>From your repo root, run:</p>
   <pre><code>loopr init</code></pre>
-  <p>This creates <code>AGENTS.md</code> (or injects a Loopr section) and writes <code>loopr/state/docs-index.txt</code>. Use <code>loopr init --no-agents</code> to skip AGENTS changes. The docs index refreshes at the start of <code>loopr run</code>/<code>loopr loop</code> or via <code>loopr index</code>.</p>
+  <p>This creates <code>AGENTS.md</code> (or injects a Loopr section) and writes the pipe-formatted <code>loopr/state/docs-index.txt</code>. Use <code>loopr init --no-agents</code> to skip AGENTS changes. The docs index refreshes at the start of <code>loopr run</code>/<code>loopr loop</code> or via <code>loopr index</code>.</p>
 
   <h2>3) Run the workflow</h2>
   <p>Provide a seed prompt and let Loopr drive Codex through PRD → Spec → Features → Tasks → Tests → Execute:</p>

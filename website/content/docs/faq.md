@@ -66,7 +66,7 @@ description: Frequently asked questions about Loopr.
 
   <details>
     <summary>Where do the artifacts live?</summary>
-    <p>Specs live under <code>specs/</code>. Operational state (repo id, transcripts, status) lives under <code>loopr/</code>. Per-task progress is recorded in <code>loopr/state/work-status.json</code>. The docs index lives at <code>loopr/state/docs-index.txt</code> (refresh with <code>loopr index</code>).</p>
+    <p>Specs live under <code>specs/</code>. Operational state (repo id, transcripts, status) lives under <code>loopr/</code>. Per-task progress is recorded in <code>loopr/state/work-status.json</code>. The pipe-formatted docs index lives at <code>loopr/state/docs-index.txt</code> (refresh with <code>loopr index</code>).</p>
   </details>
 
   <details>

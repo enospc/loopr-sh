@@ -68,7 +68,7 @@ TEST_COMMAND=just test
 All under `loopr/state/`:
 - `status.json` (public, current loop status)
 - `work-status.json` (per-task status when using `--per-task`)
-- `docs-index.txt` (compressed docs index used in prompts)
+- `docs-index.txt` (pipe-formatted docs index used in prompts)
 
 ## Docs Index Command
 `loopr index` regenerates `loopr/state/docs-index.txt` on demand. The index is also refreshed at the start of
